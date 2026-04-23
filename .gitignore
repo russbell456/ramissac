@@ -1,0 +1,30 @@
+# -------------------------
+# Entorno y secretos
+# -------------------------
+.env
+
+# -------------------------
+# Base de datos local
+# -------------------------
+test.db
+*.sqlite3
+
+# -------------------------
+# Caché de Python
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+
+# -------------------------
+# Archivos generados en runtime
+# -------------------------
+uploads/
+temp_files/
+static/generados/
+static/firmas/
+
+# -------------------------
+# Logs
+# -------------------------
+*.log
