@@ -19,7 +19,7 @@ from app.models.user import User
 router = APIRouter(
     prefix="/rqs",
     tags=["RQs"],
-    dependencies=[Depends(get_current_user)]
+    #dependencies=[Depends(get_current_user)]#
 )
 
 

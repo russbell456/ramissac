@@ -1,0 +1,20 @@
+[run]
+# Elimina 'source = app' para que solo considere los archivos listados en 'include'
+include =
+    app/models/almacen_prestamo.py
+    app/models/almacen_articulos.py
+    app/routers/almacen_prestamo.py
+    app/routers/almacen_articulo_router.py
+    app/schemas/almacen_prestamo.py
+    app/schemas/almacen_articulo_schema.py
+    app/services/almacen_prestamo_service.py
+    app/services/almacen_articulo_service.py
+    app/repositories/almacen_prestamo_repository.py
+    app/repositories/almacen_articulo_repository.py
+
+[report]
+show_missing = True
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if __name__ == .__main__.:

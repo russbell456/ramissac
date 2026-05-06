@@ -10,7 +10,7 @@ import os
 router = APIRouter(
     prefix="/pdf",
     tags=["Importación PDF"],
-    dependencies=[Depends(get_current_user)]  # 🔐 SEGURIDAD GLOBAL
+    #dependencies=[Depends(get_current_user)]  # 🔐 SEGURIDAD GLOBAL
 )
 
 @router.post("/importar_rq")

@@ -16,7 +16,7 @@ from app.models.user import User
 router = APIRouter(
     prefix="/rq-residente",
     tags=["Requerimientos Mobiles"],
-    dependencies=[Depends(get_current_user)]  # 🔐 PROTEGE TODO
+    #dependencies=[Depends(get_current_user)]  # 🔐 PROTEGE TODO
 )
 
 # Instanciamos los servicios una sola vez

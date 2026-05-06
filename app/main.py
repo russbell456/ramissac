@@ -22,6 +22,9 @@ from app.routers.pdf_import_router import router as importar_rq
 from app.routers.upload_router import router as upload_router
 from app.routers.comprobantes_router import router as comprobantes_router
 from app.routers.rq_personalizado_router import router as rq_personalizado_router
+from app.routers.almacen_articulo_router import router as almacen_articulo_router
+from app.routers.almacen_prestamo import router as almacen_prestamo_router
+from app.routers.almacen_devolucion import router as almacen_devolucion_router
 
 # -------------------------------
 # APP
@@ -66,6 +69,10 @@ def seed_admin_user(db: Session):
     if not existing:
         admin_user = User(
             nombre="Admin",
+            apellidos="User",
+            dni="00000000A",
+            cargo="Administrador",
+            codigo_unico="ADMIN001",  
             email=admin_email,
             password=Hash.get_password_hash("admin123"),
             role="admin"
@@ -99,7 +106,10 @@ app.include_router(auth_router)
 app.include_router(upload_router)
 app.include_router(inventario_router)
 app.include_router(importar_rq)
-app.include_router(rqs_router)
+app.include_router(rqs_router)  
+app.include_router(almacen_devolucion_router)
+app.include_router(almacen_articulo_router)
+app.include_router(almacen_prestamo_router)
 app.include_router(rq_item_router)
 app.include_router(orden_compra_router)
 app.include_router(rq_personalizado_router)

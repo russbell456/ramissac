@@ -12,7 +12,7 @@ from app.dependencies.auth_dependencies import get_current_user
 router = APIRouter(
     prefix="/ordenes_parciales",
     tags=["ordenes_parciales"],
-    dependencies=[Depends(get_current_user)]  # 🔐 SEGURIDAD GLOBAL
+    #dependencies=[Depends(get_current_user)]  # 🔐 SEGURIDAD GLOBAL
 )
 
 

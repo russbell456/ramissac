@@ -11,8 +11,12 @@ def seed():
         # Crear usuario admin de prueba
         user = User(
             nombre="Admin",
+            apellidos="User",
+            dni="00000000A",
+            cargo="Administrador",
+            codigo_unico="ADMIN001",  
             email="admin@example.com",
-            password=Hash.get_password_hash("admin123"),  # <-- aquí
+            password=Hash.get_password_hash("admin123"),
             role="admin"
         )
         db.add(user)

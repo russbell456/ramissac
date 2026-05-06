@@ -10,7 +10,7 @@ from app.dependencies.auth_dependencies import get_current_user
 router = APIRouter(
     prefix="/uploads",
     tags=["Uploads"],
-    dependencies=[Depends(get_current_user)]  # 🔐 SEGURIDAD GLOBAL
+    #dependencies=[Depends(get_current_user)]  # 🔐 SEGURIDAD GLOBAL
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

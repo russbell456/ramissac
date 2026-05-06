@@ -9,11 +9,20 @@ class AuthService:
     def __init__(self, db: Session):
         self.user_repo = UserRepository(db)
 
-    def register_user(self, nombre: str, email: str, password: str, role: str = "user"):
+    def register_user(self, nombre: str, apellidos: str, dni: str, cargo: str | None, email: str, password: str, role: str = "user"):
         if self.user_repo.get_by_email(email):
-            raise ValueError("User already exists")
+            raise ValueError("El email ya está registrado")
+        
         hashed_password = hash_password(password)
-        user = User(nombre=nombre, email=email, password=hashed_password, role=role)
+        user = User(
+            nombre=nombre,
+            apellidos=apellidos,
+            dni=dni,
+            cargo=cargo,
+            email=email,
+            password=hashed_password,
+            role=role
+        )
         return self.user_repo.create_user(user)
 
     def authenticate_user(self, email: str, password: str):
@@ -21,3 +30,7 @@ class AuthService:
         if not user or not verify_password(password, user.password):
             return None
         return user
+
+    # NUEVO MÉTODO: Obtener todos los trabajadores
+    def obtener_trabajadores(self, db: Session):
+        return db.query(User).filter(User.role == "trabajador").all()
