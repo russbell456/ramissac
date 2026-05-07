@@ -1,7 +1,7 @@
 from __future__ import annotations
-
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
 from app.database.base import Base
@@ -27,41 +27,75 @@ from app.routers.almacen_prestamo import router as almacen_prestamo_router
 from app.routers.almacen_devolucion import router as almacen_devolucion_router
 
 # -------------------------------
-# APP
+# CONFIGURACIÓN DE LA API (SWAGGER PROFESIONAL)
 # -------------------------------
-app = FastAPI(title="Sistema con Roles y Auth")
+app = FastAPI(
+    title="🚀 RamisToolX API - Corporación Ramis SAC",
+    description="""
+    ## Sistema Integral de Gestión de Activos y Control de Adquisiciones
+    
+    API desarrollada para la optimización de procesos logísticos y de almacén. 
+    Implementa estándares de **OpenAPI 3.0** y principios de la norma **ISO 25010**.
+
+    ### 🛠️ Equipo de Desarrollo (Orbit):
+    * **JxL** (Backend & Lead Developer)
+    * **Dan** (Analista de Sistemas)
+    * **Pawel** (QA & Testing)
+    * **Rusbel** (DevOps & Dockerizacion)
+    
+    ### 🔑 Seguridad:
+    Esta API utiliza **OAuth2** con **JWT (JSON Web Tokens)** para el control de acceso basado en roles.
+    """,
+    version="1.2.0",
+    contact={
+        "name": "Equipo Orbit - UPeU Juliaca",
+        "url": "https://github.com/russbell456/ramissac",
+    }
+)
 
 # -------------------------------
-# RUTA ROOT (IMPORTANTE PARA RAILWAY)
+# MIDDLEWARE (CORS) - Vital para que la App Móvil conecte
 # -------------------------------
-@app.get("/")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # En producción poner el dominio específico
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# -------------------------------
+# RUTA ROOT (CONTROL DE SALUD)
+# -------------------------------
+@app.get("/", tags=["Sistema"])
 def root():
-    return {"status": "OK", "message": "FastAPI alive"}
+    return {
+        "status": "Online",
+        "project": "RamisToolX",
+        "version": "1.2.0",
+        "message": "Backend central operativo"
+    }
 
 # -------------------------------
-# CREACIÓN AUTOMÁTICA DE CARPETAS
+# INFRAESTRUCTURA Y CARPETAS
 # -------------------------------
 FOLDERS = [
-    "uploads",
     "uploads/comprobantes",
     "uploads/ordenes_compra",
     "temp_files",
-    "static",
     "static/firmas",
     "static/generados",
-    "static/templates"  # 👈 plantillas
+    "static/templates"
 ]
 
 for folder in FOLDERS:
     os.makedirs(folder, exist_ok=True)
 
-# -------------------------------
-# ARCHIVOS ESTÁTICOS
-# -------------------------------
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # -------------------------------
-# CREAR USUARIO ADMIN AUTOMÁTICAMENTE
+# DATA SEEDING (ADMIN POR DEFECTO)
 # -------------------------------
 def seed_admin_user(db: Session):
     admin_email = "admin@example.com"
@@ -69,29 +103,24 @@ def seed_admin_user(db: Session):
     if not existing:
         admin_user = User(
             nombre="Admin",
-            apellidos="User",
-            dni="00000000A",
-            cargo="Administrador",
-            codigo_unico="ADMIN001",  
+            apellidos="Principal",
+            dni="00000000",
+            cargo="Administrador del Sistema",
+            codigo_unico="ADMIN-ORBIT",
             email=admin_email,
             password=Hash.get_password_hash("admin123"),
             role="admin"
         )
         db.add(admin_user)
         db.commit()
-        print("Usuario admin creado correctamente.")
-    else:
-        print("Usuario admin ya existe.")
+        print("✅ Usuario admin de respaldo creado.")
 
 # -------------------------------
-# STARTUP (CLAVE PARA RAILWAY)
+# STARTUP EVENT
 # -------------------------------
 @app.on_event("startup")
 def on_startup():
-    # Crear tablas
     Base.metadata.create_all(bind=engine)
-
-    # Seed admin
     db = next(get_db())
     try:
         seed_admin_user(db)
@@ -99,17 +128,24 @@ def on_startup():
         db.close()
 
 # -------------------------------
-# ROUTERS
+# INCLUSIÓN DE ROUTERS (ORDEN LÓGICO)
 # -------------------------------
-app.include_router(comprobantes_router)
+# 1. Acceso y Archivos
 app.include_router(auth_router)
 app.include_router(upload_router)
-app.include_router(inventario_router)
+
+# 2. Gestión de Requerimientos
 app.include_router(importar_rq)
-app.include_router(rqs_router)  
-app.include_router(almacen_devolucion_router)
+app.include_router(rqs_router)
+app.include_router(rq_item_router)
+app.include_router(rq_personalizado_router)
+
+# 3. Logística y Compras
+app.include_router(orden_compra_router)
+app.include_router(comprobantes_router)
+
+# 4. Inventario y Almacén
+app.include_router(inventario_router)
 app.include_router(almacen_articulo_router)
 app.include_router(almacen_prestamo_router)
-app.include_router(rq_item_router)
-app.include_router(orden_compra_router)
-app.include_router(rq_personalizado_router)
+app.include_router(almacen_devolucion_router)
