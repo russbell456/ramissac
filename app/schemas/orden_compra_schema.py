@@ -112,6 +112,19 @@ class OrdenCompraCreate(BaseModel):
     comprobantes: List[ComprobanteItem]
 
 
+
+
+class ComprobanteEntity(BaseModel):
+    id: int
+    tipo_documento: str
+    archivo_ruta: str
+    numero_comprobante: Optional[str] = None
+    es_factura: Optional[bool] = None
+    fecha: Optional[date] = None
+
+    model_config = {"from_attributes": True}
+
+
 class OrdenCompraEntity(BaseModel):
     id: int
     # ⚠️ CAMPO ELIMINADO: rq_item_id
@@ -127,16 +140,7 @@ class OrdenCompraEntity(BaseModel):
     # El detalle de los ítems ahora va aquí (debe mapearse vía relación)
     items_comprados: List[Dict[str, Any]] = [] # Usamos Dict temporalmente para reportar la relación
     comprobantes: List[ComprobanteEntity] = []
-
-class ComprobanteEntity(BaseModel):
-    id: int
-    tipo_documento: str
-    archivo_ruta: str
-    numero_comprobante: Optional[str] = None
-    es_factura: Optional[bool] = None
-    fecha: Optional[date] = None
-
-    model_config = {"from_attributes": True}
+    
 # respuesta summary
 class AvanceItem(BaseModel):
     item_id: int

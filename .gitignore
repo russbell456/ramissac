@@ -28,3 +28,4 @@ static/firmas/
 # Logs
 # -------------------------
 *.log
+.env
