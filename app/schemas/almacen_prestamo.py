@@ -1,12 +1,8 @@
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime
-
-<<<<<<< HEAD
 from sqlalchemy import Enum
-=======
 from enum import Enum
->>>>>>> e11366450dc900be412f7c6cfe72ffffb0b3c07a
 class TipoArticuloSchema(str, Enum):
     EQUIPO = "equipo"
     CONSUMIBLE = "consumible"
@@ -20,7 +16,7 @@ class PrestamoDetalleSchema(BaseModel):
     cantidad_prestada: int
     cantidad_devuelta: int
     esta_devuelto: bool
-    articulo_nombre: str  # ← Nuevo: nombre del artículo (lo agregamos manualmente)
+    articulo_nombre: str 
     articulo_tipo: str
     articulo_unidad: str
 
@@ -28,8 +24,8 @@ class PrestamoDetalleSchema(BaseModel):
         from_attributes = True
 
 class PrestamoQRData(BaseModel):
-    trabajador_id: int                        # ID real del trabajador (viene del login)
-    codigo_unico: str                         # Correlativo (56, 23, etc.)
+    trabajador_id: int                        
+    codigo_unico: str                         
     dni: str
     nombres_completos: str
     cargo: str
