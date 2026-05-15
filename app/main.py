@@ -115,7 +115,6 @@ def seed_admin_user(db: Session):
     if not existing:
         admin_user = User(
             nombre="Admin",
-            apellidos="User",
             dni="00000000A",
             cargo="Administrador",
             codigo_unico="ADMIN001",  
