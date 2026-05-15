@@ -7,7 +7,7 @@ from app.core.security import hash_password, verify_password
 
 class AuthService:
     def __init__(self, db: Session):
-        self.db = db  # Guardamos la sesión
+        self.db = db  #
         self.user_repo = UserRepository(db)
 
     def register_user(self, nombre: str, apellidos: str, dni: str, cargo: str | None, email: str, password: str, role: str = "user"):
@@ -34,7 +34,6 @@ class AuthService:
 
 
     def obtener_trabajadores(self):
-        # Usamos la sesión que ya vive en el servicio
         return self.db.query(User).filter(User.role == "trabajador").all()
-    def obtener_trabajadores(self, db: Session):
-        return db.query(User).filter(User.role == "trabajador").all()
+    
+

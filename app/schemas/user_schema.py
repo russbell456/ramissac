@@ -31,7 +31,7 @@ class UserCreate(BaseModel):
     )
 
     cargo: Optional[str] = Field(
-        None,
+        default=None,
         description="Cargo del usuario"
     )
 
@@ -47,7 +47,7 @@ class UserCreate(BaseModel):
     )
 
     codigo_unico: Optional[str] = Field(
-        None,
+        default=None,
         description=(
             "Código único o "
             "correlativo (opcional)"
@@ -68,14 +68,18 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
 
     email: EmailStr
+
     password: str
 
 
 class UserResponse(BaseModel):
 
     id: int
+
     nombre: str
+
     apellidos: str
+
     dni: str
 
     cargo: Optional[str] = None
@@ -87,12 +91,15 @@ class UserResponse(BaseModel):
     role: Optional[str] = "user"
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class Token(BaseModel):
 
     access_token: str
+
     token_type: str = "bearer"
+
     role: str
+
     user: UserResponse
