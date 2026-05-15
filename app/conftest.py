@@ -4,10 +4,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.database.base import Base
-from app.database.connection import get_db  # tu dependencia real
-from app.main import app  # importa tu app principal (donde incluyes los routers)
-
-# Base de datos SQLite en memoria para tests de repositorios
+from app.database.connection import get_db  
+from app.main import app  
 TEST_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
