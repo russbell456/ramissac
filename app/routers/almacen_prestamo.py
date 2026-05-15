@@ -50,8 +50,8 @@ UserDep = Annotated[
 @router.post(
     "/registrar-prestamo-qr",
     response_model=PrestamoResponse,
-    status_code=status.HTTP_201_CREATED
-)
+    status_code=status.HTTP_200_OK
+    )
 def registrar_prestamo_qr(
     data: PrestamoQRData,
     db: DbDep,

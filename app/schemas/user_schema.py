@@ -5,7 +5,8 @@ from typing import Optional
 from pydantic import (
     BaseModel,
     EmailStr,
-    Field
+    Field,
+    ConfigDict
 )
 
 
@@ -40,18 +41,12 @@ class UserCreate(BaseModel):
     password: str = Field(
         ...,
         min_length=8,
-        description=(
-            "Contraseña "
-            "(mínimo 8 caracteres)"
-        )
+        description="Contraseña (mínimo 8 caracteres)"
     )
 
     codigo_unico: Optional[str] = Field(
         default=None,
-        description=(
-            "Código único o "
-            "correlativo (opcional)"
-        )
+        description="Código único o correlativo (opcional)"
     )
 
     role: Optional[str] = Field(
@@ -59,8 +54,7 @@ class UserCreate(BaseModel):
         description=(
             "Rol del usuario. "
             "Opciones válidas: "
-            "user, trabajador, "
-            "almacenero, admin"
+            "user, trabajador, almacenero, admin"
         )
     )
 
@@ -73,6 +67,8 @@ class UserLogin(BaseModel):
 
 
 class UserResponse(BaseModel):
+
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
 
@@ -89,9 +85,6 @@ class UserResponse(BaseModel):
     codigo_unico: Optional[str] = None
 
     role: Optional[str] = "user"
-
-    class Config:
-        orm_mode = True
 
 
 class Token(BaseModel):
