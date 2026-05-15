@@ -2,7 +2,11 @@ from pydantic import BaseModel
 from typing import List
 from datetime import datetime
 
+<<<<<<< HEAD
 from sqlalchemy import Enum
+=======
+from enum import Enum
+>>>>>>> e11366450dc900be412f7c6cfe72ffffb0b3c07a
 class TipoArticuloSchema(str, Enum):
     EQUIPO = "equipo"
     CONSUMIBLE = "consumible"

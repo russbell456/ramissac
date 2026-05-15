@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Text, Boolean, JSON, Any
+=======
+from typing import Any
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Text, Boolean, JSON
+>>>>>>> e11366450dc900be412f7c6cfe72ffffb0b3c07a
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.base import Base

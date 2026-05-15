@@ -30,3 +30,7 @@ xlrd>=2.0.1
 pdfplumber==0.10.3
 passlib[bcrypt]==1.7.4
 
+<<<<<<< HEAD
+=======
+reportlab==4.2.2
+>>>>>>> e11366450dc900be412f7c6cfe72ffffb0b3c07a
