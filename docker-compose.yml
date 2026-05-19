@@ -94,7 +94,7 @@ services:
 
   # 7. TESTLINK DB
   testlinkdb:
-    image: bitnami/mariadb:10.11
+    image: bitnami/mariadb:latest
     container_name: testlink_mysql
     environment:
       - MARIADB_USER=bitnami
