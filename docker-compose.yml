@@ -104,3 +104,40 @@ volumes:
   sonar_db_data:
   sonarqube_data:
   sonarqube_extensions:
+  testlink_db_data:
+  testlink_data:
+# 7. BASE DE DATOS DE TESTLINK
+  testlinkdb:
+    image: bitnami/mariadb:10.11
+    container_name: testlink_mysql
+    environment:
+      - MARIADB_USER=bitnami
+      - MARIADB_PASSWORD=ramis_testlink_pass
+      - MARIADB_DATABASE=bitnami_testlink
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - devops_network
+    volumes:
+      - testlink_db_data:/bitnami/mariadb
+    restart: unless-stopped
+
+  testlink:
+    image: bitnami/testlink:1.9.20
+    container_name: testlink_server
+    ports:
+      - "8081:8080" # Mapeado al 8081 para no chocar con Jenkins (80) ni Sonar (9000)
+    environment:
+      - TESTLINK_DATABASE_HOST=testlinkdb
+      - TESTLINK_DATABASE_PORT_NUMBER=3306
+      - TESTLINK_DATABASE_USER=bitnami
+      - TESTLINK_DATABASE_PASSWORD=ramis_testlink_pass
+      - TESTLINK_DATABASE_NAME=bitnami_testlink
+      - TESTLINK_USERNAME=admin
+      - TESTLINK_PASSWORD=bitnami_admin
+    depends_on:
+      - testlinkdb
+    networks:
+      - devops_network
+    volumes:
+      - testlink_data:/bitnami/testlink
+    restart: unless-stopped
