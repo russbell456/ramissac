@@ -1,5 +1,5 @@
 # Project Title
-
+sss
 ## Description
 This project is a Python web application structured to follow best practices in software development. It includes a clear separation of concerns, with distinct directories for models, schemas, routers, services, and utilities.
 
@@ -61,4 +61,4 @@ python app/main.py
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.# Modificaci¢n de prueba 
+This project is licensed under the MIT License. See the LICENSE file for details.# Modificaciï¿½n de prueba 
