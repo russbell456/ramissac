@@ -109,7 +109,7 @@ services:
 
   # 8. TESTLINK
   testlink:
-    image: bitnami/testlink:1.9.20
+    image: sameersbn/testlink:latest
     container_name: testlink_server
     ports:
       - "8081:8080"
