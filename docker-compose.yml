@@ -31,7 +31,7 @@ services:
     networks:
       - devops_network
 
-  # 3. JENKINS (Personalizado para reconocer Docker)
+  # 3. JENKINS
   jenkins:
     build:
       context: .
@@ -46,7 +46,7 @@ services:
       - devops_network
     restart: unless-stopped
 
-  # 4. NGINX (Proxy)
+  # 4. NGINX
   nginx:
     image: nginx:latest
     container_name: nginx_proxy
@@ -59,7 +59,7 @@ services:
     networks:
       - devops_network
 
-  # 5. BASE DE DATOS DE SONARQUBE
+  # 5. SONAR DB
   sonardb:
     image: postgres:15-alpine
     container_name: sonarqube_db
@@ -92,21 +92,7 @@ services:
       - sonarqube_extensions:/opt/sonarqube/extensions
     restart: unless-stopped
 
-networks:
-  devops_network:
-    driver: bridge
-
-volumes:
-  postgres_data:
-  jenkins_home:
-    external: true
-    name: infra-devops_jenkins_home
-  sonar_db_data:
-  sonarqube_data:
-  sonarqube_extensions:
-  testlink_db_data:
-  testlink_data:
-# 7. BASE DE DATOS DE TESTLINK
+  # 7. TESTLINK DB
   testlinkdb:
     image: bitnami/mariadb:10.11
     container_name: testlink_mysql
@@ -121,11 +107,12 @@ volumes:
       - testlink_db_data:/bitnami/mariadb
     restart: unless-stopped
 
+  # 8. TESTLINK
   testlink:
     image: bitnami/testlink:1.9.20
     container_name: testlink_server
     ports:
-      - "8081:8080" # Mapeado al 8081 para no chocar con Jenkins (80) ni Sonar (9000)
+      - "8081:8080"
     environment:
       - TESTLINK_DATABASE_HOST=testlinkdb
       - TESTLINK_DATABASE_PORT_NUMBER=3306
@@ -141,3 +128,18 @@ volumes:
     volumes:
       - testlink_data:/bitnami/testlink
     restart: unless-stopped
+
+networks:
+  devops_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  jenkins_home:
+    external: true
+    name: infra-devops_jenkins_home
+  sonar_db_data:
+  sonarqube_data:
+  sonarqube_extensions:
+  testlink_db_data:
+  testlink_data:
