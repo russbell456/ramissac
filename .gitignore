@@ -23,6 +23,16 @@ uploads/
 temp_files/
 static/generados/
 static/firmas/
+generar_word.py
+generate_report.py
+generate_sca_word_report.py
+generate_word_report.py
+bandit.json
+pip_audit.json
+dashboard_security.png
+security_chart.png
+*.docx
+*.xlsx
 
 # -------------------------
 # Logs

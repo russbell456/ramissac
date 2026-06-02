@@ -1,0 +1,3 @@
+Usuario admin ya existe.
+200
+{"id":1,"codigo_unico":"PREST-27c02447-432e-4de8-930b-6e22a9d69606","estado":"abierto","message":"Préstamo registrado correctamente"}

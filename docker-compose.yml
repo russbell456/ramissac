@@ -9,8 +9,8 @@ services:
     volumes:
       - .:/app
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-      ALGORITHM: ${ALGORITHM}
+      DATABASE_URL: "postgresql://ramissac_user:ramissac_password@db:5432/ramissac_db"
+      ALGORITHM: "HS256"
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
       MAIL_USER: ${MAIL_USER}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
@@ -61,6 +61,8 @@ services:
       - "80:80"
     volumes:
       - ./infra-devops/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Volumen añadido para reflejar los reportes de Allure generados localmente
+      - ./allure-report:/usr/share/nginx/html/allure-report:ro
     depends_on:
       - jenkins
     networks:

@@ -1,49 +1,83 @@
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.database.base import Base
-from app.database.connection import get_db  # tu dependencia real
-from app.main import app  # importa tu app principal (donde incluyes los routers)
+from sqlalchemy.pool import StaticPool
 
-# Base de datos SQLite en memoria para tests de repositorios
-TEST_DATABASE_URL = "sqlite:///:memory:"
-engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-@pytest.fixture(autouse=True)
-def clean_db(db_session):
-    # Esto borra todo el contenido de las tablas antes de cada test
-    for table in reversed(Base.metadata.sorted_tables):
-        db_session.execute(table.delete())
-    db_session.commit()
-    yield
+from app.database.base import Base
+from app.database.connection import get_db
+from app.main import app
+
+# IMPORTANTE:
+# StaticPool hace que TODAS las sesiones usen
+# la misma conexión en memoria
+
+TEST_DATABASE_URL = "sqlite://"
+
+engine = create_engine(
+    TEST_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool
+)
+
+TestingSessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+# Crear tablas UNA sola vez
+Base.metadata.create_all(bind=engine)
+
+
 @pytest.fixture(scope="function")
 def db_session():
-    Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
+
     try:
         yield db
+
     finally:
         db.close()
-        Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(autouse=True)
+def clean_db(db_session):
+
+    # Limpiar tablas antes de cada test
+    for table in reversed(Base.metadata.sorted_tables):
+        db_session.execute(table.delete())
+
+    db_session.commit()
+
+    yield
+
 
 @pytest.fixture
 def mock_db():
-    """Mock puro para pruebas unitarias de services y routers"""
     return MagicMock()
+
 
 @pytest.fixture
 def client():
-    """TestClient con override de get_db"""
+
     def override_get_db():
         db = TestingSessionLocal()
+
         try:
             yield db
+
         finally:
             db.close()
+
     app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+
+    with TestClient(app) as c:
+        yield c
+
+    app.dependency_overrides.clear()
+
 
 @pytest.fixture
 def mock_current_user_almacenero():
@@ -51,6 +85,7 @@ def mock_current_user_almacenero():
     user.id = 999
     user.role = "almacenero"
     return user
+
 
 @pytest.fixture
 def mock_current_user_trabajador():
