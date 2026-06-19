@@ -2,16 +2,19 @@ import io
 import pandas as pd
 
 from app.dependencies.auth_dependencies import get_current_user
+from app.models.almacen_articulos import AlmacenArticulo, TipoArticulo
 
 
 def override_admin_user():
     class User:
+        id = 999
         role = "admin"
     return User()
 
 
 def override_trabajador_user():
     class User:
+        id = 888
         role = "trabajador"
     return User()
 
@@ -141,3 +144,105 @@ def test_importar_excel_forbidden(client):
     )
 
     assert response.status_code == 403
+
+
+def test_desactivar_articulo_success(client, db_session):
+    from app.main import app
+    app.dependency_overrides[get_current_user] = override_admin_user
+
+    articulo = AlmacenArticulo(
+        nombre="Articulo Integracion Desactivar",
+        unidad_medida="UND",
+        tipo=TipoArticulo.CONSUMIBLE,
+        stock_actual=10,
+        codigo_excel="AID001",
+        activo=True
+    )
+    db_session.add(articulo)
+    db_session.commit()
+    db_session.refresh(articulo)
+
+    response = client.patch(
+        f"/articulo/{articulo.id}/desactivar",
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["message"] == "Artículo desactivado correctamente"
+    assert data["articulo_id"] == articulo.id
+
+    app.dependency_overrides.clear()
+
+
+def test_desactivar_articulo_forbidden(client, db_session):
+    from app.main import app
+    app.dependency_overrides[get_current_user] = override_trabajador_user
+
+    articulo = AlmacenArticulo(
+        nombre="Articulo Integracion Desactivar Forbidden",
+        unidad_medida="UND",
+        tipo=TipoArticulo.CONSUMIBLE,
+        stock_actual=10,
+        codigo_excel="AID002",
+        activo=True
+    )
+    db_session.add(articulo)
+    db_session.commit()
+    db_session.refresh(articulo)
+
+    response = client.patch(
+        f"/articulo/{articulo.id}/desactivar",
+    )
+    assert response.status_code == 403
+
+    app.dependency_overrides.clear()
+
+
+def test_activar_articulo_success(client, db_session):
+    from app.main import app
+    app.dependency_overrides[get_current_user] = override_admin_user
+
+    articulo = AlmacenArticulo(
+        nombre="Articulo Integracion Activar",
+        unidad_medida="UND",
+        tipo=TipoArticulo.CONSUMIBLE,
+        stock_actual=10,
+        codigo_excel="AIA001",
+        activo=False
+    )
+    db_session.add(articulo)
+    db_session.commit()
+    db_session.refresh(articulo)
+
+    response = client.patch(
+        f"/articulo/{articulo.id}/activar",
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["message"] == "Artículo activado correctamente"
+    assert data["articulo_id"] == articulo.id
+
+    app.dependency_overrides.clear()
+
+
+def test_activar_articulo_forbidden(client, db_session):
+    from app.main import app
+    app.dependency_overrides[get_current_user] = override_trabajador_user
+
+    articulo = AlmacenArticulo(
+        nombre="Articulo Integracion Activar Forbidden",
+        unidad_medida="UND",
+        tipo=TipoArticulo.CONSUMIBLE,
+        stock_actual=10,
+        codigo_excel="AIA002",
+        activo=False
+    )
+    db_session.add(articulo)
+    db_session.commit()
+    db_session.refresh(articulo)
+
+    response = client.patch(
+        f"/articulo/{articulo.id}/activar",
+    )
+    assert response.status_code == 403
+
+    app.dependency_overrides.clear()
