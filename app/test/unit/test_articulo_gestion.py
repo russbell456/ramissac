@@ -150,6 +150,10 @@ def test_procesar_inventario_excel(db_session):
     # Simular el objeto UploadFile de FastAPI
     mock_file = MagicMock()
     mock_file.file = excel_buffer
+    
+    async def mock_read():
+        return excel_buffer.getvalue()
+    mock_file.read = mock_read
 
     service = AlmacenArticuloService(db_session)
     

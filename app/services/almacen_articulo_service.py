@@ -70,9 +70,16 @@ class AlmacenArticuloService:
         self,
         file
     ):
+        import io
+        import inspect
+
+        if hasattr(file, "read") and inspect.iscoroutinefunction(file.read):
+            content = await file.read()
+        else:
+            content = file.file.read()
 
         df = pd.read_excel(
-            file.file,
+            io.BytesIO(content),
             skiprows=3
         )
 

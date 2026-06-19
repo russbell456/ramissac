@@ -1,13 +1,4 @@
-"""
-=============================================================
-  PRUEBAS UNITARIAS COMPLETAS - AuthService, UserRepository,
-  User model, Auth Router y Schemas
-  Stack: pytest + unittest.mock (equivalente a Mockito en Java)
-=============================================================
-"""
-
 from __future__ import annotations
-
 import pytest
 from unittest.mock import MagicMock, patch, PropertyMock, call
 from sqlalchemy.orm import Session
