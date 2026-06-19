@@ -14,6 +14,13 @@ from sqlalchemy.orm import Session
 from app.dependencies.auth_dependencies import (
     get_current_user
 )
+from app.schemas.user_schema import (
+    UserCreate,
+    UserLogin,
+    UserResponse,
+    UserUpdate,
+    Token
+)
 
 from app.schemas.user_schema import (
     UserCreate,
@@ -206,3 +213,45 @@ def obtener_trabajadores(
     service = AuthService(db)
 
     return service.obtener_trabajadores()
+@router.put(
+    "/usuario/{user_id}",
+    response_model=UserResponse
+)
+def actualizar_usuario(
+    user_id: int,
+    data: UserUpdate,
+    db: DbDep,
+    user: UserDep
+):
+
+    if user.role not in [
+        "admin"
+    ]:
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No autorizado"
+        )
+
+    service = AuthService(db)
+
+    try:
+
+        return (
+            service.actualizar_usuario(
+                user_id=user_id,
+                nombre=data.nombre,
+                apellidos=data.apellidos,
+                dni=data.dni,
+                cargo=data.cargo,
+                email=data.email,
+                usuario_auditoria=user.id
+            )
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )

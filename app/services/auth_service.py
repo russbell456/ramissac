@@ -1,5 +1,7 @@
 from __future__ import annotations
-
+from app.services.auditoria_service import (
+    AuditoriaService
+)
 from sqlalchemy.orm import Session
 from app.repositories.user_repository import UserRepository
 from app.models.user import User
@@ -35,5 +37,53 @@ class AuthService:
 
     def obtener_trabajadores(self):
         return self.db.query(User).filter(User.role == "trabajador").all()
-    
+    def actualizar_usuario(
+        self,
+        user_id: int,
+        nombre: str,
+        apellidos: str,
+        dni: str,
+        cargo: str | None,
+        email: str,
+        usuario_auditoria: int
+    ):
+
+        user = (
+            self.user_repo.get_by_id(
+                user_id
+            )
+        )
+
+        if not user:
+            raise ValueError(
+                "Usuario no encontrado"
+            )
+
+        user.nombre = nombre
+        user.apellidos = apellidos
+        user.dni = dni
+        user.cargo = cargo
+        user.email = email
+
+        user = (
+            self.user_repo.update_user(
+                user
+            )
+        )
+
+        AuditoriaService(
+            self.db
+        ).registrar(
+            usuario_id=usuario_auditoria,
+            accion="EDITAR_USUARIO",
+            entidad="users",
+            entidad_id=user.id,
+            descripcion=(
+                f"Se actualizó el usuario "
+                f"{user.email}"
+            )
+        )
+
+        return user
+        
 

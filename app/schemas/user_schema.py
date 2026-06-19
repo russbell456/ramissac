@@ -96,3 +96,24 @@ class Token(BaseModel):
     role: str
 
     user: UserResponse
+    
+class UserUpdate(BaseModel):
+
+    nombre: str = Field(
+        ...,
+        min_length=2
+    )
+
+    apellidos: str = Field(
+        ...,
+        min_length=2
+    )
+
+    dni: str = Field(
+        ...,
+        pattern=r"^\d{8}$"
+    )
+
+    cargo: str | None = None
+
+    email: EmailStr

@@ -5,6 +5,9 @@ from app.models.almacen_prestamo import (
     AlmacenPrestamoDetalle,
     EstadoPrestamo
 )
+from app.services.auditoria_service import (
+    AuditoriaService
+)
 
 from app.models.user import User
 from app.models.almacen_articulos import AlmacenArticulo
@@ -86,6 +89,21 @@ class AlmacenPrestamoService:
         prestamo = self.repo.crear_prestamo(
             prestamo,
             detalles
+        )
+        AuditoriaService(
+            self.db
+        ).registrar(
+            usuario_id=almacenero_id,
+            accion="CREAR_PRESTAMO",
+            entidad="PRESTAMO",
+            entidad_id=prestamo.id,
+            descripcion=(
+                f"Préstamo "
+                f"{prestamo.codigo_unico} "
+                f"registrado para "
+                f"{trabajador.nombre} "
+                f"{trabajador.apellidos}"
+            )
         )
 
         detalles_schema = []

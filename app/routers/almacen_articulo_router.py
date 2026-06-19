@@ -107,3 +107,95 @@ def buscar_articulos(
     service = AlmacenArticuloService(db)
 
     return service.buscar_articulos(q)
+@router.patch(
+    "/{articulo_id}/desactivar",
+    status_code=status.HTTP_200_OK
+)
+def desactivar_articulo(
+    articulo_id: int,
+    db: DbDep,
+    user: UserDep
+):
+
+    if user.role not in [
+        "admin",
+        "almacenero"
+    ]:
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No autorizado"
+        )
+
+    service = (
+        AlmacenArticuloService(
+            db
+        )
+    )
+
+    try:
+
+        articulo = (
+            service.desactivar_articulo(
+                articulo_id,
+                user.id
+            )
+        )
+
+        return {
+            "message":
+                "Artículo desactivado correctamente",
+            "articulo_id":
+                articulo.id
+        }
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+@router.patch(
+    "/{articulo_id}/activar",
+    status_code=status.HTTP_200_OK
+)
+def activar_articulo(
+    articulo_id: int,
+    db: DbDep,
+    user: UserDep
+):
+
+    if user.role not in [
+        "admin",
+        "almacenero"
+    ]:
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No autorizado"
+        )
+
+    service = AlmacenArticuloService(db)
+
+    try:
+
+        articulo = (
+            service.activar_articulo(
+                articulo_id,
+                user.id
+            )
+        )
+
+        return {
+            "message":
+                "Artículo activado correctamente",
+            "articulo_id":
+                articulo.id
+        }
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )

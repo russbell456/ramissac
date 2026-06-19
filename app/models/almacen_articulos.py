@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.base import Base
@@ -6,6 +6,7 @@ import enum
 class TipoArticulo(enum.Enum):
     EQUIPO = "equipo"
     CONSUMIBLE = "consumible"
+
 class AlmacenArticulo(Base):
     __tablename__ = "almacen_articulos"
     id = Column(Integer, primary_key=True, index=True)
@@ -14,3 +15,5 @@ class AlmacenArticulo(Base):
     tipo = Column(Enum(TipoArticulo), nullable=False)
     stock_actual = Column(Integer, default=0)
     codigo_excel = Column(String, unique=True, index=True)
+    activo = Column(Boolean, default=True, nullable=False)
+    fecha_baja = Column(DateTime, nullable=True)
