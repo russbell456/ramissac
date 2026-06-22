@@ -4,7 +4,7 @@ sssssssssssssSsss
 This project is a Python web application structured to follow best practices in software development. It includes a clear separation of concerns, with distinct directories for models, schemas, routers, services, and utilities.
 
 ## Directory Structure
-```
+```ssss
 backend/
 ├── app/
 │   ├── main.py
