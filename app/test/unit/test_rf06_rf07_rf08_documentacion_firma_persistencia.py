@@ -130,7 +130,7 @@ def test_rf08_descargar_pdf_existente(client, mocker):
     }
 
     mocker.patch(
-        'fastapi.responses.FileResponse',
+        'app.routers.almacen_prestamo.FileResponse',
         return_value=mock_file_response
     )
 
