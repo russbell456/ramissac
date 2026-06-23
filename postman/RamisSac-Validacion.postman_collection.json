@@ -1,0 +1,291 @@
+{
+  "info": {
+    "_postman_id": "ramissac-validaciones",
+    "name": "RamisSac API — Validación de parámetros",
+    "description": "Pruebas integrales Postman: entradas inválidas deben responder HTTP 400.\n\nUsuario seed: admin@example.com / admin123\n\nEjecutar con Collection Runner (orden secuencial). API en http://localhost:8000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "tokenAdmin", "value": "" },
+    { "key": "tokenAlmacenero", "value": "" },
+    { "key": "adminUserId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "VAL-001 Login email sin arroba",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"adminexample.com\",\n  \"password\": \"admin123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('VAL-001: 400 email sin @', () => pm.response.to.have.status(400));",
+            "pm.test('VAL-001: mensaje de email', () => {",
+            "  const detail = pm.response.json().detail;",
+            "  const msg = Array.isArray(detail) ? detail.join(' ') : detail;",
+            "  pm.expect(msg.toLowerCase()).to.include('email');",
+            "});"
+          ],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-002 Login contraseña corta",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-002: 400 contraseña corta', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-003 Registro DNI con letras",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"1234567A\",\n  \"email\": \"juan.invalido@test.com\",\n  \"password\": \"12345678\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('VAL-003: 400 DNI con letras', () => pm.response.to.have.status(400));",
+            "pm.test('VAL-003: mensaje DNI', () => {",
+            "  const detail = pm.response.json().detail;",
+            "  const msg = Array.isArray(detail) ? detail.join(' ') : detail;",
+            "  pm.expect(msg.toLowerCase()).to.include('dni');",
+            "});"
+          ],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-004 Registro DNI corto",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"1234567\",\n  \"email\": \"juan.corto@test.com\",\n  \"password\": \"12345678\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-004: 400 DNI corto', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-005 Registro DNI largo",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"123456789\",\n  \"email\": \"juan.largo@test.com\",\n  \"password\": \"12345678\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-005: 400 DNI largo', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-006 Registro email inválido",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"12345678\",\n  \"email\": \"no-es-email\",\n  \"password\": \"12345678\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-006: 400 email inválido', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-007 Registro contraseña corta",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"12345678\",\n  \"email\": \"juan.pass@test.com\",\n  \"password\": \"123\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-007: 400 contraseña corta', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-008 Registro nombre corto",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"J\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"12345678\",\n  \"email\": \"juan.nombre@test.com\",\n  \"password\": \"12345678\",\n  \"role\": \"user\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-008: 400 nombre corto', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-009 Registro rol inválido",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellidos\": \"Pérez\",\n  \"dni\": \"12345678\",\n  \"email\": \"juan.rol@test.com\",\n  \"password\": \"12345678\",\n  \"role\": \"superadmin\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-009: 400 rol inválido', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "Login Admin (setup)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Login admin 200', () => pm.response.to.have.status(200));",
+            "const j = pm.response.json();",
+            "pm.collectionVariables.set('tokenAdmin', j.access_token);",
+            "pm.collectionVariables.set('adminUserId', String(j.user.id));"
+          ],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-010 Actualizar usuario DNI inválido",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Admin\",\n  \"apellidos\": \"Principal\",\n  \"dni\": \"1234567A\",\n  \"email\": \"admin@example.com\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/usuario/{{adminUserId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-010: 400 DNI inválido en update', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-011 Préstamo cantidad negativa",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trabajador_id\": 1,\n  \"codigo_unico\": \"TEST-001\",\n  \"dni\": \"12345678\",\n  \"nombres_completos\": \"Juan Pérez\",\n  \"cargo\": \"Operario\",\n  \"fecha_prestamo\": \"2030-06-15T10:00:00\",\n  \"fecha_devolucion_prevista\": \"2030-06-20T10:00:00\",\n  \"items\": [{ \"articulo_id\": 1, \"cantidad\": -1 }],\n  \"firma_base64\": \"data:image/png;base64,iVBORw0KGgo=\"\n}"
+        },
+        "url": "{{baseUrl}}/almacen/registrar-prestamo-qr"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-011: 400 cantidad negativa', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    },
+    {
+      "name": "VAL-012 Préstamo sin firma",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trabajador_id\": 1,\n  \"codigo_unico\": \"TEST-002\",\n  \"dni\": \"12345678\",\n  \"nombres_completos\": \"Juan Pérez\",\n  \"cargo\": \"Operario\",\n  \"fecha_prestamo\": \"2030-06-15T10:00:00\",\n  \"fecha_devolucion_prevista\": \"2030-06-20T10:00:00\",\n  \"items\": [{ \"articulo_id\": 1, \"cantidad\": 1 }]\n}"
+        },
+        "url": "{{baseUrl}}/almacen/registrar-prestamo-qr"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": ["pm.test('VAL-012: 400 sin firma', () => pm.response.to.have.status(400));"],
+          "type": "text/javascript"
+        }
+      }]
+    }
+  ]
+}

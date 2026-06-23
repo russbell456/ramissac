@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.validation_handler import request_validation_exception_handler
 import os
 
 from app.database.base import Base
@@ -72,6 +73,11 @@ app = FastAPI(
     }
 )
 
+
+app.add_exception_handler(
+    RequestValidationError,
+    request_validation_exception_handler,
+)
 
 app.add_middleware(
     CORSMiddleware,

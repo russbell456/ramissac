@@ -1,21 +1,24 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 from datetime import datetime
 
+
 class ItemDevolucion(BaseModel):
-    prestamo_detalle_id: int
-    cantidad: int
+    prestamo_detalle_id: int = Field(..., gt=0)
+    cantidad: int = Field(..., gt=0)
+
 
 class DevolucionQRData(BaseModel):
-    trabajador_id: int
-    codigo_unico: str
-    dni: str
-    nombres_completos: str
-    cargo: str
+    trabajador_id: int = Field(..., gt=0)
+    codigo_unico: str = Field(..., min_length=1)
+    dni: str = Field(..., pattern=r"^\d{8}$")
+    nombres_completos: str = Field(..., min_length=2)
+    cargo: str = Field(..., min_length=1)
     fecha_devolucion: datetime
-    prestamo_id: int  # Referencia al préstamo original
-    items: List[ItemDevolucion]
-    firma_base64: str
+    prestamo_id: int = Field(..., gt=0)
+    items: List[ItemDevolucion] = Field(..., min_length=1)
+    firma_base64: str = Field(..., min_length=1)
+
 
 class DevolucionResponse(BaseModel):
     id: int

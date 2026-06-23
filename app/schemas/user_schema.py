@@ -4,9 +4,9 @@ from typing import Optional
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     EmailStr,
     Field,
-    ConfigDict
 )
 
 
@@ -26,9 +26,8 @@ class UserCreate(BaseModel):
 
     dni: str = Field(
         ...,
-        min_length=8,
-        max_length=8,
-        description="DNI (8 dígitos)"
+        pattern=r"^\d{8}$",
+        description="DNI (8 dígitos numéricos)"
     )
 
     cargo: Optional[str] = Field(
@@ -63,7 +62,11 @@ class UserLogin(BaseModel):
 
     email: EmailStr
 
-    password: str
+    password: str = Field(
+        ...,
+        min_length=8,
+        description="Contraseña (mínimo 8 caracteres)"
+    )
 
 
 class UserResponse(BaseModel):
@@ -96,7 +99,8 @@ class Token(BaseModel):
     role: str
 
     user: UserResponse
-    
+
+
 class UserUpdate(BaseModel):
 
     nombre: str = Field(

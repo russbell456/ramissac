@@ -315,7 +315,9 @@ def test_registrar_prestamo_forbidden(client):
             "fecha_devolucion_prevista": (
                 datetime.now() + timedelta(days=3)
             ).isoformat(),
-            "items": [],
+            "items": [
+                {"articulo_id": 1, "cantidad": 1}
+            ],
             "firma_base64":
                 "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO5W7FYAAAAASUVORK5CYII="
         }
