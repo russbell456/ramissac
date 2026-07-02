@@ -1,0 +1,2956 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://tu-usuario.github.io/ramistoolx/entregables/fase1/01_project_charter/">
+      
+      
+        <link rel="prev" href="../../">
+      
+      
+        <link rel="next" href="../02_plan_auditoria/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>1. Project Charter - RamisToolX - Startup Orbit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#entregable-n-1-project-charter-de-auditoria-sdlc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="RamisToolX - Startup Orbit" class="md-header__button md-logo" aria-label="RamisToolX - Startup Orbit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RamisToolX - Startup Orbit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              1. Project Charter
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../api/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../arquitectura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Arquitectura del Sistema
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../backend/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Documentacion del Backend
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../ci-cd/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CI/CD y Automatización
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../infraestructura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Infraestrucura y DevOps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+  ENTREGABLES
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="RamisToolX - Startup Orbit" class="md-nav__button md-logo" aria-label="RamisToolX - Startup Orbit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    RamisToolX - Startup Orbit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../arquitectura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura del Sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentacion del Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD y Automatización
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../infraestructura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infraestrucura y DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ENTREGABLES
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ENTREGABLES
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Índice General
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 1: Planificación y Gestión
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 1: Planificación y Gestión
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Project Charter
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Project Charter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#universidad-peruana-union" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Universidad Peruana Unión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Universidad Peruana Unión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#facultad-de-ingenieria-y-arquitectura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Facultad de Ingeniería y Arquitectura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caratula-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carátula del Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-informacion-general-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. INFORMACIÓN GENERAL DEL PROYECTO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-antecedentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ANTECEDENTES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. ANTECEDENTES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-descripcion-del-sistema-ramistoolx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Descripción del Sistema RamisToolX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-arquitectura-y-tecnologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Arquitectura y Tecnología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-contexto-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Contexto de la Auditoría
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-justificacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. JUSTIFICACIÓN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. JUSTIFICACIÓN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-necesidad-de-la-auditoria-sdlc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Necesidad de la Auditoría SDLC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-beneficios-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Beneficios de la Auditoría
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-riesgos-que-se-pretenden-mitigar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Riesgos que se Pretenden Mitigar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-problema-u-oportunidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. PROBLEMA U OPORTUNIDAD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. PROBLEMA U OPORTUNIDAD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-situacion-identificada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Situación Identificada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-oportunidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Oportunidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-objetivo-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. OBJETIVO GENERAL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-objetivos-especificos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. OBJETIVOS ESPECÍFICOS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-alcance-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. ALCANCE DE LA AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. ALCANCE DE LA AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-gestion-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Gestión del Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Requisitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-diseno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Diseño
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-desarrollo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Desarrollo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-pruebas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Pruebas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 Implementación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#77-mantenimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.7 Mantenimiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#78-documentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.8 Documentación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#79-seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.9 Seguridad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#710-calidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.10 Calidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-exclusiones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. EXCLUSIONES
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-criterios-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. CRITERIOS DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-metodologia-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. METODOLOGÍA DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. METODOLOGÍA DE AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fase-1-preparar-y-planificar-semanas-1-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 1: Preparar y Planificar (Semanas 1 - 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-2-describir-el-proceso-y-trabajo-de-campo-semanas-3-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 2: Describir el Proceso y Trabajo de Campo (Semanas 3 - 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-3-evaluar-y-reportar-semanas-6-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 3: Evaluar y Reportar (Semanas 6 - 8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-4-seguimiento-semanas-9-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 4: Seguimiento (Semanas 9 - 10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-entregables-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. ENTREGABLES DE LA AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-stakeholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. STAKEHOLDERS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. STAKEHOLDERS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-stakeholders-del-proyecto-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Stakeholders del Proyecto de Auditoría
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-stakeholders-del-sistema-ramistoolx-usuarios-finales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Stakeholders del Sistema RamisToolX (Usuarios Finales)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-cronograma-de-alto-nivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. CRONOGRAMA DE ALTO NIVEL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. CRONOGRAMA DE ALTO NIVEL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#14-presupuesto-estimado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. PRESUPUESTO ESTIMADO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-riesgos-del-proyecto-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. RIESGOS DEL PROYECTO DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-factores-criticos-de-exito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. FACTORES CRÍTICOS DE ÉXITO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-criterios-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. CRITERIOS DE ACEPTACIÓN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-supuestos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. SUPUESTOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-restricciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. RESTRICCIONES
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#20-aprobaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20. APROBACIONES
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_plan_auditoria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Plan de Auditoria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_lista_verificacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. lista de Verificacion SDLC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 2: Solución Técnica (TS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 2: Solución Técnica (TS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase2/04_registro_evidencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Registro de videncias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase2/05_papeles_trabajo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Papeles de Trabajo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 3: Verificación (VER)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 3: Verificación (VER)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase3/06_matriz_hallazgos.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. matriz de hallazgos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase3/github_flow.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. matriz
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_5" id="__nav_7_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 4: Integración del Producto (IP)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 4: Integración del Producto (IP)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase4/estrategia.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estrategia de Despliegue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase4/termux.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Servidor Móvil (Termux)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#universidad-peruana-union" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Universidad Peruana Unión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Universidad Peruana Unión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#facultad-de-ingenieria-y-arquitectura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Facultad de Ingeniería y Arquitectura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caratula-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carátula del Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-informacion-general-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. INFORMACIÓN GENERAL DEL PROYECTO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-antecedentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ANTECEDENTES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. ANTECEDENTES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-descripcion-del-sistema-ramistoolx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Descripción del Sistema RamisToolX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-arquitectura-y-tecnologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Arquitectura y Tecnología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-contexto-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Contexto de la Auditoría
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-justificacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. JUSTIFICACIÓN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. JUSTIFICACIÓN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-necesidad-de-la-auditoria-sdlc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Necesidad de la Auditoría SDLC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-beneficios-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Beneficios de la Auditoría
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-riesgos-que-se-pretenden-mitigar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Riesgos que se Pretenden Mitigar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-problema-u-oportunidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. PROBLEMA U OPORTUNIDAD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. PROBLEMA U OPORTUNIDAD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-situacion-identificada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Situación Identificada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-oportunidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Oportunidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-objetivo-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. OBJETIVO GENERAL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-objetivos-especificos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. OBJETIVOS ESPECÍFICOS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-alcance-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. ALCANCE DE LA AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. ALCANCE DE LA AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-gestion-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Gestión del Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Requisitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-diseno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Diseño
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-desarrollo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Desarrollo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-pruebas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Pruebas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 Implementación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#77-mantenimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.7 Mantenimiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#78-documentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.8 Documentación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#79-seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.9 Seguridad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#710-calidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.10 Calidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-exclusiones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. EXCLUSIONES
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-criterios-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. CRITERIOS DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-metodologia-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. METODOLOGÍA DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. METODOLOGÍA DE AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fase-1-preparar-y-planificar-semanas-1-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 1: Preparar y Planificar (Semanas 1 - 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-2-describir-el-proceso-y-trabajo-de-campo-semanas-3-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 2: Describir el Proceso y Trabajo de Campo (Semanas 3 - 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-3-evaluar-y-reportar-semanas-6-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 3: Evaluar y Reportar (Semanas 6 - 8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-4-seguimiento-semanas-9-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 4: Seguimiento (Semanas 9 - 10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-entregables-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. ENTREGABLES DE LA AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-stakeholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. STAKEHOLDERS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. STAKEHOLDERS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-stakeholders-del-proyecto-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Stakeholders del Proyecto de Auditoría
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-stakeholders-del-sistema-ramistoolx-usuarios-finales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Stakeholders del Sistema RamisToolX (Usuarios Finales)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-cronograma-de-alto-nivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. CRONOGRAMA DE ALTO NIVEL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. CRONOGRAMA DE ALTO NIVEL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#14-presupuesto-estimado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. PRESUPUESTO ESTIMADO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-riesgos-del-proyecto-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. RIESGOS DEL PROYECTO DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-factores-criticos-de-exito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. FACTORES CRÍTICOS DE ÉXITO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-criterios-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. CRITERIOS DE ACEPTACIÓN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-supuestos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. SUPUESTOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-restricciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. RESTRICCIONES
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#20-aprobaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20. APROBACIONES
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="entregable-n-1-project-charter-de-auditoria-sdlc">Entregable N° 1: Project Charter de Auditoría SDLC</h1>
+<h2 id="universidad-peruana-union">Universidad Peruana Unión</h2>
+<h3 id="facultad-de-ingenieria-y-arquitectura">Facultad de Ingeniería y Arquitectura</h3>
+<p><strong>EAP Ingeniería de Sistemas - Ciclo VII</strong> <strong>Curso:</strong> Ingeniería de Software II<br />
+<strong>Docente responsable:</strong> Ing. Ruben Roque Sucari  </p>
+<hr />
+<h2 id="caratula-del-proyecto">Carátula del Proyecto</h2>
+<ul>
+<li><strong>Proyecto Auditado:</strong> RamisToolX (Sistema de Gestión de Préstamos de Equipos - RAMIS S.A.C.)</li>
+<li><strong>Nombre de la Startup:</strong> Orbit</li>
+<li><strong>Nombre del Producto:</strong> RamisToolX</li>
+<li><strong>Grupo:</strong> 01</li>
+<li><strong>Equipo Auditor / Integrantes:</strong><ul>
+<li>Russbel Daniel Cari Mamani - 202310107</li>
+<li>Reginaldo Dan Mayhuire Buendia - 201910784</li>
+<li>Pawel Armando Paricahua Adco - 202312725</li>
+</ul>
+</li>
+<li><strong>Lugar y Fecha:</strong> Juliaca, junio de 2026</li>
+</ul>
+<hr />
+<h2 id="1-informacion-general-del-proyecto">1. INFORMACIÓN GENERAL DEL PROYECTO</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Campo</th>
+<th style="text-align: left;">Detalle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Nombre del Proyecto</strong></td>
+<td style="text-align: left;">Auditoría del Ciclo de Vida del Desarrollo de Software del Sistema RamisToolX</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Código del Proyecto</strong></td>
+<td style="text-align: left;">AUD-SDLC-RAMISTOOLX-2026-001</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Versión del documento</strong></td>
+<td style="text-align: left;">1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Fecha de elaboración</strong></td>
+<td style="text-align: left;">30 de junio de 2026</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Fecha de inicio estimada</strong></td>
+<td style="text-align: left;">30 de junio de 2026</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Fecha de cierre estimada</strong></td>
+<td style="text-align: left;">09 de septiembre de 2026</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Patrocinador</strong></td>
+<td style="text-align: left;">Universidad Peruana Unión - Facultad de Ingeniería y Arquitectura</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Auditor líder</strong></td>
+<td style="text-align: left;">Ing. Ruben Roque Sucari</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Equipo auditor</strong></td>
+<td style="text-align: left;">Russbel Daniel Cari Mamani, Reginaldo Dan Mayhuire Buendia, Pawel Armando Paricahua Adco</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Clasificación</strong></td>
+<td style="text-align: left;">Confidencial - Uso interno académico</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sistema auditado</strong></td>
+<td style="text-align: left;">RamisToolX</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Organización auditada</strong></td>
+<td style="text-align: left;">Startup Orbit</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-antecedentes">2. ANTECEDENTES</h2>
+<h3 id="21-descripcion-del-sistema-ramistoolx">2.1 Descripción del Sistema RamisToolX</h3>
+<p>RamisToolX es un sistema de gestión de almacén, inventario y préstamos desarrollado por la startup Orbit, concebido para automatizar los procesos lógicos y operativos de control de artículos. El sistema elimina los registros manuales que propician la pérdida de información y la falta de control, asegurando una trazabilidad total de los movimientos físicos a través de flujos transaccionales y la generación automatizada de actas de entrega firmadas en formato PDF.</p>
+<h3 id="22-arquitectura-y-tecnologia">2.2 Arquitectura y Tecnología</h3>
+<p>El sistema adopta una arquitectura Cliente-Servidor optimizada para su ejecución local y móvil:
+* <strong>Aplicación Móvil (Frontend):</strong> Desarrollada con el framework Flutter, sirviendo de interfaz interactiva para todos los perfiles de usuario.
+* <strong>API REST (Backend):</strong> Desarrollada en Python utilizando el framework FastAPI, la cual expone los endpoints transaccionales y cuenta con documentación técnica autogenerada vía Swagger/OpenAPI.
+* <strong>Base de Datos:</strong> Motor relacional estructurado para la persistencia del catálogo de artículos, registros de usuarios y flujos transaccionales de préstamos.
+* <strong>Infraestructura y Despliegue:</strong> El backend se aloja localmente mediante Ubuntu-Server, actuando como servidor central en la red local. Administra el sistema de archivos mediante rutas absolutas para garantizar la inmutabilidad y almacenamiento seguro de los comprobantes PDF.</p>
+<h3 id="23-contexto-de-la-auditoria">2.3 Contexto de la Auditoría</h3>
+<p>La presente auditoría se origina como un ejercicio de ingeniería riguroso enfocado en evaluar si el ciclo de desarrollo (SDLC) de RamisToolX cumplió con los estándares metodológicos declarados. Se inspeccionará la adherencia al marco de trabajo <strong>Scrum</strong> (Jira) y al modelo de calidad <strong>CMMI-DEV v1.3</strong> en sus áreas de proceso de Solución Técnica (TS), Verificación (VER) e Integración del Producto (IP), junto al pipeline de aseguramiento (GitHub Flow con Peer Reviews, Pytest con cobertura del 82%, análisis estático en SonarQube y escaneos de seguridad en Snyk).</p>
+<hr />
+<h2 id="3-justificacion">3. JUSTIFICACIÓN</h2>
+<h3 id="31-necesidad-de-la-auditoria-sdlc">3.1 Necesidad de la Auditoría SDLC</h3>
+<p>Los reportes históricos de entidades globales como el <em>Government Accounting Office (GAO)</em> evidencian fallas estructurales severas en proyectos de software: el 29% se paga pero nunca se entrega; el 47% se entrega pero no se usa; el 19.5% se abandona tras su despliegue; y solo el 1.5% se aprovecha exactamente como fue concebido. Ante este panorama, es indispensable auditar los procesos de ingeniería de RamisToolX para:
+* Asegurar que el manejo transaccional de carga masiva (Excel), artículos y flujos de préstamos sea robusto y libre de fallas lógicas.
+* Verificar la estabilidad de una arquitectura Cliente-Servidor desplegada en un entorno restrictivo local (Ubuntu-Server), mitigando problemas de concurrencia y persistencia de actas PDF.
+* Evaluar si las prácticas de CMMI-DEV v1.3 se institucionalizaron de forma real en el código o si solo quedaron a nivel documental.</p>
+<h3 id="32-beneficios-de-la-auditoria">3.2 Beneficios de la Auditoría</h3>
+<ul>
+<li><strong>Alineación de Requisitos:</strong> Garantiza que los endpoints expuestos cubran con precisión los flujos operativos reales del almacén.</li>
+<li><strong>Institucionalización de Controles:</strong> Valida el cumplimiento del flujo de control de versiones, como la regla protectora en GitHub que exige un mínimo de 2 aprobaciones de pares (<em>Peer Reviews</em>) antes de fusionar código a <code>main</code>.</li>
+<li><strong>Estabilización de Infraestructura:</strong> Minimiza desbordamientos y fallas críticas en el manejo de rutas absolutas de Ubuntu-Server.</li>
+<li><strong>Línea Base de Calidad:</strong> Proporciona un diagnóstico imparcial basado en métricas objetivas de SonarQube y Pytest.</li>
+</ul>
+<h3 id="33-riesgos-que-se-pretenden-mitigar">3.3 Riesgos que se Pretenden Mitigar</h3>
+<ul>
+<li>Inconsistencia de datos durante transacciones concurrentes de préstamos y devoluciones.</li>
+<li>Brechas de seguridad en la API FastAPI debidas a fallas de autenticación o exposición en Swagger.</li>
+<li>Falso sentido de cobertura de software si el 82% en Pytest no evalúa caminos lógicos críticos.</li>
+<li>Deuda técnica acumulada que comprometa la mantenibilidad y escalabilidad del backend en Python.</li>
+</ul>
+<hr />
+<h2 id="4-problema-u-oportunidad">4. PROBLEMA U OPORTUNIDAD</h2>
+<h3 id="41-situacion-identificada">4.1 Situación Identificada</h3>
+<p>A pesar de la implementación de herramientas modernas de desarrollo por parte de la Startup Orbit, se identifican las siguientes situaciones críticas desde la perspectiva de control:
+* <strong>Trazabilidad no verificada:</strong> Ausencia de una validación cruzada formal que enlace las Historias de Usuario prioritarias en Jira con los Pull Requests aprobados en GitHub.
+* <strong>Falta de un Plan de Pruebas Integral:</strong> Falta constatar si el 82% de cobertura con Pytest responde a una estrategia formal que someta a estrés los flujos excepcionales del negocio.
+* <strong>Riesgos de Despliegue Atípico:</strong> El uso de servidores locales sobre Ubuntu-Server representa una solución ingeniosa pero propensa a pérdida de persistencia si no se auditan rigurosamente sus rutas absolutas y políticas de backup.</p>
+<h3 id="42-oportunidad">4.2 Oportunidad</h3>
+<p>La auditoría constituye una oportunidad estratégica para certificar la madurez de la ingeniería de software de la Startup Orbit, consolidando la confianza de los <em>stakeholders</em> y construyendo una línea base de software lista para producción bajo el modelo híbrido Scrum + CMMI-DEV.</p>
+<hr />
+<h2 id="5-objetivo-general">5. OBJETIVO GENERAL</h2>
+<p>Ejecutar una auditoría exhaustiva y sistemática del Ciclo de Vida del Desarrollo de Software (SDLC) del sistema RamisToolX, evaluando el nivel de cumplimiento de las prácticas ágiles de Scrum, los controles de calidad integrados en el repositorio y la institucionalización de las áreas de proceso de CMMI-DEV v1.3 (Solución Técnica [TS], Verificación [VER] e Integración del Producto [IP]) aplicadas por la Startup Orbit, emitiendo un dictamen formal sobre la fiabilidad, seguridad y mantenibilidad de la solución Cliente-Servidor construida.</p>
+<hr />
+<h2 id="6-objetivos-especificos">6. OBJETIVOS ESPECÍFICOS</h2>
+<ul>
+<li><strong>OE-01:</strong> Verificar la trazabilidad metodológica auditando el tablero de Jira, asegurando que las historias de usuario guíen de manera directa el desarrollo de código en GitHub.</li>
+<li><strong>OE-02:</strong> Validar el proceso de Verificación (VER) inspeccionando los scripts automatizados de Pytest, comprobando que la suite de testeo cubra las reglas críticas de negocio.</li>
+<li><strong>OE-03:</strong> Evaluar la calidad y seguridad estática del backend analizando los reportes históricos e indicadores técnicos generados por SonarQube y Snyk.</li>
+<li><strong>OE-04:</strong> Comprobar la rigurosidad de las revisiones entre pares inspeccionando las bitácoras de GitHub, validando que ningún cambio se integre a la rama <code>main</code> sin un mínimo de 2 aprobaciones (<em>Peer Reviews</em>).</li>
+<li><strong>OE-05:</strong> Auditar la Solución Técnica (TS) y la Integración del Producto (IP) verificando el correcto despliegue llocal de la API en Ubuntu-Server, su comunicación con la app en Flutter y el correcto guardado de actas PDF mediante rutas absolutas.</li>
+</ul>
+<hr />
+<h2 id="7-alcance-de-la-auditoria">7. ALCANCE DE LA AUDITORÍA</h2>
+<p>La auditoría SDLC del proyecto RamisToolX abarcará las siguientes áreas y aspectos específicos:</p>
+<h3 id="71-gestion-del-proyecto">7.1 Gestión del Proyecto</h3>
+<ul>
+<li>Existencia y contenido del acta formal de constitución del proyecto (Project Charter).</li>
+<li>Planificación de Sprints, historias de usuario y Product Backlog gestionados en Jira.</li>
+<li>Participación del equipo en ceremonias ágiles (Scrum) y asignación de responsables.</li>
+<li>Mecanismos de control de cambios y revisiones a lo largo del desarrollo.</li>
+<li>Registro de impedimentos y problemas técnicos resueltos durante la ejecución.</li>
+</ul>
+<h3 id="72-requisitos">7.2 Requisitos</h3>
+<ul>
+<li>Procedimientos aplicados para el levantamiento de requerimientos de almacén e inventario.</li>
+<li>Existencia de un catálogo formal de historias de usuario con criterios de aceptación definidos.</li>
+<li>Clasificación y priorización de requisitos operativos y de transacciones.</li>
+<li>Trazabilidad de los requisitos iniciales hacia los endpoints construidos.</li>
+<li>Procedimiento de gestión de cambios en las funcionalidades del producto.</li>
+</ul>
+<h3 id="73-diseno">7.3 Diseño</h3>
+<ul>
+<li>Especificación arquitectónica detallada bajo el modelo Cliente-Servidor.</li>
+<li>Coherencia entre los requisitos y el diseño de la API REST (FastAPI) y la App Móvil (Flutter).</li>
+<li>Diseño del modelo lógico y físico de la base de datos relacional.</li>
+<li>Documentación automatizada de las interfaces y endpoints (Swagger/OpenAPI).</li>
+<li>Especificación del flujo de generación y almacenamiento de actas PDF en rutas absolutas.</li>
+</ul>
+<h3 id="74-desarrollo">7.4 Desarrollo</h3>
+<ul>
+<li>Estándares de programación aplicados en Python (backend) y Dart (frontend).</li>
+<li>Preparación del entorno de desarrollo local y orquestación.</li>
+<li>Control de versiones estructurado mediante la estrategia GitHub Flow.</li>
+<li>Procedimientos de revisión de código exigiendo un mínimo de dos <em>Peer Reviews</em> por <em>Pull Request</em>.</li>
+<li>Aplicación de buenas prácticas de ingeniería de software para asegurar un código limpio.</li>
+</ul>
+<h3 id="75-pruebas">7.5 Pruebas</h3>
+<ul>
+<li>Ejecución y evidencia de pruebas unitarias automatizadas implementadas con Pytest.</li>
+<li>Validación del cumplimiento de la métrica de cobertura de código (verificando el 82% actual).</li>
+<li>Análisis estático de código para la detección de <em>code smells</em> utilizando SonarQube/SonarCloud.</li>
+<li>Pruebas de integración para las operaciones concurrentes de inventario y autenticación.</li>
+<li>Gestión y corrección de los defectos o <em>bugs</em> encontrados durante la fase de verificación (VER - CMMI).</li>
+</ul>
+<h3 id="76-implementacion">7.6 Implementación</h3>
+<ul>
+<li>Procedimientos de instalación y configuración del entorno de servidor central alojado en Ubuntu-Server.</li>
+<li>Configuración de variables de entorno y parámetros de conexión a la base de datos.</li>
+<li>Estrategia de inicialización de datos, incluyendo la carga masiva de inventario vía Excel.</li>
+<li>Gestión de permisos de almacenamiento local requeridos para el correcto guardado de los comprobantes.</li>
+<li>Procedimientos definidos para el empaquetado y liberación (Integración del Producto - IP).</li>
+</ul>
+<h3 id="77-mantenimiento">7.7 Mantenimiento</h3>
+<ul>
+<li>Control de versiones y gestión de actualizaciones directamente en el repositorio principal de GitHub.</li>
+<li>Trazabilidad y registro de las modificaciones realizadas al código fuente.</li>
+<li>Procedimientos documentados para la resolución de incidencias post-despliegue.</li>
+</ul>
+<h3 id="78-documentacion">7.8 Documentación</h3>
+<ul>
+<li>Completitud de la documentación técnica de la API (esquemas y rutas autogeneradas).</li>
+<li>Documentación de la configuración del pipeline de integración continua (CI/CD).</li>
+<li>Existencia de guías técnicas claras para la preparación y arranque del entorno en Ubuntu-Server.</li>
+<li>Accesibilidad del código y los artefactos de diseño para todos los integrantes del equipo.</li>
+</ul>
+<h3 id="79-seguridad">7.9 Seguridad</h3>
+<ul>
+<li>Evaluación de los mecanismos de autenticación y validación de sesiones en el backend.</li>
+<li>Escaneo y mitigación de vulnerabilidades en las dependencias de software utilizando la herramienta Snyk.</li>
+<li>Manejo seguro de las rutas de directorios para evitar el acceso no autorizado a los archivos PDF generados.</li>
+<li>Verificación de la política de protección de la rama principal (<code>main</code>) contra inyecciones de código no revisadas.</li>
+</ul>
+<h3 id="710-calidad">7.10 Calidad</h3>
+<ul>
+<li>Institucionalización de las áreas de proceso de CMMI-DEV v1.3 requeridas: Solución Técnica (TS), Verificación (VER) e Integración del Producto (IP).</li>
+<li>Fiabilidad: manejo adecuado de excepciones y validación de tipos de datos en la API.</li>
+<li>Mantenibilidad: control continuo de la deuda técnica reportada por las herramientas de análisis estático.</li>
+<li>Portabilidad: evaluación de la capacidad de despliegue del backend en entornos restringidos o móviles.</li>
+</ul>
+<hr />
+<h2 id="8-exclusiones">8. EXCLUSIONES</h2>
+<ul>
+<li>Revisión manual línea por línea de la totalidad del código fuente (se confía en herramientas automatizadas como SonarQube y Pytest).</li>
+<li>Evaluación física de la infraestructura de hardware (estado o potencia de los smartphones/laptops usados).</li>
+<li>Análisis de procesos administrativos o contables internos de RAMIS S.A.C. no sistematizados en RamisToolX.</li>
+<li>Auditorías financieras, de costos operativos de la startup o estudios de Retorno de Inversión (ROI).</li>
+<li>Evaluación del rendimiento de la red del proveedor de Internet local.</li>
+<li>Evaluación de áreas de proceso de CMMI-DEV v1.3 fuera de TS, VER e IP.</li>
+<li>Soporte técnico y resolución de bugs operativos detectados tras el cierre de la auditoría.</li>
+</ul>
+<hr />
+<h2 id="9-criterios-de-auditoria">9. CRITERIOS DE AUDITORÍA</h2>
+<p>La evaluación de cumplimiento técnico y metodológico se regirá por los siguientes criterios base:
+* <strong>CMMI-DEV v1.3:</strong> Metas y prácticas específicas de las áreas de proceso Solución Técnica (TS), Verificación (VER) e Integración del Producto (IP).
+* <strong>Marco Scrum:</strong> Estándares de gestión ágil (historias de usuario con criterios de aceptación claros y Sprints cerrados en Jira).
+* <strong>ISO/IEC 25010:</strong> Atributos de calidad de software seleccionados: Adecuación Funcional, Fiabilidad, Seguridad y Mantenibilidad.
+* <strong>Métricas Internas de Calidad (Quality Gates):</strong>
+    * Cobertura de pruebas automatizadas con Pytest mayor o igual al <strong>80%</strong> (Línea base actual: 82%).
+    * Severidad de vulnerabilidades en dependencias (Snyk) en nivel <strong>Cero (0)</strong> para críticas y altas.
+    * Control de Deuda Técnica y <em>Code Smells</em> bajo indicadores aceptables en SonarQube.
+* <strong>Políticas del Repositorio:</strong> Bloqueo y protección estricta de la rama <code>main</code> en GitHub, requiriendo un historial mínimo de dos (2) Peer Reviews firmados por PR.</p>
+<hr />
+<h2 id="10-metodologia-de-auditoria">10. METODOLOGÍA DE AUDITORÍA</h2>
+<p>El proceso se ejecutará de manera sistemática a través de cuatro (4) fases secuenciales:</p>
+<p>+-----------------------------------+     +-----------------------------------+
+| Fase 1: Preparar y Planificar     | --&gt; | Fase 2: Trabajo de Campo          |
+| - Definición de Checklist SDLC    |     | - Análisis Jira, GitHub, Pytest   |
++-----------------------------------+     +-----------------------------------+
+|
+v
++-----------------------------------+     +-----------------------------------+
+| Fase 4: Seguimiento               | &lt;-- | Fase 3: Evaluar y Reportar        |
+| - Verificación del Plan de Acción |     | - Emisión de Informes y Hallazgos |
++-----------------------------------+     +-----------------------------------+</p>
+<h3 id="fase-1-preparar-y-planificar-semanas-1-2">Fase 1: Preparar y Planificar (Semanas 1 - 2)</h3>
+<ul>
+<li>Establecer el alcance, objetivos y el Plan de Auditoría detallado.</li>
+<li>Diseñar y estructurar el <strong>Checklist SDLC</strong> adaptado a la arquitectura técnica de RamisToolX.</li>
+<li>Emitir la comunicación formal de apertura del proceso de auditoría a la Startup Orbit.</li>
+</ul>
+<h3 id="fase-2-describir-el-proceso-y-trabajo-de-campo-semanas-3-5">Fase 2: Describir el Proceso y Trabajo de Campo (Semanas 3 - 5)</h3>
+<ul>
+<li>Conducir entrevistas técnicas con los desarrolladores para levantar el flujo empírico aplicado.</li>
+<li>Inspeccionar los repositorios en GitHub para contrastar las políticas de revisión y ramas (GitHub Flow).</li>
+<li>Extraer reportes de SonarQube, Snyk y los logs detallados de Pytest para comprobar las métricas de calidad.</li>
+<li>Verificar en el servidor Ubuntu-Server la persistencia de datos y el comportamiento de las rutas absolutas.</li>
+</ul>
+<h3 id="fase-3-evaluar-y-reportar-semanas-6-8">Fase 3: Evaluar y Reportar (Semanas 6 - 8)</h3>
+<ul>
+<li>Contrastar la evidencia recopilada contra los Criterios de Auditoría (Fase 1).</li>
+<li>Elaborar la <strong>Matriz de Hallazgos</strong> categorizando conformidades y no conformidades.</li>
+<li>Redactar y discutir el Informe Preliminar con los desarrolladores para recibir descargos técnicos.</li>
+<li>Consolidar y emitir el <strong>Informe Final de Auditoría</strong> con dictámenes definitivos.</li>
+</ul>
+<h3 id="fase-4-seguimiento-semanas-9-10">Fase 4: Seguimiento (Semanas 9 - 10)</h3>
+<ul>
+<li>Revisar el Plan de Acción Correctiva (CAP) diseñado por la Startup Orbit.</li>
+<li>Monitorear en el repositorio la subsanación de la deuda técnica o debilidades metodológicas halladas.</li>
+<li>Firmar el <strong>Acta de Cierre de Auditoría</strong> y archivar los papeles de trabajo de forma segura.</li>
+</ul>
+<hr />
+<h2 id="11-entregables-de-la-auditoria">11. ENTREGABLES DE LA AUDITORÍA</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">N.</th>
+<th style="text-align: left;">Entregable</th>
+<th style="text-align: left;">Descripción</th>
+<th style="text-align: left;">Fase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;"><strong>Project Charter de Auditoría</strong></td>
+<td style="text-align: left;">Documento de inicio formal que define los objetivos, el alcance y los recursos de la auditoría de RamisToolX.</td>
+<td style="text-align: left;">Planificación</td>
+</tr>
+<tr>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"><strong>Plan de Auditoría SDLC</strong></td>
+<td style="text-align: left;">Detalle técnico del cronograma, los criterios de evaluación y los responsables del proceso.</td>
+<td style="text-align: left;">Fase 1</td>
+</tr>
+<tr>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><strong>Checklist SDLC Adaptado</strong></td>
+<td style="text-align: left;">Lista de verificación estructurada según los requerimientos de Scrum, FastAPI, Flutter y CMMI-DEV.</td>
+<td style="text-align: left;">Fase 1</td>
+</tr>
+<tr>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;"><strong>Registro de Evidencias Técnicas</strong></td>
+<td style="text-align: left;">Compilación sistemática de capturas del tablero de Jira, reportes de Pytest, análisis de SonarQube y escaneos de Snyk.</td>
+<td style="text-align: left;">Fase 2</td>
+</tr>
+<tr>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"><strong>Papeles de Trabajo (Bitácoras GitHub)</strong></td>
+<td style="text-align: left;">Documentación del análisis de los Pull Requests, verificando la regla de las 2 aprobaciones por pares.</td>
+<td style="text-align: left;">Fases 2 y 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;"><strong>Matriz de Hallazgos</strong></td>
+<td style="text-align: left;">Registro detallado de conformidades y no conformidades detectadas en el ciclo de vida del software.</td>
+<td style="text-align: left;">Fase 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;"><strong>Matriz de Riesgos del Sistema</strong></td>
+<td style="text-align: left;">Identificación y valoración de riesgos técnicos derivados de los hallazgos (deuda técnica, seguridad en la API, etc.).</td>
+<td style="text-align: left;">Fase 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;"><strong>Informe Preliminar de Auditoría</strong></td>
+<td style="text-align: left;">Borrador inicial con las evaluaciones de las áreas CMMI y Scrum para revisión conjunta con la Startup Orbit.</td>
+<td style="text-align: left;">Fase 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;"><strong>Informe Final de Auditoría</strong></td>
+<td style="text-align: left;">Documento técnico definitivo con las conclusiones concluyentes y recomendaciones para el docente supervisor.</td>
+<td style="text-align: left;">Fase 3</td>
+</tr>
+<tr>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;"><strong>Plan de Acción Correctiva (CAP)</strong></td>
+<td style="text-align: left;">Plan elaborado por el equipo para mitigar la deuda técnica, mejorar la cobertura de código o corregir desvíos.</td>
+<td style="text-align: left;">Fase 4</td>
+</tr>
+<tr>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;"><strong>Acta de Cierre de Auditoría</strong></td>
+<td style="text-align: left;">Documentación formal que certifica la culminación de la auditoría del ciclo de vida de RamisToolX.</td>
+<td style="text-align: left;">Fase 4</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-stakeholders">12. STAKEHOLDERS</h2>
+<h3 id="121-stakeholders-del-proyecto-de-auditoria">12.1 Stakeholders del Proyecto de Auditoría</h3>
+<ul>
+<li><strong>Patrocinador (UPeU):</strong> Representado por la Facultad de Ingeniería y Arquitectura, velando por la excelencia académica y técnica.</li>
+<li><strong>Ing. Ruben Roque Sucari:</strong> Auditor Líder y Docente Supervisor, encargado de guiar el proceso y validar la aplicación de estándares internacionales.</li>
+<li><strong>Equipo Auditor (Grupo 01):</strong> Responsables directos de la ejecución metodológica, recolección de evidencias y redacción de informes.</li>
+<li><strong>Startup Orbit:</strong> Organización auditada, sujeta a evaluación de procesos con el fin de robustecer sus capacidades de entrega.</li>
+</ul>
+<h3 id="122-stakeholders-del-sistema-ramistoolx-usuarios-finales">12.2 Stakeholders del Sistema RamisToolX (Usuarios Finales)</h3>
+<ul>
+<li><strong>Administrador del Sistema:</strong> Administra los accesos globales y las configuraciones de seguridad de la API FastAPI.</li>
+<li><strong>Encargado de Almacén:</strong> Gestiona el stock operativo de artículos y ejecuta la carga masiva mediante planillas Excel.</li>
+<li><strong>Operador de Préstamos:</strong> Procesa las solicitudes de salida y retorno de equipos desde la aplicación en Flutter, emitiendo el acta PDF.</li>
+<li><strong>Prestatario / Solicitante:</strong> Estudiante o personal que recibe el bien en préstamo y cuya identidad queda grabada en el comprobante inmutable.</li>
+</ul>
+<hr />
+<h2 id="13-cronograma-de-alto-nivel">13. CRONOGRAMA DE ALTO NIVEL</h2>
+<p>El cronograma detalla un horizonte temporal de 10 semanas (50 días hábiles):</p>
+<ul>
+<li><strong>Hito de Inicio (30/06/2026):</strong> Aprobación del Project Charter y kick-off.</li>
+<li><strong>Fase 1 (01/07/2026 - 14/07/2026):</strong> Elaboración de planes de trabajo y Checklist SDLC por el Equipo Auditor.</li>
+<li><strong>Fase 2 (15/07/2026 - 04/08/2026):</strong> Revisión documental profunda (Jira, PRs de GitHub, endpoints FastAPI, suite Pytest).</li>
+<li><strong>Fase 3 (05/08/2026 - 25/08/2026):</strong> Análisis de desvíos, redacción de Matriz de Hallazgos y entrega del Informe Final por el Auditor Líder.</li>
+<li><strong>Fase 4 (26/08/2026 - 08/09/2026):</strong> Diseño del Plan de Acción Correctiva por Startup Orbit y validación de correcciones.</li>
+<li><strong>Hito de Cierre (09/09/2026):</strong> Firma del Acta de Cierre y archivado documental.</li>
+</ul>
+<hr />
+<h3 id="14-presupuesto-estimado">14. PRESUPUESTO ESTIMADO</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Recurso / Concepto</th>
+<th style="text-align: left;">Horas Est.</th>
+<th style="text-align: left;">Tarifa / Hora</th>
+<th style="text-align: left;">Subtotal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Auditor Líder</td>
+<td style="text-align: left;">120 h</td>
+<td style="text-align: left;">S/ 100.00</td>
+<td style="text-align: left;">S/ 12,000.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Auditor de Software</td>
+<td style="text-align: left;">80 h</td>
+<td style="text-align: left;">S/ 80.00</td>
+<td style="text-align: left;">S/ 6,400.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Especialista QA</td>
+<td style="text-align: left;">60 h</td>
+<td style="text-align: left;">S/ 70.00</td>
+<td style="text-align: left;">S/ 4,200.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Analista de Procesos</td>
+<td style="text-align: left;">60 h</td>
+<td style="text-align: left;">S/ 60.00</td>
+<td style="text-align: left;">S/ 3,600.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Gastos operativos y movilidad</td>
+<td style="text-align: left;">─</td>
+<td style="text-align: left;">─</td>
+<td style="text-align: left;">S/ 500.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Infraestructura Cloud y Licencias (Jira, Snyk)</td>
+<td style="text-align: left;">─</td>
+<td style="text-align: left;">─</td>
+<td style="text-align: left;">S/ 1,000.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Imprevistos y Materiales (5%)</td>
+<td style="text-align: left;">─</td>
+<td style="text-align: left;">─</td>
+<td style="text-align: left;">S/ 1,385.00</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TOTAL ESTIMADO</strong></td>
+<td style="text-align: left;"><strong>320 h</strong></td>
+<td style="text-align: left;"><strong>─</strong></td>
+<td style="text-align: left;"><strong>S/ 29,085.00</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="15-riesgos-del-proyecto-de-auditoria">15. RIESGOS DEL PROYECTO DE AUDITORÍA</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Riesgo</th>
+<th style="text-align: left;">Prob.</th>
+<th style="text-align: left;">Impacto</th>
+<th style="text-align: left;">Nivel</th>
+<th style="text-align: left;">Estrategia de Respuesta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>R-01</strong></td>
+<td style="text-align: left;">Inconsistencia en la trazabilidad entre Jira (historias) y GitHub (código).</td>
+<td style="text-align: left;">Alta</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Crítico</strong></td>
+<td style="text-align: left;">Exigir vinculación obligatoria de IDs de historias de usuario en el título de cada Pull Request.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>R-02</strong></td>
+<td style="text-align: left;">Falsa cobertura en pruebas automatizadas (Pytest) sobre flujos críticos.</td>
+<td style="text-align: left;">Alta</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Crítico</strong></td>
+<td style="text-align: left;">Realizar inspección de los archivos de prueba para validar aserciones robustas en lógica transaccional.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-03</td>
+<td style="text-align: left;">Resistencia del equipo a observar hallazgos de calidad de código.</td>
+<td style="text-align: left;">Media</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Alto</strong></td>
+<td style="text-align: left;">Establecer un enfoque constructivo orientado a la mejora de notas y madurez del producto.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-04</td>
+<td style="text-align: left;">Información desactualizada o incompleta en la documentación Swagger.</td>
+<td style="text-align: left;">Alta</td>
+<td style="text-align: left;">Medio</td>
+<td style="text-align: left;"><strong>Alto</strong></td>
+<td style="text-align: left;">Ejecutar pruebas cruzadas de endpoints contra los esquemas autogenerados de la API en vivo.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-05</td>
+<td style="text-align: left;">Modificaciones de alcance imprevistas en los flujos de almacén.</td>
+<td style="text-align: left;">Baja</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Medio</strong></td>
+<td style="text-align: left;">Congelamiento de alcance metodológico a partir de la firma de este Charter.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-06</td>
+<td style="text-align: left;">Limitaciones de tiempo para auditar el entorno específico de Ubuntu-Server.</td>
+<td style="text-align: left;">Media</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Alto</strong></td>
+<td style="text-align: left;">Concentrar esfuerzos en el análisis de persistencia y permisos lógicos en directorios locales.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-07</td>
+<td style="text-align: left;">Indisponibilidad de desarrolladores para entrevistas o revisiones.</td>
+<td style="text-align: left;">Media</td>
+<td style="text-align: left;">Medio</td>
+<td style="text-align: left;"><strong>Medio</strong></td>
+<td style="text-align: left;">Agendar sesiones técnicas con 48 horas de anticipación mediante herramientas colaborativas.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-08</td>
+<td style="text-align: left;">Acceso restringido al servidor en Ubuntu-Server durante el trabajo de campo.</td>
+<td style="text-align: left;">Alta</td>
+<td style="text-align: left;">Medio</td>
+<td style="text-align: left;"><strong>Alto</strong></td>
+<td style="text-align: left;">Implementar simulación de red local o captura exhaustiva de logs de ejecución y endpoints.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-09</td>
+<td style="text-align: left;">Sesgo evaluativo por proximidad académica entre los participantes.</td>
+<td style="text-align: left;">Baja</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Medio</strong></td>
+<td style="text-align: left;">Sustentar de forma estricta las conclusiones sobre métricas duras de SonarQube y Pytest.</td>
+</tr>
+<tr>
+<td style="text-align: left;">R-10</td>
+<td style="text-align: left;">Corrupción o desorganización de los papeles de trabajo del equipo.</td>
+<td style="text-align: left;">Baja</td>
+<td style="text-align: left;">Alto</td>
+<td style="text-align: left;"><strong>Medio</strong></td>
+<td style="text-align: left;">Uso de almacenamiento redundante en la nube de la institución con versionamiento semanal.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="16-factores-criticos-de-exito">16. FACTORES CRÍTICOS DE ÉXITO</h3>
+<ul>
+<li><strong>Colaboración activa:</strong> Disposición del equipo Orbit para abrir sus repositorios, tableros de Jira y compartir los logs del servidor local en Ubuntu-Server.</li>
+<li><strong>Objetividad analítica:</strong> Apoyar los dictámenes e informes en métricas automatizadas verificables, aislando la evaluación del factor de compañerismo.</li>
+<li><strong>Competencia en el Stack:</strong> Dominio técnico por parte de los evaluadores de las lógicas específicas de FastAPI, inyección de entornos con Pydantic y empaquetamiento móvil.</li>
+<li><strong>Alineación con CMMI:</strong> Apego estricto a las directrices de las áreas de proceso TS, VER e IP, evitando desvíos hacia lógicas teóricas no requeridas.</li>
+</ul>
+<hr />
+<h3 id="17-criterios-de-aceptacion">17. CRITERIOS DE ACEPTACIÓN</h3>
+<ul>
+<li>Se han ejecutado satisfactoriamente el 100% de las actividades descritas en las 4 fases metodológicas de la auditoría.</li>
+<li>Cada no conformidad o hallazgo cuenta con un papel de trabajo de soporte e identificadores de evidencia claros (ej. link a PR, logs de testeo).</li>
+<li>El Informe Final es revisado con la Startup Orbit y aprobado formalmente por el docente Ing. Ruben Roque Sucari.</li>
+<li>La Startup Orbit hace entrega de un Plan de Acción Correctiva (CAP) viable y formal para subsanar los desvíos críticos detectados.</li>
+</ul>
+<hr />
+<h3 id="18-supuestos">18. SUPUESTOS</h3>
+<ul>
+<li>La documentación técnica provista por el equipo de desarrollo es íntegra, verídica y corresponde a la versión de código desplegada.</li>
+<li>La Facultad mantendrá el calendario académico estable sin alteraciones en la fecha de cierre de notas.</li>
+<li>El entorno Ubuntu-Server y los dispositivos de prueba se mantendrán operativos durante la ejecución de las fases de campo.</li>
+<li>Los estándares seleccionados (ISO 25010, CMMI v1.3) cubren de forma suficiente las demandas formativas de la asignatura.</li>
+</ul>
+<hr />
+<h3 id="19-restricciones">19. RESTRICCIONES</h3>
+<ul>
+<li><strong>Temporal:</strong> Limitación estricta al calendario del ciclo VII, requiriendo concluir todas las fases en un máximo de 10 semanas.</li>
+<li><strong>De Recursos:</strong> El equipo auditor se autogestiona con los integrantes asignados, sin posibilidad de sumar especialistas externos.</li>
+<li><strong>Infraestructura:</strong> En caso de caída de conectividad en la red local de Ubuntu-Server, la auditoría se limitará estrictamente al análisis estático de artefactos de software.</li>
+<li><strong>Confidencialidad:</strong> Toda brecha de seguridad o deuda técnica hallada será tratada bajo estricta reserva y uso exclusivo del curso.</li>
+</ul>
+<hr />
+<h2 id="20-aprobaciones">20. APROBACIONES</h2>
+<p>Facultad de Ingeniería y Arquitectura (FIA - UPeU)
+Firma del Patrocinador / Dirección de Escuela
+Fecha: //______</p>
+<p>Ing. Ruben Roque Sucari
+Firma del Profesor Responsable / Auditor Líder
+Fecha: //______</p>
+<p>Representante de Startup Orbit
+Firma del Líder de Desarrollo / Auditado
+Fecha: //______</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
