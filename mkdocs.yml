@@ -1,5 +1,5 @@
 site_name: "RamisToolX - Startup Orbit"
-site_url: https://tu-usuario.github.io/ramistoolx
+site_url: https://russbell456.github.io/ramissac
 
 theme:
   name: material
@@ -24,8 +24,8 @@ nav:
       - '4. Registro de videncias': 'entregables/fase2/04_registro_evidencias.md'
       - '5. Papeles de Trabajo': 'entregables/fase2/05_papeles_trabajo.md'
     - 'Fase 3: Verificación (VER)':
-      - '6. matriz de hallazgos': 'entregables/fase3/06_matriz_hallazgos.md'
-      - 'Trabajo Colaborativo (GitHub Flow)': 'entregables/fase3/github_flow.md'
+      - '6. matriz de hallazgos': 'entregables/fase3/06_matrix_hallazgos.md'
+      - '7. matriz': 'entregables/fase3/github_flow.md'
     - 'Fase 4: Integración del Producto (IP)':
       - 'Estrategia de Despliegue': 'entregables/fase4/estrategia.md'
       - 'Servidor Móvil (Termux)': 'entregables/fase4/termux.md'

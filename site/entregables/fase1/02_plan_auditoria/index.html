@@ -1,0 +1,1736 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://russbell456.github.io/ramissac/entregables/fase1/02_plan_auditoria/">
+      
+      
+        <link rel="prev" href="../01_project_charter/">
+      
+      
+        <link rel="next" href="../03_lista_verificacion/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>2. Plan de Auditoria - RamisToolX - Startup Orbit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#entregable-n-2-plan-de-auditoria-sdlc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="RamisToolX - Startup Orbit" class="md-header__button md-logo" aria-label="RamisToolX - Startup Orbit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RamisToolX - Startup Orbit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2. Plan de Auditoria
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../api/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../arquitectura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Arquitectura del Sistema
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../backend/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Documentacion del Backend
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../ci-cd/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CI/CD y Automatización
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../infraestructura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Infraestrucura y DevOps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+  ENTREGABLES
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="RamisToolX - Startup Orbit" class="md-nav__button md-logo" aria-label="RamisToolX - Startup Orbit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    RamisToolX - Startup Orbit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../arquitectura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura del Sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentacion del Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD y Automatización
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../infraestructura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infraestrucura y DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ENTREGABLES
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ENTREGABLES
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Índice General
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 1: Planificación y Gestión
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 1: Planificación y Gestión
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_project_charter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Project Charter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Plan de Auditoria
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Plan de Auditoria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objetivos-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. OBJETIVOS DE LA AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. OBJETIVOS DE LA AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-objetivo-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Objetivo General
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-objetivos-especificos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Objetivos Específicos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-alcance-detallado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ALCANCE DETALLADO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-asignacion-de-roles-y-responsabilidades-equipo-auditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ASIGNACIÓN DE ROLES Y RESPONSABILIDADES (EQUIPO AUDITOR)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cronograma-detallado-de-actividades-y-agenda-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. CRONOGRAMA DETALLADO DE ACTIVIDADES Y AGENDA DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-procedimientos-detallados-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. PROCEDIMIENTOS DETALLADOS DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. PROCEDIMIENTOS DETALLADOS DE AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-a-auditoria-de-gestion-de-requisitos-y-trazabilidad-scrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO A: Auditoría de Gestión de Requisitos y Trazabilidad (Scrum)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-b-auditoria-de-calidad-de-codigo-y-mantenibilidad-cmmi-dev-ver-sonarcloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO B: Auditoría de Calidad de Código y Mantenibilidad (CMMI-DEV VER / SonarCloud)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-c-auditoria-de-seguridad-de-componentes-snyk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO C: Auditoría de Seguridad de Componentes (Snyk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-d-auditoria-de-solucion-tecnica-e-integracion-en-servidor-privado-cmmi-dev-ts-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO D: Auditoría de Solución Técnica e Integración en Servidor Privado (CMMI-DEV TS / IP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_lista_verificacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. lista de Verificacion SDLC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 2: Solución Técnica (TS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 2: Solución Técnica (TS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase2/04_registro_evidencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Registro de videncias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase2/05_papeles_trabajo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Papeles de Trabajo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 3: Verificación (VER)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 3: Verificación (VER)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase3/06_matriz_hallazgos.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. matriz de hallazgos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase3/github_flow.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. matriz
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_5" id="__nav_7_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fase 4: Integración del Producto (IP)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Fase 4: Integración del Producto (IP)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase4/estrategia.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estrategia de Despliegue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fase4/termux.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Servidor Móvil (Termux)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objetivos-de-la-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. OBJETIVOS DE LA AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. OBJETIVOS DE LA AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-objetivo-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Objetivo General
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-objetivos-especificos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Objetivos Específicos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-alcance-detallado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ALCANCE DETALLADO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-asignacion-de-roles-y-responsabilidades-equipo-auditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ASIGNACIÓN DE ROLES Y RESPONSABILIDADES (EQUIPO AUDITOR)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cronograma-detallado-de-actividades-y-agenda-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. CRONOGRAMA DETALLADO DE ACTIVIDADES Y AGENDA DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-procedimientos-detallados-de-auditoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. PROCEDIMIENTOS DETALLADOS DE AUDITORÍA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. PROCEDIMIENTOS DETALLADOS DE AUDITORÍA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-a-auditoria-de-gestion-de-requisitos-y-trazabilidad-scrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO A: Auditoría de Gestión de Requisitos y Trazabilidad (Scrum)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-b-auditoria-de-calidad-de-codigo-y-mantenibilidad-cmmi-dev-ver-sonarcloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO B: Auditoría de Calidad de Código y Mantenibilidad (CMMI-DEV VER / SonarCloud)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-c-auditoria-de-seguridad-de-componentes-snyk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO C: Auditoría de Seguridad de Componentes (Snyk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-d-auditoria-de-solucion-tecnica-e-integracion-en-servidor-privado-cmmi-dev-ts-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROCEDIMIENTO D: Auditoría de Solución Técnica e Integración en Servidor Privado (CMMI-DEV TS / IP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="entregable-n-2-plan-de-auditoria-sdlc">Entregable N° 2: Plan de Auditoría SDLC</h1>
+<p><strong>SISTEMA:</strong> RamisToolX<br />
+<strong>ORGANIZACIÓN:</strong> Startup Orbit<br />
+<strong>CÓDIGO DEL DOCUMENTO:</strong> AUD-SDLC-RAMISTOOLX-2026-001-PLAN<br />
+<strong>FECHA DE EMISIÓN:</strong> 01 de julio de 2026  </p>
+<hr />
+<h2 id="1-objetivos-de-la-auditoria">1. OBJETIVOS DE LA AUDITORÍA</h2>
+<h3 id="11-objetivo-general">1.1 Objetivo General</h3>
+<p>Evaluar y dictaminar de manera sistemática la conformidad y madurez de los procesos de ingeniería de software implementados en el Ciclo de Vida de Desarrollo de Software (SDLC) de la aplicación Cliente-Servidor <strong>RamisToolX</strong>, confrontándolos con las áreas de proceso de <strong>CMMI-DEV v1.3</strong> (Solución Técnica [TS], Verificación [VER], Integración del Producto [IP]) y las prácticas ágiles del marco <strong>Scrum</strong>, con el fin de asegurar la entrega de un producto robusto, seguro y mantenible en el servidor privado de la organización.</p>
+<h3 id="12-objetivos-especificos">1.2 Objetivos Específicos</h3>
+<ul>
+<li><strong>OE1 (Gestión y Requisitos):</strong> Verificar la trazabilidad del 100% de las Historias de Usuario priorizadas en el Backlog de Jira con respecto a las funcionalidades codificadas en los Pull Requests de GitHub.</li>
+<li><strong>OE2 (Calidad de Código):</strong> Auditar los reportes estáticos obtenidos mediante el ejecutable <code>.jar</code> de SonarCloud para comprobar el estado real de la mantenibilidad, confiabilidad y el cumplimiento estricto del <strong>89% de cobertura de código (Code Coverage)</strong> mediante Pytest.</li>
+<li><strong>OE3 (Seguridad):</strong> Analizar el archivo estructurado JSON emitido por Snyk para identificar, clasificar y corroborar la mitigación de vulnerabilidades o dependencias obsoletas en el backend desarrollado con FastAPI.</li>
+<li><strong>OE4 (Solución Técnica e Integración):</strong> Evaluar los procedimientos y scripts de despliegue en el nuevo entorno del Servidor Privado, validando la persistencia de datos, el flujo de carga masiva vía Excel y el almacenamiento seguro de las actas de préstamo generadas en formato PDF.</li>
+<li><strong>OE5 (Revisiones por Pares):</strong> Inspeccionar el cumplimiento de las políticas de control de versiones de GitHub Flow, asegurando que cada integración cuente con el registro de al menos dos (2) Peer Reviews aprobadas.</li>
+</ul>
+<hr />
+<h2 id="2-alcance-detallado">2. ALCANCE DETALLADO</h2>
+<p>El alcance operativo de esta auditoría se delimita estrictamente a los siguientes componentes técnicos y metodológicos:</p>
+<ul>
+<li><strong>Dimensión Metodológica:</strong> Procesos de gestión ágil Scrum (Sprints, daily logs, criterios de aceptación en Jira) y prácticas de ingeniería basadas en CMMI-DEV v1.3.</li>
+<li><strong>Dimensión Tecnológica (Backend):</strong> Código fuente de la API REST en Python (FastAPI), validación de la documentación interactiva en Swagger/OpenAPI y orquestación del entorno.</li>
+<li><strong>Dimensión Tecnológica (Frontend):</strong> Código de la aplicación móvil en Dart utilizando el framework Flutter.</li>
+<li><strong>Pipeline de QA y Seguridad:</strong> Análisis de scripts de pruebas automatizadas unitarias en Pytest, reportes en formato Word y Excel extraídos desde el <code>.jar</code> de SonarCloud, y el archivo JSON de diagnóstico de Snyk.</li>
+<li><strong>Infraestructura de Despliegue:</strong> Análisis técnico del proceso de migración, configuración de variables de entorno y persistencia en el <strong>Servidor Privado</strong> (excluyendo el entorno descartado en Termux).</li>
+</ul>
+<hr />
+<h2 id="3-asignacion-de-roles-y-responsabilidades-equipo-auditor">3. ASIGNACIÓN DE ROLES Y RESPONSABILIDADES (EQUIPO AUDITOR)</h2>
+<p>Para mantener la coherencia metodológica y asegurar la segregación de funciones dentro de la Startup Orbit, se distribuyen las responsabilidades de la auditoría de la siguiente manera:</p>
+<ul>
+<li>
+<p><strong>Líder del Proyecto de Auditoría / Supervisor General:</strong> Ing. Ruben Roque Sucari.</p>
+</li>
+<li>
+<p><strong>Auditor 1: Russbel Daniel Cari Mamani</strong></p>
+</li>
+<li><em>Especialidad:</em> Auditor de Infraestructura, Despliegue y Base de Datos.</li>
+<li>
+<p><em>Responsabilidades:</em> Inspeccionar la configuración física y lógica del Servidor Privado; auditar la persistencia de datos, el almacenamiento de actas PDF mediante rutas del servidor y el proceso de carga masiva de inventarios por Excel; redactar el Acta de Cierre.</p>
+</li>
+<li>
+<p><strong>Auditor 2: Pawel Armando Paricahua Adco</strong></p>
+</li>
+<li><em>Especialidad:</em> Auditor de Calidad de Software, Código y QA.</li>
+<li>
+<p><em>Responsabilidades:</em> Auditar el repositorio de GitHub y el pipeline de pruebas; analizar los reportes en Word y Excel extraídos del <code>.jar</code> de SonarCloud; validar que la cobertura en Pytest cumpla efectivamente el 89% establecido; estructurar la Matriz de Hallazgos y la Matriz de Riesgos.</p>
+</li>
+<li>
+<p><strong>Auditor 3: Reginaldo Dan Mayhuire Buendia</strong></p>
+</li>
+<li><em>Especialidad:</em> Auditor de Gestión de Proyectos, Requisitos y Seguridad.</li>
+<li><em>Responsabilidades:</em> Verificar la trazabilidad de historias de usuario en Jira frente a los Pull Requests; inspeccionar las políticas de protección de ramas en GitHub (doble aprobación); analizar el archivo JSON de Snyk para la auditoría de seguridad del código; consolidar el Informe Preliminar e Informe Final.</li>
+</ul>
+<hr />
+<h2 id="4-cronograma-detallado-de-actividades-y-agenda-de-auditoria">4. CRONOGRAMA DETALLADO DE ACTIVIDADES Y AGENDA DE AUDITORÍA</h2>
+<p>A continuación se detalla la planificación operativa distribuida en las 10 semanas de duración del proyecto (01 de julio de 2026 al 09 de septiembre de 2026):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Cód.</th>
+<th style="text-align: left;">Fase / Tarea Operativa</th>
+<th style="text-align: left;">Fecha Inicio</th>
+<th style="text-align: left;">Fecha Fin</th>
+<th style="text-align: left;">Responsable Directo</th>
+<th style="text-align: left;">Evidencia / Entregable Asociado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>F1.1</strong></td>
+<td style="text-align: left;">Configuración de criterios, objetivos y lineamientos base.</td>
+<td style="text-align: left;">01/07/2026</td>
+<td style="text-align: left;">02/07/2026</td>
+<td style="text-align: left;">Equipo Completo</td>
+<td style="text-align: left;">Acta de inicio / Project Charter</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F1.2</strong></td>
+<td style="text-align: left;">Diseño y adaptación de la Lista de Verificación (Checklist SDLC).</td>
+<td style="text-align: left;">03/07/2026</td>
+<td style="text-align: left;">08/07/2026</td>
+<td style="text-align: left;">R. Dan Mayhuire</td>
+<td style="text-align: left;">Checklist SDLC en formato Word</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F1.3</strong></td>
+<td style="text-align: left;">Consolidación y firma del Plan de Auditoría formal.</td>
+<td style="text-align: left;">09/07/2026</td>
+<td style="text-align: left;">14/07/2026</td>
+<td style="text-align: left;">R. Cari Mamani</td>
+<td style="text-align: left;"><strong>Entregable 2: Plan de Auditoría</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F2.1</strong></td>
+<td style="text-align: left;"><strong>Entrevista Técnica N°1:</strong> Gestión de Requisitos y Ceremonias Ágiles en Jira.</td>
+<td style="text-align: left;">15/07/2026</td>
+<td style="text-align: left;">18/07/2026</td>
+<td style="text-align: left;">R. Dan Mayhuire</td>
+<td style="text-align: left;">Minuta de entrevista / Log Jira</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F2.2</strong></td>
+<td style="text-align: left;"><strong>Entrevista Técnica N°2:</strong> Ingeniería de Calidad y Pruebas Unitarias.</td>
+<td style="text-align: left;">21/07/2026</td>
+<td style="text-align: left;">25/07/2026</td>
+<td style="text-align: left;">P. Paricahua</td>
+<td style="text-align: left;">Registro de entrevistas de QA</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F2.3</strong></td>
+<td style="text-align: left;">Extracción y descodificación de reportes Word/Excel del <code>.jar</code> de SonarCloud.</td>
+<td style="text-align: left;">28/07/2026</td>
+<td style="text-align: left;">31/07/2026</td>
+<td style="text-align: left;">P. Paricahua</td>
+<td style="text-align: left;">Documentos de inspección SonarCloud</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F2.4</strong></td>
+<td style="text-align: left;">Parseo y análisis de vulnerabilidades del JSON de Snyk.</td>
+<td style="text-align: left;">01/08/2026</td>
+<td style="text-align: left;">04/08/2026</td>
+<td style="text-align: left;">R. Dan Mayhuire</td>
+<td style="text-align: left;">Reporte analítico de seguridad / JSON</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F2.5</strong></td>
+<td style="text-align: left;">Inspección técnica en sitio / remota de la arquitectura en el Servidor Privado.</td>
+<td style="text-align: left;">05/08/2026</td>
+<td style="text-align: left;">08/08/2026</td>
+<td style="text-align: left;">R. Cari Mamani</td>
+<td style="text-align: left;"><strong>Entregable 4: Registro de Evidencias</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F3.1</strong></td>
+<td style="text-align: left;">Procesamiento de datos de campo y documentación de Papeles de Trabajo.</td>
+<td style="text-align: left;">11/08/2026</td>
+<td style="text-align: left;">14/08/2026</td>
+<td style="text-align: left;">Equipo Completo</td>
+<td style="text-align: left;"><strong>Entregable 5: Papeles de Trabajo</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F3.2</strong></td>
+<td style="text-align: left;">Estructuración cualitativa de desvíos y brechas detectadas.</td>
+<td style="text-align: left;">15/08/2026</td>
+<td style="text-align: left;">18/08/2026</td>
+<td style="text-align: left;">P. Paricahua</td>
+<td style="text-align: left;"><strong>Entregable 6: Matriz de Hallazgos</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F3.3</strong></td>
+<td style="text-align: left;">Mapeo y cálculo probabilístico de riesgos del sistema.</td>
+<td style="text-align: left;">19/08/2026</td>
+<td style="text-align: left;">21/08/2026</td>
+<td style="text-align: left;">P. Paricahua</td>
+<td style="text-align: left;"><strong>Entregable 7: Matriz de Riesgos</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F3.4</strong></td>
+<td style="text-align: left;">Redacción y revisión interna del borrador técnico de la auditoría.</td>
+<td style="text-align: left;">22/08/2026</td>
+<td style="text-align: left;">25/08/2026</td>
+<td style="text-align: left;">R. Dan Mayhuire</td>
+<td style="text-align: left;"><strong>Entregable 8: Informe Preliminar</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F3.5</strong></td>
+<td style="text-align: left;">Emisión final y firma del Dictamen de Auditoría de RamisToolX.</td>
+<td style="text-align: left;">26/08/2026</td>
+<td style="text-align: left;">28/08/2026</td>
+<td style="text-align: left;">Equipo Completo</td>
+<td style="text-align: left;"><strong>Entregable 9: Informe Final</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F4.1</strong></td>
+<td style="text-align: left;">Diseño de estrategias de remediación de bugs y deudas técnicas.</td>
+<td style="text-align: left;">29/08/2026</td>
+<td style="text-align: left;">02/09/2026</td>
+<td style="text-align: left;">Startup Orbit</td>
+<td style="text-align: left;"><strong>Entregable 10: Plan de Acción Correctiva</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F4.2</strong></td>
+<td style="text-align: left;">Cierre formal del proceso, firmas y archivo definitivo de artefactos.</td>
+<td style="text-align: left;">03/09/2026</td>
+<td style="text-align: left;">09/09/2026</td>
+<td style="text-align: left;">R. Cari Mamani</td>
+<td style="text-align: left;"><strong>Entregable 11: Acta de Cierre</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-procedimientos-detallados-de-auditoria">5. PROCEDIMIENTOS DETALLADOS DE AUDITORÍA</h2>
+<h3 id="procedimiento-a-auditoria-de-gestion-de-requisitos-y-trazabilidad-scrum">PROCEDIMIENTO A: Auditoría de Gestión de Requisitos y Trazabilidad (Scrum)</h3>
+<ul>
+<li><strong>Objetivo:</strong> Garantizar que el sistema RamisToolX responda fielmente a las necesidades del negocio.</li>
+<li><strong>Paso 1:</strong> Acceder al tablero Kanban/Scrum de Jira de la Startup Orbit.</li>
+<li><strong>Paso 2:</strong> Seleccionar una muestra aleatoria del 30% de las Historias de Usuario etiquetadas como "Done" (Finalizadas).</li>
+<li><strong>Paso 3:</strong> Verificar que cada funcionalidad cuente con criterios de aceptación explícitos en lenguaje Gherkin o formato estándar.</li>
+<li><strong>Paso 4:</strong> Cruzar el ID de la Historia de Jira con el identificador del Pull Request en GitHub.</li>
+<li><strong>Paso 5:</strong> Corroborar la firma o marcas de validación de al menos 2 integrantes del equipo en la bitácora del repositorio.</li>
+</ul>
+<h3 id="procedimiento-b-auditoria-de-calidad-de-codigo-y-mantenibilidad-cmmi-dev-ver-sonarcloud">PROCEDIMIENTO B: Auditoría de Calidad de Código y Mantenibilidad (CMMI-DEV VER / SonarCloud)</h3>
+<ul>
+<li><strong>Objetivo:</strong> Validar la solidez estructural del código y la veracidad de las métricas de prueba.</li>
+<li><strong>Paso 1:</strong> Ejecutar la herramienta empaquetada en el archivo <code>.jar</code> de SonarCloud configurada para el entorno local/académico.</li>
+<li><strong>Paso 2:</strong> Exportar los resultados consolidados de análisis estático en formatos Word y Excel generados de manera nativa por la utilidad.</li>
+<li><strong>Paso 3:</strong> Verificar en las hojas de datos que la métrica de <strong>cobertura de código alcance el 89%</strong>, inspeccionando qué bloques lógicos de FastAPI o Flutter se encuentran excluidos del pipeline.</li>
+<li><strong>Paso 4:</strong> Analizar el índice de deuda técnica detectado en el reporte de Excel, prestando especial atención a la presencia de Code Smells (código sucio) en los controladores de la base de datos.</li>
+</ul>
+<h3 id="procedimiento-c-auditoria-de-seguridad-de-componentes-snyk">PROCEDIMIENTO C: Auditoría de Seguridad de Componentes (Snyk)</h3>
+<ul>
+<li><strong>Objetivo:</strong> Asegurar la API frente a brechas de seguridad y librerías comprometidas.</li>
+<li><strong>Paso 1:</strong> Localizar el archivo JSON crudo generado en el último escaneo automatizado por la herramienta Snyk sobre el archivo de dependencias (<code>requirements.txt</code> o <code>pubspec.yaml</code>).</li>
+<li><strong>Paso 2:</strong> Examinar la estructura de datos del JSON, aislando los nodos clasificados con severidad "High" (Alta) o "Critical" (Crítica).</li>
+<li><strong>Paso 3:</strong> Constatar si las dependencias vulnerables identificadas en el JSON han sido actualizadas o parchadas en el entorno actual del servidor.</li>
+</ul>
+<h3 id="procedimiento-d-auditoria-de-solucion-tecnica-e-integracion-en-servidor-privado-cmmi-dev-ts-ip">PROCEDIMIENTO D: Auditoría de Solución Técnica e Integración en Servidor Privado (CMMI-DEV TS / IP)</h3>
+<ul>
+<li><strong>Objetivo:</strong> Verificar la estabilidad de la arquitectura y la correcta persistencia de datos en producción.</li>
+<li><strong>Paso 1:</strong> Solicitar las credenciales y rutas de acceso seguro (SSH/SFTP) al <strong>Servidor Privado</strong> donde se aloja el backend de FastAPI.</li>
+<li><strong>Paso 2:</strong> Inspeccionar el archivo de configuración del servidor y las variables de entorno para corroborar el correcto aislamiento de las llaves secretas de autenticación.</li>
+<li><strong>Paso 3:</strong> Evaluar el módulo de generación de actas en PDF, comprobando mediante pruebas de inserción que los archivos se escriban en rutas absolutas controladas y protegidas contra accesos externos directos.</li>
+<li><strong>Paso 4:</strong> Simular el flujo de carga masiva de inventario mediante el procesamiento de un archivo Excel de prueba, auditando los logs de FastAPI para verificar el control de excepciones ante entradas de datos erróneas.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
