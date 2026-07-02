@@ -68,7 +68,7 @@ El análisis de las claves `vulnerabilities` dentro del JSON arrojó los siguien
 * **Vulnerabilidades Medias/Bajas (Medium/Low):** 2 detectadas en dependencias secundarias de parsing (actualizadas inmediatamente mediante parches de entorno).
 
 **CAPTURA DE PANTALLA N° 13:** Archivo JSON de Snyk abierto en un entorno de desarrollo, mostrando el resumen de la auditoría de seguridad ('0 critical, 0 high vulnerabilities').
-![Archivo JSON Snyk](../assets/nombre_imagen_13.png)
+![Archivo JSON Snyk]()
 
 > **Conclusión del Auditor (PT-03):** El backend desarrollado en FastAPI se encuentra blindado contra las vulnerabilidades más comunes del TOP 10 de OWASP asociadas a librerías de terceros obsoletas.
 

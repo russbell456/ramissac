@@ -63,7 +63,7 @@ Este documento compila de manera sistemática los artefactos, reportes y comprob
 * **Descripción:** Inspección técnica del archivo estructurado en formato JSON exportado por la herramienta Snyk durante el escaneo automatizado del backend de la aplicación. Se analiza la identificación y nivel de severidad de vulnerabilidades en las librerías de Python.
 
 **CAPTURA DE PANTALLA N° 06:** Fragmento del archivo JSON de Snyk abierto en un editor de código (VS Code), resaltando las claves `severity`, `title` y el estado de remediación de paquetes de FastAPI.
-![Archivo JSON Snyk](../assets/nombre_imagen_6.png)
+![Archivo JSON Snyk]()
 
 ---
 
