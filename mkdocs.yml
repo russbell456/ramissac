@@ -25,7 +25,9 @@ nav:
       - '5. Papeles de Trabajo': 'entregables/fase2/05_papeles_trabajo.md'
     - 'Fase 3: Verificación (VER)':
       - '6. matriz de hallazgos': 'entregables/fase3/06_matrix_hallazgos.md'
-      - '7. matriz': 'entregables/fase3/github_flow.md'
+      - '7. matriz de Riesgos': ''
+      - '8. Informe Preliminar de Auditoria': ''
+      - '9.Informe Final de Auditoria': ''
     - 'Fase 4: Integración del Producto (IP)':
-      - 'Estrategia de Despliegue': 'entregables/fase4/estrategia.md'
-      - 'Servidor Móvil (Termux)': 'entregables/fase4/termux.md'
+      - '10. Plan de Acción Correctiva': ''
+      - '11. Acta de Cierre de Auditoria': ''
