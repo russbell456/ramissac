@@ -1,4 +1,15 @@
 services:
+  docs:
+    image: python:3.9-slim
+    container_name: ramissac_docs
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: bash -c "pip install mkdocs-material && mkdocs serve --dev-addr=0.0.0.0:8001"
+    ports:
+      - "8001:8001"
+    networks:
+      - devops_network
 
   # 1. BACKEND FASTAPI
   backend:
