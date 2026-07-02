@@ -1,22 +1,31 @@
 site_name: "RamisToolX - Startup Orbit"
-site_url: https://russbell456.github.io/ramissac/
+site_url: https://russbell456.github.io/ramissac
 
 theme:
   name: material
   features:
-    - navigation.tabs
-    - navigation.sections
+    - navigation.tabs      # Hace que el menú principal aparezca como pestañas arriba
+    - navigation.sections  # Agrupa las subsecciones de forma limpia en el lateral
 
 nav:
   - 'Inicio': index.md
+  - 'API Reference': api.md
+  - 'Arquitectura del Sistema': arquitectura.md
+  - 'Documentacion del Backend': backend.md
+  - 'CI/CD y Automatización': ci-cd.md
+  - 'Infraestrucura y DevOps': infraestructura.md
   - 'ENTREGABLES':
-      - 'Índice General': 'entregables/index.md'
-      - 'Fase 1: Planificación y Gestión':
-          - '1. Project Charter': 'entregables/fase1/01_project_charter.md'
-          - '2. Plan de Auditoria': 'entregables/fase1/02_plan_auditoria.md'
-          - '3. Lista de Verificacion SDLC': 'entregables/fase1/03_lista_verificacion.md'
-      - 'Fase 2: Solución Técnica (TS)':
-          - '4. Registro de Evidencias': 'entregables/fase2/04_registro_evidencias.md'
-          - '5. Papeles de Trabajo': 'entregables/fase2/05_papeles_trabajo.md'
-      - 'Fase 3: Verificación (VER)':
-          - '6. Matriz de Hallazgos': 'entregables/fase3/06_matrix_hallazgo.md'
+    - 'Índice General': 'entregables/index.md'
+    - 'Fase 1: Planificación y Gestión':
+      - '1. Project Charter': 'entregables/fase1/01_project_charter.md'
+      - '2. Plan de Auditoria': 'entregables/fase1/02_plan_auditoria.md'
+      - '3. lista de Verificacion SDLC': 'entregables/fase1/03_lista_verificacion.md'
+    - 'Fase 2: Solución Técnica (TS)':
+      - '4. Registro de videncias': 'entregables/fase2/04_registro_evidencias.md'
+      - '5. Papeles de Trabajo': 'entregables/fase2/05_papeles_trabajo.md'
+    - 'Fase 3: Verificación (VER)':
+      - '6. matriz de hallazgos': 'entregables/fase3/06_matrix_hallazgos.md'
+      - '7. matriz': 'entregables/fase3/github_flow.md'
+    - 'Fase 4: Integración del Producto (IP)':
+      - 'Estrategia de Despliegue': 'entregables/fase4/estrategia.md'
+      - 'Servidor Móvil (Termux)': 'entregables/fase4/termux.md'
