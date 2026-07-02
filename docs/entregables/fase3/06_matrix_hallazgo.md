@@ -32,7 +32,7 @@ La presente matriz consolida los desvíos, oportunidades de mejora y conformidad
 * **Evidencia:** Inspección técnica por consola SSH del Servidor Privado, donde se constató el servicio FastAPI corriendo de manera continua y el almacenamiento controlado de PDFs.
 
 **CAPTURA DE PANTALLA N° 17:** Consola SSH del Servidor Privado evidenciando el despliegue exitoso y activo de FastAPI, en sustitución del entorno Termux.
-![Consola SSH Servidor Privado](../assets/nombre_imagen_17.png)
+![Consola SSH Servidor Privado]()
 
 * **Impacto:** Evita la pérdida de disponibilidad del servicio RamisToolX, soluciona las restricciones de red de Termux y garantiza la persistencia segura de las actas de la Corporación Ramis SAC.
 * **Recomendación:** Formalizar el Servidor Privado como el entorno oficial de producción en el manual de despliegue, eliminando permanentemente cualquier script remanente asociado a Termux.

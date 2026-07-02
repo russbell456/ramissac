@@ -104,7 +104,7 @@ El análisis de las claves `vulnerabilities` dentro del JSON arrojó los siguien
 ![Directorio Actas PDF](../../assets/imagen_8.png)
 
 **CAPTURA DE PANTALLA N° 16:** Respuesta http (Código 200 OK) en el Swagger de la API al cargar el archivo Excel de inventario masivo.
-![Swagger Carga Masiva](../assets/nombre_imagen_16.png)
+![Swagger Carga Masiva]()
 
 > **Conclusión del Auditor (PT-05):** Los mecanismos de persistencia y procesamiento de datos por lotes operan bajo condiciones seguras y estables en la infraestructura del servidor, demostrando un correcto control de excepciones e integridad en el almacenamiento.
 
