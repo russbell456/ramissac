@@ -38,9 +38,10 @@ security_chart.png
 # Logs
 # -------------------------
 *.log
-<<<<<<< HEAD
-=======
 .env
->>>>>>> e11366450dc900be412f7c6cfe72ffffb0b3c07a
 *.tar 
+*.pyc
+*.sql
+*.code-workspace
 ramistoolx_image.tar 
+static/prestamos/

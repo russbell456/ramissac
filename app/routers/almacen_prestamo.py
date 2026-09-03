@@ -6,7 +6,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
-    status
+    status,
 )
 
 from fastapi.responses import FileResponse
@@ -15,52 +15,54 @@ from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 
+from app.dependencies.auth_dependencies import (
+    get_current_user,
+)
+
 from app.schemas.almacen_prestamo import (
     ArticuloPrestamoSchema,
     PrestamoQRData,
     PrestamoResponse,
-    PrestamoSchema
+    PrestamoSchema,
 )
 
 from app.services.almacen_prestamo_service import (
-    AlmacenPrestamoService
-)
-
-from app.dependencies.auth_dependencies import (
-    get_current_user
+    AlmacenPrestamoService,
 )
 
 
 router = APIRouter(
     prefix="/almacen",
-    tags=["Almacén"]
+    tags=["Almacén"],
 )
+
 
 DbDep = Annotated[
     Session,
-    Depends(get_db)
+    Depends(get_db),
 ]
+
 
 UserDep = Annotated[
     dict,
-    Depends(get_current_user)
+    Depends(get_current_user),
 ]
 
 
 @router.post(
     "/registrar-prestamo-qr",
     response_model=PrestamoResponse,
-    status_code=status.HTTP_200_OK
-    )
+    status_code=status.HTTP_201_CREATED,
+)
 def registrar_prestamo_qr(
     data: PrestamoQRData,
     db: DbDep,
-    user: UserDep
+    user: UserDep,
 ):
 
     if user.role not in [
         "almacenero",
-        "admin"
+        "admin",
     ]:
 
         raise HTTPException(
@@ -68,37 +70,45 @@ def registrar_prestamo_qr(
             detail=(
                 "Solo almacenero o admin "
                 "puede registrar préstamos"
-            )
+            ),
         )
 
-    service = AlmacenPrestamoService(db)
+    service = AlmacenPrestamoService(
+        db
+    )
 
     try:
 
-        prestamo = service.registrar_prestamo_desde_qr(
-            data,
-            user.id
+        prestamo = (
+            service.registrar_prestamo_desde_qr(
+                data,
+                user.id,
+            )
         )
 
         return PrestamoResponse(
             id=prestamo.id,
-            codigo_unico=prestamo.codigo_unico,
-            estado=prestamo.estado
+            codigo_unico=(
+                prestamo.codigo_unico
+            ),
+            estado=(
+                prestamo.estado.value
+            ),
         )
 
-    except ValueError as e:
+    except ValueError as exc:
 
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+            detail=str(exc),
+        ) from exc
 
 
 @router.get(
-    "/prestamo/{prestamo_id}/pdf"
+    "/prestamo/{prestamo_id}/pdf",
 )
 def descargar_pdf(
-    prestamo_id: int
+    prestamo_id: int,
 ):
 
     pdf_path = (
@@ -110,29 +120,32 @@ def descargar_pdf(
 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="PDF no encontrado"
+            detail="PDF no encontrado",
         )
 
     return FileResponse(
         pdf_path,
-        filename=f"prestamo_{prestamo_id}.pdf"
+        filename=(
+            f"prestamo_{prestamo_id}.pdf"
+        ),
     )
 
 
 @router.get(
     "/trabajador/{trabajador_id}/prestamos",
-    response_model=list[PrestamoSchema]
+    response_model=list[PrestamoSchema],
 )
 def obtener_prestamos_trabajador(
     trabajador_id: int,
     db: DbDep,
-    user: UserDep
+    user: UserDep,
 ):
 
     if (
-        user.role not in [
+        user.role
+        not in [
             "almacenero",
-            "admin"
+            "admin",
         ]
         and user.id != trabajador_id
     ):
@@ -142,38 +155,48 @@ def obtener_prestamos_trabajador(
             detail=(
                 "No autorizado para "
                 "ver préstamos ajenos"
-            )
+            ),
         )
 
-    service = AlmacenPrestamoService(db)
+    service = AlmacenPrestamoService(
+        db
+    )
 
-    return service.obtener_prestamos_trabajador(
-        trabajador_id
+    return (
+        service.obtener_prestamos_trabajador(
+            trabajador_id
+        )
     )
 
 
 @router.get(
     "/articulo/{articulo_id}/prestamos",
-    response_model=list[ArticuloPrestamoSchema]
+    response_model=list[
+        ArticuloPrestamoSchema
+    ],
 )
 def obtener_prestamos_articulo(
     articulo_id: int,
     db: DbDep,
-    user: UserDep
+    user: UserDep,
 ):
 
     if user.role not in [
         "almacenero",
-        "admin"
+        "admin",
     ]:
 
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="No autorizado"
+            detail="No autorizado",
         )
 
-    service = AlmacenPrestamoService(db)
+    service = AlmacenPrestamoService(
+        db
+    )
 
-    return service.obtener_prestamos_articulo(
-        articulo_id
+    return (
+        service.obtener_prestamos_articulo(
+            articulo_id
+        )
     )

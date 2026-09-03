@@ -13,4 +13,4 @@ class User(Base):
     codigo_unico = Column(String, unique=True, nullable=True) # Nuevo (código correlativo o personalizado)
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
-    role = Column("rol", String, default="user")      # ← Mapea a la columna 'rol' en PostgreSQL
+    role = Column("rol", String, default="user")      # ← Mapea a la columna 'rol' en PostgreSQLA
