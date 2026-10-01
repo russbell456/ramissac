@@ -6,15 +6,12 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy.orm import Session
-
 from app.core.validation_handler import request_validation_exception_handler
 from app.database.base import Base
-from app.database.connection import engine, get_db
+from app.database.connection import engine
 from app.models.almacen_articulo_imagen import AlmacenArticuloImagen
 from app.models.almacen_obras import AlmacenObra
 from app.models.almacen_terceros import AlmacenTercero
-from app.models.user import User
 import app.models  # noqa: F401
 
 from app.routers.almacen_articulo_router import router as almacen_articulo_router
@@ -26,18 +23,19 @@ from app.routers.auth_router import router as auth_router
 from app.routers.vehiculo_router import router as vehiculo_router
 from app.routers.ruta_router import router as ruta_router
 from app.routers.mantenimiento_router import router as mantenimiento_router
+from app.routers.inspeccion_router import router as inspeccion_router
+from app.routers.averia_router import router as averia_router
+from app.routers.incidente_router import router as incidente_router
+from app.routers.plan_mantenimiento_router import router as plan_mantenimiento_router
+from app.routers.jornada_transporte_router import router as jornada_transporte_router
 
-from app.security.hashing import Hash
+from app.scripts.seed_users import seed
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
-    db = next(get_db())
-    try:
-        seed_admin_user(db)
-    finally:
-        db.close()
+    seed()
     yield
 
 
@@ -119,36 +117,6 @@ def root():
     }
 
 
-def seed_admin_user(db: Session):
-    admin_email = "admin@example.com"
-
-    existing = (
-        db.query(User)
-        .filter(User.email == admin_email)
-        .first()
-    )
-
-    if existing:
-        print("Usuario admin ya existe.")
-        return
-
-    admin_user = User(
-        nombre="Admin",
-        dni="00000000A",
-        cargo="Administrador",
-        apellidos="Principal",
-        codigo_unico="ADMIN-ORBIT",
-        email=admin_email,
-        password=Hash.get_password_hash("admin123"),
-        role="admin",
-    )
-
-    db.add(admin_user)
-    db.commit()
-
-    print("Usuario admin creado correctamente.")
-
-
 # Registro de todos los routers del sistema consolidado
 app.include_router(auth_router)
 app.include_router(almacen_articulo_router)
@@ -159,3 +127,8 @@ app.include_router(almacen_terceros_router)
 app.include_router(vehiculo_router)
 app.include_router(ruta_router)
 app.include_router(mantenimiento_router)
+app.include_router(inspeccion_router)
+app.include_router(averia_router)
+app.include_router(incidente_router)
+app.include_router(plan_mantenimiento_router)
+app.include_router(jornada_transporte_router)

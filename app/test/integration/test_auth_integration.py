@@ -87,3 +87,20 @@ def test_login_invalid_password(client):
     )
 
     assert response.status_code == 401
+
+
+def test_register_privileged_role_is_forbidden(client):
+    for role in ("admin", "almacenero"):
+        response = client.post(
+            "/auth/register",
+            json={
+                "nombre": "Privileged",
+                "apellidos": "Attempt",
+                "dni": str(uuid.uuid4().int)[:8],
+                "cargo": "Test",
+                "email": f"{role}_{uuid.uuid4()}@test.com",
+                "password": "12345678",
+                "role": role,
+            },
+        )
+        assert response.status_code == 403

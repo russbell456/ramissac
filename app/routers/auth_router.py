@@ -45,7 +45,8 @@ ALLOWED_ROLES = {
     "user",
     "trabajador",
     "almacenero",
-    "admin"
+    "admin",
+    "conductor"
 }
 
 DbDep = Annotated[
@@ -85,7 +86,8 @@ def register(
 
     if role in [
         "trabajador",
-        "almacenero"
+        "almacenero",
+        "conductor"
     ]:
         if (
             not user_data.dni or
@@ -174,7 +176,8 @@ def login(
                 "dni": auth_user.dni,
                 "cargo": auth_user.cargo,
                 "email": auth_user.email,
-                "codigo_unico": auth_user.codigo_unico
+                "codigo_unico": auth_user.codigo_unico,
+                "role": auth_user.role
             }
         }
 

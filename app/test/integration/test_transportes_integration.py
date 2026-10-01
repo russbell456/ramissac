@@ -66,6 +66,51 @@ def _crear_vehiculo(client, placa: Optional[str] = None):
     return response.json()
 
 
+def _crear_salida_aprobada(client, vehiculo_id: int, ruta_id: int):
+    """Crea una inspección SALIDA aprobada para habilitar el inicio de la ruta.
+
+    El checklist personalizado garantiza que la inspección tenga al menos un
+    detalle conforme; el resultado global se marca como APROBADA.
+    """
+    codigo = f"SALIDA-{vehiculo_id}-{ruta_id}"
+    item = client.post(
+        "/api/inspecciones/checklist-items",
+        json={
+            "codigo": codigo,
+            "nombre": "Verificación general de salida",
+            "criticidad": "media",
+        },
+    )
+    # Si el ítem ya existe (mismo codigo en otro test), reutilizarlo.
+    if item.status_code == 400:
+        items = client.get("/api/inspecciones/checklist-items").json()
+        item_id = next(i["id"] for i in items if i["codigo"] == codigo)
+    else:
+        assert item.status_code == 201
+        item_id = item.json()["id"]
+
+    inspeccion = client.post(
+        "/api/inspecciones/",
+        json={
+            "vehiculo_id": vehiculo_id,
+            "ruta_id": ruta_id,
+            "tipo": "SALIDA",
+            "detalles": [
+                {"item_id": item_id, "resultado": "conforme", "comentario": "OK"}
+            ],
+        },
+    )
+    assert inspeccion.status_code == 201
+    inspeccion_id = inspeccion.json()["id"]
+
+    resuelta = client.patch(
+        f"/api/inspecciones/{inspeccion_id}/resolver",
+        json={"resultado": "APROBADA", "observaciones": "Inspección de salida aprobada"},
+    )
+    assert resuelta.status_code == 200
+    return resuelta.json()
+
+
 def test_listar_vehiculos_vacio(client):
     response = client.get("/api/vehiculos/")
     assert response.status_code == 200
@@ -138,6 +183,9 @@ def test_iniciar_ruta(client, db_session, override_auth):
     )
     ruta_id = creada.json()["id"]
 
+    # Crear certificación de inspección SALIDA aprobada (requisito formal).
+    _crear_salida_aprobada(client, vehiculo["id"], ruta_id)
+
     # Traer el objeto del trabajador registrado de la BD usando db_session
     trabajador_user = db_session.query(User).filter(User.id == trabajador["id"]).first()
 
@@ -201,6 +249,9 @@ def test_finalizar_ruta_libera_vehiculo(client, db_session, override_auth):
     )
     ruta_id = creada.json()["id"]
 
+    # Crear certificación de inspección SALIDA aprobada (requisito formal).
+    _crear_salida_aprobada(client, vehiculo["id"], ruta_id)
+
     trabajador_user = db_session.query(User).filter(User.id == trabajador["id"]).first()
 
     # Iniciar ruta primero (con rol de trabajador asignado)
@@ -253,6 +304,9 @@ def test_finalizar_ruta_con_falla_envia_a_mantenimiento(client, db_session, over
         },
     )
     ruta_id = creada.json()["id"]
+
+    # Crear certificación de inspección SALIDA aprobada (requisito formal).
+    _crear_salida_aprobada(client, vehiculo["id"], ruta_id)
 
     trabajador_user = db_session.query(User).filter(User.id == trabajador["id"]).first()
 
@@ -326,13 +380,13 @@ def test_ruta_rechaza_usuario_sin_rol_trabajador(client):
     usuario = client.post(
         "/auth/register",
         json={
-            "nombre": "Admin",
+            "nombre": "Usuario",
             "apellidos": "Fake",
             "dni": _unique_dni(),
-            "cargo": "Admin",
+            "cargo": "Usuario",
             "email": email,
             "password": "12345678",
-            "role": "admin",
+            "role": "user",
         },
     )
     assert usuario.status_code == 201

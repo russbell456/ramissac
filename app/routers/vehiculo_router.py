@@ -17,32 +17,32 @@ router = APIRouter(
 DbDep = Annotated[Session, Depends(get_db)]
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
 
-def require_almacenero(user: CurrentUserDep) -> User:
-    if user.role != "almacenero":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo el almacenero puede gestionar vehículos.")
+def require_transport_role(user: CurrentUserDep) -> User:
+    if user.role not in {"admin", "conductor"}:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No autorizado para gestionar vehículos.")
     return user
 
 @router.get("/", response_model=list[VehiculoResponse])
-def listar_vehiculos(db: DbDep, _: Annotated[User, Depends(require_almacenero)]):
+def listar_vehiculos(db: DbDep, _: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
     return service.get_all_vehiculos()
 
 @router.get("/{id}", response_model=VehiculoResponse)
-def obtener_vehiculo(id: int, db: DbDep, _: Annotated[User, Depends(require_almacenero)]):
+def obtener_vehiculo(id: int, db: DbDep, _: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
     return service.get_vehiculo_by_id(id)
 
 @router.post("/", response_model=VehiculoResponse, status_code=status.HTTP_201_CREATED)
-def crear_vehiculo(schema: VehiculoCreate, db: DbDep, _: Annotated[User, Depends(require_almacenero)]):
+def crear_vehiculo(schema: VehiculoCreate, db: DbDep, _: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
     return service.create_vehiculo(schema)
 
 @router.put("/{id}", response_model=VehiculoResponse)
-def actualizar_vehiculo(id: int, schema: VehiculoUpdate, db: DbDep, _: Annotated[User, Depends(require_almacenero)]):
+def actualizar_vehiculo(id: int, schema: VehiculoUpdate, db: DbDep, _: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
     return service.update_vehiculo(id, schema)
 
 @router.delete("/{id}")
-def eliminar_vehiculo(id: int, db: DbDep, user: Annotated[User, Depends(require_almacenero)]):
+def eliminar_vehiculo(id: int, db: DbDep, user: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
     return service.delete_vehiculo(id, user.id)

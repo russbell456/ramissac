@@ -39,6 +39,7 @@ class VehiculoService:
             marca=schema.marca,
             modelo=schema.modelo,
             capacidad_carga=schema.capacidad_carga,
+            kilometraje_actual=schema.kilometraje_actual,
             estado="disponible"
         )
         self.db.add(nuevo_vehiculo)
@@ -68,6 +69,19 @@ class VehiculoService:
             vehiculo.modelo = schema.modelo
         if schema.capacidad_carga is not None:
             vehiculo.capacidad_carga = schema.capacidad_carga
+
+        # Kilometraje monotónico: nunca puede disminuir.
+        if schema.kilometraje_actual is not None:
+            if schema.kilometraje_actual < (vehiculo.kilometraje_actual or 0.0):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "El nuevo kilometraje no puede ser menor que el "
+                        "kilometraje actual."
+                    ),
+                )
+            vehiculo.kilometraje_actual = schema.kilometraje_actual
+
         self.db.commit()
         self.db.refresh(vehiculo)
         return vehiculo
