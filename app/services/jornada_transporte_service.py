@@ -109,6 +109,7 @@ class JornadaTransporteService:
 
         jornada.checklists.append(Checklist(**data.model_dump()))
         vehiculo.kilometraje_actual = data.kilometraje
+        jornada.km_inicial = data.kilometraje
         if data.conforme:
             jornada.estado = "en_curso"
             jornada.fecha_inicio = datetime.utcnow()
@@ -142,12 +143,67 @@ class JornadaTransporteService:
             raise HTTPException(status_code=400, detail="El kilometraje no puede disminuir.")
         jornada.checklists.append(Checklist(**data.model_dump()))
         vehiculo.kilometraje_actual = data.kilometraje
+        jornada.km_final = data.kilometraje
         jornada.estado = "finalizada"
         jornada.fecha_fin = datetime.utcnow()
         vehiculo.estado = "disponible" if data.conforme else "en_mantenimiento"
+
+        km_inicial = jornada.km_inicial or data.kilometraje
+        self._calcular_metricas(jornada, km_inicial, data.kilometraje)
+
         self.db.commit()
         self.db.refresh(jornada)
         return jornada
+
+    def _calcular_metricas(
+        self, jornada: JornadaTransporte, km_inicial: float, km_final: float
+    ) -> None:
+        """Calcula horas efectivas y km recorridos, generando alertas e incidencias si se superan umbrales."""
+        fecha_inicio = jornada.fecha_inicio or datetime.utcnow()
+        fecha_fin = jornada.fecha_fin or datetime.utcnow()
+
+        duracion_horas = (fecha_fin - fecha_inicio).total_seconds() / 3600.0
+
+        # Descuento de 1 hora de almuerzo si la jornada cruza el mediodía
+        descuento_almuerzo = 0.0
+        if fecha_inicio.hour < 12 and fecha_fin.hour >= 12:
+            descuento_almuerzo = 1.0
+
+        horas_efectivas = duracion_horas - descuento_almuerzo
+        jornada.horas_efectivas = round(horas_efectivas, 2)
+
+        if horas_efectivas > 10:
+            jornada.alerta_horas = True
+            self.db.add(
+                IncidenciaRuta(
+                    jornada_id=jornada.id,
+                    tipo="falla",
+                    descripcion=f"Alerta: Jornada superó 10 horas efectivas ({horas_efectivas:.1f}h).",
+                )
+            )
+
+        km_recorridos = km_final - km_inicial
+        jornada.km_inicial = km_inicial
+        jornada.km_final = km_final
+
+        if km_recorridos > 200:
+            jornada.alerta_km = True
+            self.db.add(
+                IncidenciaRuta(
+                    jornada_id=jornada.id,
+                    tipo="falla",
+                    descripcion=f"Alerta: Kilometraje recorrido excede 200km ({km_recorridos:.1f}km).",
+                )
+            )
+            vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == jornada.vehiculo_id).first()
+            if vehiculo:
+                self.db.add(
+                    Averia(
+                        vehiculo_id=vehiculo.id,
+                        descripcion=f"Alerta: Kilometraje recorrido excede 200km ({km_recorridos:.1f}km).",
+                        criticidad="media",
+                    )
+                )
 
     def registrar_incidencia(
         self, jornada_id: int, data: IncidenciaRutaCreate, conductor_id: int

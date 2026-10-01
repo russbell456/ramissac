@@ -25,6 +25,13 @@ class JornadaTransporte(Base):
     checklist_flash = Column(JSON, nullable=True)
     observaciones = Column(Text, nullable=True)
 
+    # Campos calculados de cierre
+    km_inicial = Column(Float, nullable=True)  # km al inicio de la jornada
+    km_final = Column(Float, nullable=True)    # km al finalizar la jornada
+    alerta_horas = Column(Boolean, default=False, nullable=False)
+    alerta_km = Column(Boolean, default=False, nullable=False)
+    horas_efectivas = Column(Float, nullable=True)
+
     vehiculo = relationship("Vehiculo", back_populates="jornadas")
     checklists = relationship(
         "Checklist",

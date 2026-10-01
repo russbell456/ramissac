@@ -46,3 +46,14 @@ def actualizar_vehiculo(id: int, schema: VehiculoUpdate, db: DbDep, _: Annotated
 def eliminar_vehiculo(id: int, db: DbDep, user: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
     return service.delete_vehiculo(id, user.id)
+
+@router.get("/{id}/kilometraje", response_model=dict)
+def obtener_kilometraje(id: int, db: DbDep, _: Annotated[User, Depends(require_transport_role)]):
+    """Devuelve solo el kilometraje actual del vehículo para autocompletar formularios."""
+    service = VehiculoService(db)
+    vehiculo = service.get_vehiculo_by_id(id)
+    return {
+        "vehiculo_id": vehiculo.id,
+        "kilometraje_actual": vehiculo.kilometraje_actual or 0.0,
+        "placa": vehiculo.placa,
+    }

@@ -40,6 +40,11 @@ class JornadaResponse(BaseModel):
     nivel_combustible: Optional[int]
     checklist_flash: Optional[dict]
     observaciones: Optional[str]
+    km_inicial: Optional[float] = None
+    km_final: Optional[float] = None
+    alerta_horas: bool = False
+    alerta_km: bool = False
+    horas_efectivas: Optional[float] = None
 
 
 class ChecklistCreate(BaseModel):
