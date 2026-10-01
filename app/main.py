@@ -20,14 +20,8 @@ from app.routers.almacen_obras import router as almacen_obras_router
 from app.routers.almacen_prestamo import router as almacen_prestamo_router
 from app.routers.almacen_terceros import router as almacen_terceros_router
 from app.routers.auth_router import router as auth_router
-from app.routers.vehiculo_router import router as vehiculo_router
-from app.routers.ruta_router import router as ruta_router
-from app.routers.mantenimiento_router import router as mantenimiento_router
-from app.routers.inspeccion_router import router as inspeccion_router
-from app.routers.averia_router import router as averia_router
-from app.routers.incidente_router import router as incidente_router
-from app.routers.plan_mantenimiento_router import router as plan_mantenimiento_router
-from app.routers.jornada_transporte_router import router as jornada_transporte_router
+# ── Módulo de Transportes (router agregador) ──────────────────────────────────
+from app.routers.transportes_router import router as transportes_router
 
 from app.scripts.seed_users import seed
 
@@ -124,11 +118,5 @@ app.include_router(almacen_prestamo_router)
 app.include_router(almacen_devolucion_router)
 app.include_router(almacen_obras_router)
 app.include_router(almacen_terceros_router)
-app.include_router(vehiculo_router)
-app.include_router(ruta_router)
-app.include_router(mantenimiento_router)
-app.include_router(inspeccion_router)
-app.include_router(averia_router)
-app.include_router(incidente_router)
-app.include_router(plan_mantenimiento_router)
-app.include_router(jornada_transporte_router)
+# ── Módulo de Transportes (punto de entrada único) ────────────────────────────
+app.include_router(transportes_router)
