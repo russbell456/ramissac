@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -18,35 +18,73 @@ class JornadaAsignacionCreate(BaseModel):
 
 
 class AccionGruaCreate(BaseModel):
-    actividad: Optional[str] = None
-    horometro_inicial: Optional[float] = None
-    horometro_final: Optional[float] = None
+    actividad: str = Field(..., min_length=1)
+    horometro_inicial: float = Field(..., ge=0)
+    horometro_final: float = Field(..., ge=0)
+
+    @model_validator(mode="after")
+    def validar_horometros(self) -> AccionGruaCreate:
+        if self.horometro_final < self.horometro_inicial:
+            raise ValueError("El horómetro final no puede ser menor al inicial.")
+        return self
 
 class AccionCombustibleCreate(BaseModel):
-    galones: Optional[float] = None
-    nivel_final: Optional[int] = None
+    galones: float = Field(..., gt=0)
+    nivel_final: int
+
+    @field_validator("nivel_final")
+    @classmethod
+    def validar_nivel_final(cls, value: int) -> int:
+        if value not in {0, 25, 50, 75, 100}:
+            raise ValueError("Seleccione un nivel de combustible válido.")
+        return value
 
 class AccionMantenimientoCreate(BaseModel):
-    taller: Optional[str] = None
-    tipo: Optional[str] = None
+    taller: Literal["CONAUTO", "PERUMOTOR", "MALVEX"]
+    tipo: Literal["Preventivo", "Correctivo"]
     trabajos_preventivos: Optional[list[str]] = None
     descripcion_correctivo: Optional[str] = None
 
+    @model_validator(mode="after")
+    def validar_trabajos(self) -> AccionMantenimientoCreate:
+        if self.tipo == "Preventivo" and not self.trabajos_preventivos:
+            raise ValueError("Seleccione al menos un trabajo preventivo.")
+        if self.tipo == "Correctivo" and not (self.descripcion_correctivo or "").strip():
+            raise ValueError("Describa el mantenimiento correctivo.")
+        return self
+
 class RegistroAccionCreate(BaseModel):
     accion_tipo: str = Field(..., min_length=1)
-    vehiculo_id: Optional[int] = Field(default=None, gt=0)
+    vehiculo_id: int = Field(..., gt=0)
     ruta: Optional[str] = None
-    nivel_combustible: Optional[int] = None
+    nivel_combustible: int
     checklist_flash: Optional[dict] = None
     observaciones: Optional[str] = None
     detalles_grua: Optional[AccionGruaCreate] = None
     detalles_combustible: Optional[AccionCombustibleCreate] = None
     detalles_mantenimiento: Optional[AccionMantenimientoCreate] = None
 
+    @field_validator("nivel_combustible")
+    @classmethod
+    def validar_nivel_inicial(cls, value: int) -> int:
+        if value not in {0, 25, 50, 75, 100}:
+            raise ValueError("Seleccione un nivel de combustible válido.")
+        return value
+
     @model_validator(mode="after")
-    def validar_vehiculo_para_conducir(self) -> RegistroAccionCreate:
-        if self.accion_tipo == "Empezar a Conducir" and self.vehiculo_id is None:
-            raise ValueError("Seleccione un vehículo para empezar a conducir.")
+    def validar_flujo(self) -> RegistroAccionCreate:
+        if self.accion_tipo == "Empezar a Conducir":
+            if not (self.ruta or "").strip():
+                raise ValueError("Seleccione una ruta para conducir.")
+            if not self.checklist_flash:
+                raise ValueError("Complete el Check List Flash.")
+        elif self.accion_tipo == "Operar Grúa" and self.detalles_grua is None:
+            raise ValueError("Complete los datos de la grúa.")
+        elif self.accion_tipo == "Abastecer Combustible" and self.detalles_combustible is None:
+            raise ValueError("Complete los datos del abastecimiento.")
+        elif (self.accion_tipo == "Mantenimiento Preventivo / Correctivo"
+              and self.detalles_mantenimiento is None):
+            raise ValueError("Complete los datos del mantenimiento.")
         return self
 
 

@@ -36,14 +36,14 @@ class JornadaTransporteService:
         if conductor is None or conductor.role != "conductor":
             raise HTTPException(status_code=403, detail="Solo los conductores pueden registrar acciones directamente.")
 
-        vehiculo = None
-        if data.vehiculo_id is not None:
-            vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == data.vehiculo_id).first()
-            if vehiculo is None:
-                raise HTTPException(status_code=404, detail="Vehículo no encontrado.")
-            if vehiculo.estado != "disponible" and data.accion_tipo == "Empezar a Conducir":
-                raise HTTPException(status_code=400, detail="El vehículo no está disponible para esta acción.")
-        
+        vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == data.vehiculo_id).first()
+        if vehiculo is None:
+            raise HTTPException(status_code=404, detail="Vehículo no encontrado.")
+        es_conduccion = data.accion_tipo == "Empezar a Conducir"
+        if es_conduccion and vehiculo.estado != "disponible":
+            raise HTTPException(status_code=400, detail="El vehículo no está disponible para esta acción.")
+
+        fecha_registro = datetime.utcnow()
         jornada = JornadaTransporte(
             conductor_id=conductor_id,
             vehiculo_id=data.vehiculo_id,
@@ -52,11 +52,13 @@ class JornadaTransporteService:
             nivel_combustible=data.nivel_combustible,
             checklist_flash=data.checklist_flash,
             observaciones=data.observaciones,
-            estado="en_curso",
-            fecha_inicio=datetime.utcnow()
+            km_inicial=vehiculo.kilometraje_actual,
+            estado="en_curso" if es_conduccion else "finalizada",
+            fecha_inicio=fecha_registro,
+            fecha_fin=None if es_conduccion else fecha_registro,
         )
-        
-        if vehiculo and data.accion_tipo == "Empezar a Conducir":
+
+        if es_conduccion:
             vehiculo.estado = "en_ruta"
             
         self.db.add(jornada)
