@@ -17,6 +17,21 @@ class JornadaAsignacionCreate(BaseModel):
     conductor_id: int = Field(..., gt=0)
 
 
+class AccionGruaCreate(BaseModel):
+    actividad: Optional[str] = None
+    horometro_inicial: Optional[float] = None
+    horometro_final: Optional[float] = None
+
+class AccionCombustibleCreate(BaseModel):
+    galones: Optional[float] = None
+    nivel_final: Optional[int] = None
+
+class AccionMantenimientoCreate(BaseModel):
+    taller: Optional[str] = None
+    tipo: Optional[str] = None
+    trabajos_preventivos: Optional[list[str]] = None
+    descripcion_correctivo: Optional[str] = None
+
 class RegistroAccionCreate(BaseModel):
     accion_tipo: str = Field(..., min_length=1)
     vehiculo_id: Optional[int] = None
@@ -24,6 +39,9 @@ class RegistroAccionCreate(BaseModel):
     nivel_combustible: Optional[int] = None
     checklist_flash: Optional[dict] = None
     observaciones: Optional[str] = None
+    detalles_grua: Optional[AccionGruaCreate] = None
+    detalles_combustible: Optional[AccionCombustibleCreate] = None
+    detalles_mantenimiento: Optional[AccionMantenimientoCreate] = None
 
 
 class JornadaResponse(BaseModel):

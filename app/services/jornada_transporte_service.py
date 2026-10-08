@@ -60,6 +60,19 @@ class JornadaTransporteService:
             vehiculo.estado = "en_ruta"
             
         self.db.add(jornada)
+        self.db.flush()
+
+        from app.models.jornada_transporte import AccionGrua, AccionCombustible, AccionMantenimiento
+        if data.accion_tipo == "Operar Grúa" and data.detalles_grua:
+            grua = AccionGrua(jornada_id=jornada.id, **data.detalles_grua.model_dump())
+            self.db.add(grua)
+        elif data.accion_tipo == "Abastecer Combustible" and data.detalles_combustible:
+            comb = AccionCombustible(jornada_id=jornada.id, **data.detalles_combustible.model_dump())
+            self.db.add(comb)
+        elif data.accion_tipo == "Mantenimiento Preventivo / Correctivo" and data.detalles_mantenimiento:
+            mantenimiento = AccionMantenimiento(jornada_id=jornada.id, **data.detalles_mantenimiento.model_dump())
+            self.db.add(mantenimiento)
+
         self.db.commit()
         self.db.refresh(jornada)
         return jornada

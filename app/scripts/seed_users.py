@@ -50,6 +50,32 @@ def seed() -> None:
             )
             db.add(conductor)
 
+        if not db.query(User).filter_by(email="conductor2@ramis.com").first():
+            conductor2 = User(
+                nombre="Luis",
+                apellidos="Mendoza",
+                dni="33333333D",
+                cargo="Conductor",
+                codigo_unico="COND002",
+                email="conductor2@ramis.com",
+                password=hash_password("conductor123"),
+                role="conductor",
+            )
+            db.add(conductor2)
+
+        if not db.query(User).filter_by(email="conductor3@ramis.com").first():
+            conductor3 = User(
+                nombre="Mario",
+                apellidos="Vargas",
+                dni="44444444E",
+                cargo="Conductor",
+                codigo_unico="COND003",
+                email="conductor3@ramis.com",
+                password=hash_password("conductor123"),
+                role="conductor",
+            )
+            db.add(conductor3)
+
         # 2. Sembrar Vehículos
         vehiculos_seed = [
             {"placa": "ABC-123", "marca": "Toyota", "modelo": "Hilux", "capacidad_carga": 1000.0, "kilometraje_actual": 15000.0, "estado": "disponible"},

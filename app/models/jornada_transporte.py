@@ -46,6 +46,39 @@ class JornadaTransporte(Base):
         order_by="IncidenciaRuta.fecha",
     )
 
+    detalles_grua = relationship("AccionGrua", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_combustible = relationship("AccionCombustible", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_mantenimiento = relationship("AccionMantenimiento", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+
+class AccionGrua(Base):
+    __tablename__ = "accion_grua"
+
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
+    actividad = Column(String, nullable=True)
+    horometro_inicial = Column(Float, nullable=True)
+    horometro_final = Column(Float, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_grua")
+
+class AccionCombustible(Base):
+    __tablename__ = "accion_combustible"
+
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
+    galones = Column(Float, nullable=True)
+    nivel_final = Column(Integer, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_combustible")
+
+class AccionMantenimiento(Base):
+    __tablename__ = "accion_mantenimiento"
+
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
+    taller = Column(String, nullable=True)
+    tipo = Column(String, nullable=True)
+    trabajos_preventivos = Column(JSON, nullable=True)
+    descripcion_correctivo = Column(String, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_mantenimiento")
 
 class Checklist(Base):
     __tablename__ = "checklists_transporte"
