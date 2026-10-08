@@ -6,7 +6,10 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.averia import Averia
-from app.models.jornada_transporte import Checklist, IncidenciaRuta, JornadaTransporte
+from app.models.jornada_transporte import (
+    AccionCocada, AccionInspeccion, AccionTorque, AccionTrabajosExternos,
+    Checklist, IncidenciaRuta, JornadaTransporte,
+)
 from app.models.mantenimiento import Mantenimiento
 from app.models.user import User
 from app.models.vehiculo import Vehiculo
@@ -39,6 +42,8 @@ class JornadaTransporteService:
         vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == data.vehiculo_id).first()
         if vehiculo is None:
             raise HTTPException(status_code=404, detail="Vehículo no encontrado.")
+        if vehiculo.kilometraje_actual is None or vehiculo.kilometraje_actual <= 0:
+            raise HTTPException(status_code=400, detail="El kilometraje inicial debe ser mayor que cero.")
         es_conduccion = data.accion_tipo == "Empezar a Conducir"
         if es_conduccion and vehiculo.estado != "disponible":
             raise HTTPException(status_code=400, detail="El vehículo no está disponible para esta acción.")
@@ -74,6 +79,22 @@ class JornadaTransporteService:
         elif data.accion_tipo == "Mantenimiento Preventivo / Correctivo" and data.detalles_mantenimiento:
             mantenimiento = AccionMantenimiento(jornada_id=jornada.id, **data.detalles_mantenimiento.model_dump())
             self.db.add(mantenimiento)
+        elif data.accion_tipo == "Inspección Técnica" and data.detalles_inspeccion:
+            self.db.add(AccionInspeccion(
+                jornada_id=jornada.id, **data.detalles_inspeccion.model_dump()
+            ))
+        elif data.accion_tipo == "Medición de Cocada" and data.detalles_cocada:
+            self.db.add(AccionCocada(
+                jornada_id=jornada.id, **data.detalles_cocada.model_dump()
+            ))
+        elif data.accion_tipo == "Medición de Torque" and data.detalles_torque:
+            self.db.add(AccionTorque(
+                jornada_id=jornada.id, **data.detalles_torque.model_dump()
+            ))
+        elif data.accion_tipo == "Trabajos a Externos" and data.detalles_trabajos_externos:
+            self.db.add(AccionTrabajosExternos(
+                jornada_id=jornada.id, **data.detalles_trabajos_externos.model_dump()
+            ))
 
         self.db.commit()
         self.db.refresh(jornada)

@@ -15,7 +15,10 @@ from app.models.mantenimiento_plan import PlanMantenimiento, PlanDetalleMantenim
 from app.models.inspeccion import ChecklistItem, Inspeccion, InspeccionDetalle
 from app.models.averia import Averia
 from app.models.incidente import Incidente
-from app.models.jornada_transporte import JornadaTransporte, Checklist, IncidenciaRuta
+from app.models.jornada_transporte import (
+    JornadaTransporte, Checklist, IncidenciaRuta, AccionInspeccion,
+    AccionCocada, AccionTorque, AccionTrabajosExternos,
+)
 
 __all__ = [
     "User",
@@ -41,4 +44,8 @@ __all__ = [
     "JornadaTransporte",
     "Checklist",
     "IncidenciaRuta",
+    "AccionInspeccion",
+    "AccionCocada",
+    "AccionTorque",
+    "AccionTrabajosExternos",
 ]

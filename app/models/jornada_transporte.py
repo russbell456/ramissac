@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text, JSON
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, ForeignKey, Integer, Numeric, String, Text, JSON
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
@@ -49,6 +49,10 @@ class JornadaTransporte(Base):
     detalles_grua = relationship("AccionGrua", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
     detalles_combustible = relationship("AccionCombustible", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
     detalles_mantenimiento = relationship("AccionMantenimiento", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_inspeccion = relationship("AccionInspeccion", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_cocada = relationship("AccionCocada", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_torque = relationship("AccionTorque", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_trabajos_externos = relationship("AccionTrabajosExternos", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
 
 class AccionGrua(Base):
     __tablename__ = "accion_grua"
@@ -79,6 +83,47 @@ class AccionMantenimiento(Base):
     descripcion_correctivo = Column(String, nullable=True)
 
     jornada = relationship("JornadaTransporte", back_populates="detalles_mantenimiento")
+
+
+class AccionInspeccion(Base):
+    __tablename__ = "accion_inspeccion"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    fecha_inspeccion = Column(Date, nullable=False)
+    fecha_vencimiento = Column(Date, nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_inspeccion")
+
+
+class AccionCocada(Base):
+    __tablename__ = "accion_cocada"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    medida = Column(Numeric(10, 2), nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_cocada")
+
+
+class AccionTorque(Base):
+    __tablename__ = "accion_torque"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    medida = Column(Numeric(10, 2), nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_torque")
+
+
+class AccionTrabajosExternos(Base):
+    __tablename__ = "accion_trabajos_externos"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    descripcion_trabajos = Column(Text, nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_trabajos_externos")
 
 class Checklist(Base):
     __tablename__ = "checklists_transporte"

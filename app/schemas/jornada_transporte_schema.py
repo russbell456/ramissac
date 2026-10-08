@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -19,8 +19,8 @@ class JornadaAsignacionCreate(BaseModel):
 
 class AccionGruaCreate(BaseModel):
     actividad: str = Field(..., min_length=1)
-    horometro_inicial: float = Field(..., ge=0)
-    horometro_final: float = Field(..., ge=0)
+    horometro_inicial: float = Field(..., gt=0)
+    horometro_final: float = Field(..., gt=0)
 
     @model_validator(mode="after")
     def validar_horometros(self) -> AccionGruaCreate:
@@ -29,7 +29,7 @@ class AccionGruaCreate(BaseModel):
         return self
 
 class AccionCombustibleCreate(BaseModel):
-    galones: float = Field(..., gt=0)
+    galones: float = Field(..., ge=0.1, le=100)
     nivel_final: int
 
     @field_validator("nivel_final")
@@ -40,18 +40,44 @@ class AccionCombustibleCreate(BaseModel):
         return value
 
 class AccionMantenimientoCreate(BaseModel):
-    taller: Literal["CONAUTO", "PERUMOTOR", "MALVEX"]
+    taller: str = Field(..., min_length=1)
     tipo: Literal["Preventivo", "Correctivo"]
     trabajos_preventivos: Optional[list[str]] = None
     descripcion_correctivo: Optional[str] = None
 
     @model_validator(mode="after")
     def validar_trabajos(self) -> AccionMantenimientoCreate:
+        if not self.taller.strip():
+            raise ValueError("Indique el taller o concesionaria.")
         if self.tipo == "Preventivo" and not self.trabajos_preventivos:
             raise ValueError("Seleccione al menos un trabajo preventivo.")
         if self.tipo == "Correctivo" and not (self.descripcion_correctivo or "").strip():
             raise ValueError("Describa el mantenimiento correctivo.")
         return self
+
+
+class AccionInspeccionCreate(BaseModel):
+    fecha_inspeccion: date
+    fecha_vencimiento: date
+
+
+class AccionCocadaCreate(BaseModel):
+    medida: float
+
+
+class AccionTorqueCreate(BaseModel):
+    medida: float
+
+
+class AccionTrabajosExternosCreate(BaseModel):
+    descripcion_trabajos: str = Field(..., min_length=1)
+
+    @field_validator("descripcion_trabajos")
+    @classmethod
+    def validar_descripcion(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Describa los trabajos realizados.")
+        return value.strip()
 
 
 class AccionGruaResponse(BaseModel):
@@ -77,16 +103,54 @@ class AccionMantenimientoResponse(BaseModel):
     trabajos_preventivos: Optional[list[str]] = None
     descripcion_correctivo: Optional[str] = None
 
+
+class AccionInspeccionResponse(AccionInspeccionCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AccionCocadaResponse(AccionCocadaCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AccionTorqueResponse(AccionTorqueCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AccionTrabajosExternosResponse(AccionTrabajosExternosCreate):
+    model_config = ConfigDict(from_attributes=True)
+
 class RegistroAccionCreate(BaseModel):
-    accion_tipo: str = Field(..., min_length=1)
+    accion_tipo: Literal[
+        "Empezar a Conducir",
+        "Operar Grúa",
+        "Abastecer Combustible",
+        "Mantenimiento Preventivo / Correctivo",
+        "Reporte de Incidencias u Observaciones",
+        "Check List y/o V°B° de vehículos",
+        "Inspección Técnica",
+        "Medición de Cocada",
+        "Medición de Torque",
+        "Trabajos a Externos",
+    ]
     vehiculo_id: int = Field(..., gt=0)
     ruta: Optional[str] = None
     nivel_combustible: int
     checklist_flash: Optional[dict] = None
-    observaciones: Optional[str] = None
+    observaciones: str = Field(..., min_length=1)
     detalles_grua: Optional[AccionGruaCreate] = None
     detalles_combustible: Optional[AccionCombustibleCreate] = None
     detalles_mantenimiento: Optional[AccionMantenimientoCreate] = None
+    detalles_inspeccion: Optional[AccionInspeccionCreate] = None
+    detalles_cocada: Optional[AccionCocadaCreate] = None
+    detalles_torque: Optional[AccionTorqueCreate] = None
+    detalles_trabajos_externos: Optional[AccionTrabajosExternosCreate] = None
+
+    @field_validator("observaciones")
+    @classmethod
+    def validar_observaciones(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Ingrese observaciones.")
+        return value.strip()
 
     @field_validator("nivel_combustible")
     @classmethod
@@ -102,6 +166,9 @@ class RegistroAccionCreate(BaseModel):
                 raise ValueError("Seleccione una ruta para conducir.")
             if not self.checklist_flash:
                 raise ValueError("Complete el Check List Flash.")
+        elif self.accion_tipo == "Check List y/o V°B° de vehículos":
+            if not self.checklist_flash:
+                raise ValueError("Complete el Check List Flash.")
         elif self.accion_tipo == "Operar Grúa" and self.detalles_grua is None:
             raise ValueError("Complete los datos de la grúa.")
         elif self.accion_tipo == "Abastecer Combustible" and self.detalles_combustible is None:
@@ -109,6 +176,14 @@ class RegistroAccionCreate(BaseModel):
         elif (self.accion_tipo == "Mantenimiento Preventivo / Correctivo"
               and self.detalles_mantenimiento is None):
             raise ValueError("Complete los datos del mantenimiento.")
+        elif self.accion_tipo == "Inspección Técnica" and self.detalles_inspeccion is None:
+            raise ValueError("Complete las fechas de inspección técnica.")
+        elif self.accion_tipo == "Medición de Cocada" and self.detalles_cocada is None:
+            raise ValueError("Ingrese la medición de cocada.")
+        elif self.accion_tipo == "Medición de Torque" and self.detalles_torque is None:
+            raise ValueError("Ingrese la medición de torque.")
+        elif self.accion_tipo == "Trabajos a Externos" and self.detalles_trabajos_externos is None:
+            raise ValueError("Describa los trabajos externos.")
         return self
 
 
@@ -183,6 +258,10 @@ class JornadaDetalleResponse(JornadaResponse):
     detalles_grua: Optional[AccionGruaResponse] = None
     detalles_combustible: Optional[AccionCombustibleResponse] = None
     detalles_mantenimiento: Optional[AccionMantenimientoResponse] = None
+    detalles_inspeccion: Optional[AccionInspeccionResponse] = None
+    detalles_cocada: Optional[AccionCocadaResponse] = None
+    detalles_torque: Optional[AccionTorqueResponse] = None
+    detalles_trabajos_externos: Optional[AccionTrabajosExternosResponse] = None
 
 
 class MantenimientoAlertaResponse(BaseModel):

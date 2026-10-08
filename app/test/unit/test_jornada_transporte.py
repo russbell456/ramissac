@@ -2,6 +2,7 @@ from app.models.user import User
 from app.models.vehiculo import Vehiculo
 import pytest
 from pydantic import ValidationError
+from fastapi import HTTPException
 
 from app.schemas.jornada_transporte_schema import (
     ChecklistCreate,
@@ -90,6 +91,7 @@ def test_conducir_requiere_vehiculo():
             nivel_combustible=50,
             ruta="Traslados en Juliaca",
             checklist_flash={"Documentos": True},
+            observaciones="Sin novedad",
         )
 
 
@@ -107,12 +109,18 @@ def test_detalles_de_cada_flujo_son_obligatorios():
         "Operar Grúa",
         "Abastecer Combustible",
         "Mantenimiento Preventivo / Correctivo",
+        "Check List y/o V°B° de vehículos",
+        "Inspección Técnica",
+        "Medición de Cocada",
+        "Medición de Torque",
+        "Trabajos a Externos",
     ):
         with pytest.raises(ValidationError):
             RegistroAccionCreate(
                 accion_tipo=accion,
                 vehiculo_id=1,
                 nivel_combustible=50,
+                observaciones="Sin novedad",
             )
 
 
@@ -139,6 +147,59 @@ def test_validaciones_condicionales_de_grua_combustible_y_mantenimiento():
             )
 
 
+def test_limites_numericos_y_taller_libre():
+    for galones in (0, 0.09, 100.01):
+        with pytest.raises(ValidationError):
+            RegistroAccionCreate(
+                accion_tipo="Abastecer Combustible",
+                vehiculo_id=1,
+                nivel_combustible=50,
+                observaciones="Sin novedad",
+                detalles_combustible={"galones": galones, "nivel_final": 75},
+            )
+    with pytest.raises(ValidationError):
+        RegistroAccionCreate(
+            accion_tipo="Operar Grúa",
+            vehiculo_id=1,
+            nivel_combustible=50,
+            observaciones="Sin novedad",
+            detalles_grua={
+                "actividad": "Izaje",
+                "horometro_inicial": 0,
+                "horometro_final": 1,
+            },
+        )
+    accion = RegistroAccionCreate(
+        accion_tipo="Mantenimiento Preventivo / Correctivo",
+        vehiculo_id=1,
+        nivel_combustible=50,
+        observaciones="Sin novedad",
+        detalles_mantenimiento={
+            "taller": "Taller local",
+            "tipo": "Preventivo",
+            "trabajos_preventivos": ["Cambio de filtro"],
+        },
+    )
+    assert accion.detalles_mantenimiento.taller == "Taller local"
+
+
+def test_kilometraje_inicial_debe_ser_positivo(db_session):
+    conductor, vehiculo = _crear_base(db_session)
+    vehiculo.kilometraje_actual = 0
+    db_session.commit()
+    with pytest.raises(HTTPException) as error:
+        JornadaTransporteService(db_session).registrar_accion(
+            conductor.id,
+            RegistroAccionCreate(
+                accion_tipo="Reporte de Incidencias u Observaciones",
+                vehiculo_id=vehiculo.id,
+                nivel_combustible=50,
+                observaciones="Sin novedad",
+            ),
+        )
+    assert error.value.status_code == 400
+
+
 def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
@@ -151,6 +212,7 @@ def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session)
             nivel_combustible=50,
             ruta="Traslados en Juliaca",
             checklist_flash={"Documentos": True},
+            observaciones="Sin novedad",
         ),
     )
     respuesta = JornadaResponse.model_validate(jornada).model_dump(mode="json")
@@ -185,6 +247,7 @@ def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
             accion_tipo="Operar Grúa",
             vehiculo_id=vehiculo.id,
             nivel_combustible=75,
+            observaciones="Sin novedad",
             detalles_grua={
                 "actividad": "Izaje",
                 "horometro_inicial": 10.5,
@@ -211,6 +274,7 @@ def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
             accion_tipo="Abastecer Combustible",
             vehiculo_id=vehiculo.id,
             nivel_combustible=25,
+            observaciones="Abastecido",
             detalles_combustible={"galones": 18.5, "nivel_final": 100},
         ),
     )
@@ -220,6 +284,7 @@ def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
             accion_tipo="Mantenimiento Preventivo / Correctivo",
             vehiculo_id=vehiculo.id,
             nivel_combustible=100,
+            observaciones="Retirado del taller",
             detalles_mantenimiento={
                 "taller": "MALVEX",
                 "tipo": "Preventivo",
@@ -234,3 +299,85 @@ def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
     assert mantenimiento.detalles_mantenimiento.trabajos_preventivos == ["Lavado"]
     detalle = JornadaDetalleResponse.model_validate(mantenimiento).model_dump(mode="json")
     assert detalle["detalles_mantenimiento"]["trabajos_preventivos"] == ["Lavado"]
+
+
+def test_observaciones_y_checklist_son_obligatorios():
+    with pytest.raises(ValidationError, match="observaciones"):
+        RegistroAccionCreate(
+            accion_tipo="Reporte de Incidencias u Observaciones",
+            vehiculo_id=1,
+            nivel_combustible=50,
+            observaciones=" ",
+        )
+    with pytest.raises(ValidationError, match="Check List Flash"):
+        RegistroAccionCreate(
+            accion_tipo="Check List y/o V°B° de vehículos",
+            vehiculo_id=1,
+            nivel_combustible=50,
+            observaciones="Revisado",
+        )
+    with pytest.raises(ValidationError, match="accion_tipo"):
+        RegistroAccionCreate(
+            accion_tipo="Acción desconocida",
+            vehiculo_id=1,
+            nivel_combustible=50,
+            observaciones="Revisado",
+        )
+
+
+def test_incidencias_y_checklist_guardan_campos_existentes(db_session):
+    conductor, vehiculo = _crear_base(db_session)
+    service = JornadaTransporteService(db_session)
+    incidencia = service.registrar_accion(
+        conductor.id,
+        RegistroAccionCreate(
+            accion_tipo="Reporte de Incidencias u Observaciones",
+            vehiculo_id=vehiculo.id,
+            nivel_combustible=25,
+            observaciones="Ruido en el motor",
+        ),
+    )
+    checklist = service.registrar_accion(
+        conductor.id,
+        RegistroAccionCreate(
+            accion_tipo="Check List y/o V°B° de vehículos",
+            vehiculo_id=vehiculo.id,
+            nivel_combustible=50,
+            observaciones="Todo en orden",
+            checklist_flash={"Botiquín": True},
+        ),
+    )
+    assert incidencia.observaciones == "Ruido en el motor"
+    assert checklist.checklist_flash == {"Botiquín": True}
+    assert incidencia.estado == checklist.estado == "finalizada"
+
+
+def test_cuatro_flujos_restantes_guardan_detalles(db_session):
+    conductor, vehiculo = _crear_base(db_session)
+    service = JornadaTransporteService(db_session)
+    casos = [
+        ("Inspección Técnica", "detalles_inspeccion",
+         {"fecha_inspeccion": "2026-10-08", "fecha_vencimiento": "2027-10-08"},
+         "fecha_vencimiento", "2027-10-08"),
+        ("Medición de Cocada", "detalles_cocada",
+         {"medida": 7.5}, "medida", 7.5),
+        ("Medición de Torque", "detalles_torque",
+         {"medida": 120.25}, "medida", 120.25),
+        ("Trabajos a Externos", "detalles_trabajos_externos",
+         {"descripcion_trabajos": "Traslado de materiales"},
+         "descripcion_trabajos", "Traslado de materiales"),
+    ]
+    for accion, campo, valores, llave, esperado in casos:
+        jornada = service.registrar_accion(
+            conductor.id,
+            RegistroAccionCreate(
+                accion_tipo=accion,
+                vehiculo_id=vehiculo.id,
+                nivel_combustible=50,
+                observaciones="Sin novedad",
+                **{campo: valores},
+            ),
+        )
+        assert jornada.estado == "finalizada"
+        detalle = JornadaDetalleResponse.model_validate(jornada).model_dump(mode="json")
+        assert detalle[campo][llave] == esperado
