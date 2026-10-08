@@ -1,6 +1,14 @@
 from app.models.user import User
 from app.models.vehiculo import Vehiculo
-from app.schemas.jornada_transporte_schema import ChecklistCreate, JornadaAsignacionCreate
+import pytest
+from pydantic import ValidationError
+
+from app.schemas.jornada_transporte_schema import (
+    ChecklistCreate,
+    JornadaAsignacionCreate,
+    JornadaResponse,
+    RegistroAccionCreate,
+)
 from app.services.jornada_transporte_service import JornadaTransporteService
 
 
@@ -12,7 +20,7 @@ def _crear_base(db_session):
         cargo="Conductor",
         email="conductor-jornada@test.com",
         password="hash",
-        role="trabajador",
+        role="conductor",
     )
     vehiculo = Vehiculo(
         placa="JRN001",
@@ -72,3 +80,38 @@ def test_checklist_inicial_no_conforme_cancela_y_genera_averia(db_session):
     assert actualizada.estado == "cancelada_por_averia"
     assert actualizada.vehiculo.estado == "en_mantenimiento"
     assert len(vehiculo.averias) == 1
+
+
+def test_conducir_requiere_vehiculo():
+    with pytest.raises(ValidationError, match="Seleccione un vehículo"):
+        RegistroAccionCreate(accion_tipo="Empezar a Conducir")
+
+
+def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session):
+    conductor, vehiculo = _crear_base(db_session)
+    service = JornadaTransporteService(db_session)
+
+    jornada = service.registrar_accion(
+        conductor.id,
+        RegistroAccionCreate(
+            accion_tipo="Empezar a Conducir",
+            vehiculo_id=vehiculo.id,
+        ),
+    )
+    respuesta = JornadaResponse.model_validate(jornada).model_dump(mode="json")
+    assert respuesta["vehiculo_id"] == vehiculo.id
+    assert service.obtener(jornada.id).vehiculo_id == vehiculo.id
+
+    finalizada = service.registrar_checklist_final(
+        jornada.id,
+        ChecklistCreate(
+            tipo="final",
+            kilometraje=120,
+            nivel_combustible="3/4",
+            estado_general="Bueno",
+            conforme=True,
+        ),
+        conductor.id,
+    )
+    assert finalizada.estado == "finalizada"
+    assert finalizada.vehiculo_id == vehiculo.id

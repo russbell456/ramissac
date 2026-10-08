@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.transportes_enums import (
     EstadoJornada,
@@ -34,7 +34,7 @@ class AccionMantenimientoCreate(BaseModel):
 
 class RegistroAccionCreate(BaseModel):
     accion_tipo: str = Field(..., min_length=1)
-    vehiculo_id: Optional[int] = None
+    vehiculo_id: Optional[int] = Field(default=None, gt=0)
     ruta: Optional[str] = None
     nivel_combustible: Optional[int] = None
     checklist_flash: Optional[dict] = None
@@ -42,6 +42,12 @@ class RegistroAccionCreate(BaseModel):
     detalles_grua: Optional[AccionGruaCreate] = None
     detalles_combustible: Optional[AccionCombustibleCreate] = None
     detalles_mantenimiento: Optional[AccionMantenimientoCreate] = None
+
+    @model_validator(mode="after")
+    def validar_vehiculo_para_conducir(self) -> RegistroAccionCreate:
+        if self.accion_tipo == "Empezar a Conducir" and self.vehiculo_id is None:
+            raise ValueError("Seleccione un vehículo para empezar a conducir.")
+        return self
 
 
 class JornadaResponse(BaseModel):
