@@ -7,6 +7,7 @@ from app.schemas.jornada_transporte_schema import (
     ChecklistCreate,
     JornadaAsignacionCreate,
     JornadaResponse,
+    JornadaDetalleResponse,
     RegistroAccionCreate,
 )
 from app.services.jornada_transporte_service import JornadaTransporteService
@@ -196,6 +197,8 @@ def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
     assert jornada.km_inicial == 100
     assert jornada.detalles_grua.actividad == "Izaje"
     assert jornada.detalles_grua.horometro_final == 11.5
+    detalle = JornadaDetalleResponse.model_validate(jornada).model_dump(mode="json")
+    assert detalle["detalles_grua"]["actividad"] == "Izaje"
 
 
 def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
@@ -229,3 +232,5 @@ def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
     assert combustible.detalles_combustible.nivel_final == 100
     assert mantenimiento.detalles_mantenimiento.taller == "MALVEX"
     assert mantenimiento.detalles_mantenimiento.trabajos_preventivos == ["Lavado"]
+    detalle = JornadaDetalleResponse.model_validate(mantenimiento).model_dump(mode="json")
+    assert detalle["detalles_mantenimiento"]["trabajos_preventivos"] == ["Lavado"]

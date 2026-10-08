@@ -53,6 +53,30 @@ class AccionMantenimientoCreate(BaseModel):
             raise ValueError("Describa el mantenimiento correctivo.")
         return self
 
+
+class AccionGruaResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    actividad: Optional[str] = None
+    horometro_inicial: Optional[float] = None
+    horometro_final: Optional[float] = None
+
+
+class AccionCombustibleResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    galones: Optional[float] = None
+    nivel_final: Optional[int] = None
+
+
+class AccionMantenimientoResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    taller: Optional[str] = None
+    tipo: Optional[str] = None
+    trabajos_preventivos: Optional[list[str]] = None
+    descripcion_correctivo: Optional[str] = None
+
 class RegistroAccionCreate(BaseModel):
     accion_tipo: str = Field(..., min_length=1)
     vehiculo_id: int = Field(..., gt=0)
@@ -156,6 +180,9 @@ class IncidenciaRutaResponse(IncidenciaRutaCreate):
 class JornadaDetalleResponse(JornadaResponse):
     checklists: list[ChecklistResponse] = []
     incidencias: list[IncidenciaRutaResponse] = []
+    detalles_grua: Optional[AccionGruaResponse] = None
+    detalles_combustible: Optional[AccionCombustibleResponse] = None
+    detalles_mantenimiento: Optional[AccionMantenimientoResponse] = None
 
 
 class MantenimientoAlertaResponse(BaseModel):
