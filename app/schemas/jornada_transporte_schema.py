@@ -31,6 +31,9 @@ class AccionGruaCreate(BaseModel):
 class AccionCombustibleCreate(BaseModel):
     galones: float = Field(..., ge=0.1, le=100)
     nivel_final: int
+    costo: Optional[float] = Field(None, ge=0)
+    comprobante: Optional[str] = Field(None, max_length=100)
+    odometro: Optional[float] = Field(None, ge=0)
 
     @field_validator("nivel_final")
     @classmethod
@@ -93,6 +96,9 @@ class AccionCombustibleResponse(BaseModel):
 
     galones: Optional[float] = None
     nivel_final: Optional[int] = None
+    costo: Optional[float] = None
+    comprobante: Optional[str] = None
+    odometro: Optional[float] = None
 
 
 class AccionMantenimientoResponse(BaseModel):
@@ -119,7 +125,22 @@ class AccionTorqueResponse(AccionTorqueCreate):
 class AccionTrabajosExternosResponse(AccionTrabajosExternosCreate):
     model_config = ConfigDict(from_attributes=True)
 
-class RegistroAccionCreate(BaseModel):
+class EvidenciaObservacion(BaseModel):
+    tiene_observaciones: bool = False
+    severidad: Optional[Literal["leve", "grave"]] = None
+    foto_observacion: Optional[str] = Field(None, max_length=500, pattern=r"^/uploads/transportes/[a-f0-9]+\.(jpg|png|webp)$")
+
+    @model_validator(mode="after")
+    def validar_evidencia(self):
+        if self.tiene_observaciones or self.severidad:
+            self.tiene_observaciones = True
+            if not self.severidad or not self.foto_observacion or not (getattr(self, "observaciones", None) or "").strip():
+                raise ValueError("Las observaciones requieren severidad, descripción y fotografía.")
+        return self
+
+
+class RegistroAccionCreate(EvidenciaObservacion):
+    jornada_padre_id: Optional[int] = Field(None, gt=0)
     accion_tipo: Literal[
         "Empezar a Conducir",
         "Operar Grúa",
@@ -133,9 +154,10 @@ class RegistroAccionCreate(BaseModel):
         "Trabajos a Externos",
     ]
     vehiculo_id: int = Field(..., gt=0)
+    km_inicial: Optional[float] = Field(None, gt=0)
     ruta: Optional[str] = None
-    nivel_combustible: int
-    checklist_flash: Optional[dict] = None
+    nivel_combustible: Optional[int] = None
+    checklist_flash: Optional[dict[str, bool]] = None
     observaciones: str = Field(..., min_length=1)
     detalles_grua: Optional[AccionGruaCreate] = None
     detalles_combustible: Optional[AccionCombustibleCreate] = None
@@ -154,13 +176,20 @@ class RegistroAccionCreate(BaseModel):
 
     @field_validator("nivel_combustible")
     @classmethod
-    def validar_nivel_inicial(cls, value: int) -> int:
-        if value not in {0, 25, 50, 75, 100}:
+    def validar_nivel_inicial(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value not in {0, 25, 50, 75, 100}:
             raise ValueError("Seleccione un nivel de combustible válido.")
         return value
 
     @model_validator(mode="after")
     def validar_flujo(self) -> RegistroAccionCreate:
+        if self.accion_tipo not in {"Operar Grúa", "Reporte de Incidencias u Observaciones"}:
+            if self.km_inicial is None:
+                raise ValueError("Ingrese km_inicial para esta acción.")
+            if self.nivel_combustible is None:
+                raise ValueError("Ingrese nivel_combustible para esta acción.")
+        if self.accion_tipo == "Reporte de Incidencias u Observaciones" and not self.tiene_observaciones:
+            raise ValueError("El reporte requiere observaciones con severidad, descripción y fotografía.")
         if self.accion_tipo == "Empezar a Conducir":
             if not (self.ruta or "").strip():
                 raise ValueError("Seleccione una ruta para conducir.")
@@ -188,6 +217,15 @@ class RegistroAccionCreate(BaseModel):
 
 
 class JornadaResponse(BaseModel):
+    estado_semaforo: str = "verde"
+    tiene_observaciones: bool = False
+    severidad: Optional[str] = None
+    foto_observacion: Optional[str] = None
+    jornada_padre_id: Optional[int] = None
+    nivel_combustible_final: Optional[float] = None
+    galones_abastecidos: Optional[float] = None
+    galones_consumidos: Optional[float] = None
+    rendimiento_km_galon: Optional[float] = None
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -208,7 +246,7 @@ class JornadaResponse(BaseModel):
     horas_efectivas: Optional[float] = None
 
 
-class ChecklistCreate(BaseModel):
+class ChecklistCreate(EvidenciaObservacion):
     tipo: str = TipoChecklistJornada.INICIAL.value
     kilometraje: float = Field(..., ge=0)
     nivel_combustible: str = Field(..., min_length=1, max_length=50)
@@ -232,6 +270,8 @@ class ChecklistResponse(ChecklistCreate):
 
 
 class IncidenciaRutaCreate(BaseModel):
+    foto_incidencia: Optional[str] = Field(None, max_length=500, pattern=r"^/uploads/transportes/[a-f0-9]+\.(jpg|png|webp)$")
+    severidad: Optional[Literal["leve", "grave"]] = None
     tipo: str
     descripcion: str = Field(..., min_length=1)
     fecha: Optional[datetime] = None
@@ -253,6 +293,7 @@ class IncidenciaRutaResponse(IncidenciaRutaCreate):
 
 
 class JornadaDetalleResponse(JornadaResponse):
+    sub_acciones: list[JornadaDetalleResponse] = Field(default_factory=list)
     checklists: list[ChecklistResponse] = []
     incidencias: list[IncidenciaRutaResponse] = []
     detalles_grua: Optional[AccionGruaResponse] = None

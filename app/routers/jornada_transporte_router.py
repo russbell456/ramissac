@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, UploadFile, File, HTTPException
+from pathlib import Path
+from uuid import uuid4
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
@@ -28,6 +30,30 @@ UserDep = Annotated[User, Depends(get_current_user)]
 @router.get("/", response_model=list[JornadaResponse])
 def listar_jornadas(db: DbDep, _: UserDep):
     return JornadaTransporteService(db).listar()
+
+
+@router.post("/fotos", status_code=201)
+async def subir_foto(user: UserDep, file: UploadFile = File(...)):
+    if user.role not in {"conductor", "admin"}:
+        raise HTTPException(403, "No tiene permiso para adjuntar evidencias.")
+    contenido = await file.read(5 * 1024 * 1024 + 1)
+    if len(contenido) > 5 * 1024 * 1024:
+        raise HTTPException(413, "La fotografía no puede superar 5 MB.")
+    from io import BytesIO
+    from PIL import Image, UnidentifiedImageError
+    try:
+        with Image.open(BytesIO(contenido)) as imagen:
+            extension = {"JPEG": "jpg", "PNG": "png", "WEBP": "webp"}.get(imagen.format)
+            if not extension or imagen.width * imagen.height > 25000000:
+                raise HTTPException(400, "Use una imagen JPG, PNG o WebP de hasta 25 megapíxeles.")
+            imagen.verify()
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError):
+        raise HTTPException(400, "El archivo no es una imagen válida.")
+    carpeta = Path("uploads/transportes")
+    carpeta.mkdir(parents=True, exist_ok=True)
+    nombre = f"{uuid4().hex}.{extension}"
+    (carpeta / nombre).write_bytes(contenido)
+    return {"url": f"/uploads/transportes/{nombre}"}
 
 
 @router.get("/{jornada_id}", response_model=JornadaDetalleResponse)

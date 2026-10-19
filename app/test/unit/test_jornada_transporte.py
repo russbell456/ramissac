@@ -37,6 +37,12 @@ def _crear_base(db_session):
     return conductor, vehiculo
 
 
+
+def _abrir(service, conductor, vehiculo):
+    return service.registrar_accion(conductor.id, RegistroAccionCreate(
+        km_inicial=100, accion_tipo="Empezar a Conducir", vehiculo_id=vehiculo.id,
+        nivel_combustible=75, ruta="Juliaca", checklist_flash={"Documentos": True}, observaciones="Sin novedades"))
+
 def test_checklist_inicial_conforme_inicia_jornada(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
@@ -74,6 +80,7 @@ def test_checklist_inicial_no_conforme_cancela_y_genera_averia(db_session):
             nivel_combustible="1/2",
             estado_general="Falla en frenos",
             conforme=False,
+            foto_observacion="/uploads/transportes/abc.jpg",
             observaciones="Revisar sistema de frenos",
         ),
         conductor.id,
@@ -87,6 +94,7 @@ def test_checklist_inicial_no_conforme_cancela_y_genera_averia(db_session):
 def test_conducir_requiere_vehiculo():
     with pytest.raises(ValidationError, match="vehiculo_id"):
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Empezar a Conducir",
             nivel_combustible=50,
             ruta="Traslados en Juliaca",
@@ -95,12 +103,9 @@ def test_conducir_requiere_vehiculo():
         )
 
 
-def test_todas_las_acciones_requieren_combustible():
+def test_apertura_requiere_combustible():
     with pytest.raises(ValidationError, match="nivel_combustible"):
-        RegistroAccionCreate(
-            accion_tipo="Reporte de Incidencias u Observaciones",
-            vehiculo_id=1,
-        )
+        RegistroAccionCreate(km_inicial=100, accion_tipo="Empezar a Conducir", vehiculo_id=1, observaciones="Sin novedades", ruta="Juliaca", checklist_flash={"Documentos":True})
 
 
 def test_detalles_de_cada_flujo_son_obligatorios():
@@ -117,6 +122,7 @@ def test_detalles_de_cada_flujo_son_obligatorios():
     ):
         with pytest.raises(ValidationError):
             RegistroAccionCreate(
+            km_inicial=100,
                 accion_tipo=accion,
                 vehiculo_id=1,
                 nivel_combustible=50,
@@ -140,6 +146,7 @@ def test_validaciones_condicionales_de_grua_combustible_y_mantenimiento():
     for accion, detalle in casos:
         with pytest.raises(ValidationError):
             RegistroAccionCreate(
+            km_inicial=100,
                 accion_tipo=accion,
                 vehiculo_id=1,
                 nivel_combustible=50,
@@ -151,6 +158,7 @@ def test_limites_numericos_y_taller_libre():
     for galones in (0, 0.09, 100.01):
         with pytest.raises(ValidationError):
             RegistroAccionCreate(
+            km_inicial=100,
                 accion_tipo="Abastecer Combustible",
                 vehiculo_id=1,
                 nivel_combustible=50,
@@ -159,6 +167,7 @@ def test_limites_numericos_y_taller_libre():
             )
     with pytest.raises(ValidationError):
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Operar Grúa",
             vehiculo_id=1,
             nivel_combustible=50,
@@ -170,6 +179,7 @@ def test_limites_numericos_y_taller_libre():
             },
         )
     accion = RegistroAccionCreate(
+            km_inicial=100,
         accion_tipo="Mantenimiento Preventivo / Correctivo",
         vehiculo_id=1,
         nivel_combustible=50,
@@ -187,17 +197,17 @@ def test_kilometraje_inicial_debe_ser_positivo(db_session):
     conductor, vehiculo = _crear_base(db_session)
     vehiculo.kilometraje_actual = 0
     db_session.commit()
-    with pytest.raises(HTTPException) as error:
+    with pytest.raises(ValidationError):
         JornadaTransporteService(db_session).registrar_accion(
             conductor.id,
             RegistroAccionCreate(
+            km_inicial=0,
                 accion_tipo="Reporte de Incidencias u Observaciones",
                 vehiculo_id=vehiculo.id,
                 nivel_combustible=50,
                 observaciones="Sin novedad",
             ),
         )
-    assert error.value.status_code == 400
 
 
 def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session):
@@ -207,6 +217,7 @@ def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session)
     jornada = service.registrar_accion(
         conductor.id,
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Empezar a Conducir",
             vehiculo_id=vehiculo.id,
             nivel_combustible=50,
@@ -240,10 +251,13 @@ def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session)
 def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
+    vehiculo.tipo = "Camión Grúa"
+    _abrir(service, conductor, vehiculo)
 
     jornada = service.registrar_accion(
         conductor.id,
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Operar Grúa",
             vehiculo_id=vehiculo.id,
             nivel_combustible=75,
@@ -257,7 +271,7 @@ def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
     )
     assert jornada.estado == "finalizada"
     assert jornada.fecha_fin is not None
-    assert jornada.km_inicial == 100
+    assert jornada.km_inicial is None
     assert jornada.detalles_grua.actividad == "Izaje"
     assert jornada.detalles_grua.horometro_final == 11.5
     detalle = JornadaDetalleResponse.model_validate(jornada).model_dump(mode="json")
@@ -267,10 +281,12 @@ def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
 def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
+    _abrir(service, conductor, vehiculo)
 
     combustible = service.registrar_accion(
         conductor.id,
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Abastecer Combustible",
             vehiculo_id=vehiculo.id,
             nivel_combustible=25,
@@ -281,6 +297,7 @@ def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
     mantenimiento = service.registrar_accion(
         conductor.id,
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Mantenimiento Preventivo / Correctivo",
             vehiculo_id=vehiculo.id,
             nivel_combustible=100,
@@ -304,6 +321,7 @@ def test_combustible_y_mantenimiento_guardan_sus_detalles(db_session):
 def test_observaciones_y_checklist_son_obligatorios():
     with pytest.raises(ValidationError, match="observaciones"):
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Reporte de Incidencias u Observaciones",
             vehiculo_id=1,
             nivel_combustible=50,
@@ -311,6 +329,7 @@ def test_observaciones_y_checklist_son_obligatorios():
         )
     with pytest.raises(ValidationError, match="Check List Flash"):
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Check List y/o V°B° de vehículos",
             vehiculo_id=1,
             nivel_combustible=50,
@@ -318,6 +337,7 @@ def test_observaciones_y_checklist_son_obligatorios():
         )
     with pytest.raises(ValidationError, match="accion_tipo"):
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Acción desconocida",
             vehiculo_id=1,
             nivel_combustible=50,
@@ -328,18 +348,22 @@ def test_observaciones_y_checklist_son_obligatorios():
 def test_incidencias_y_checklist_guardan_campos_existentes(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
+    _abrir(service, conductor, vehiculo)
     incidencia = service.registrar_accion(
         conductor.id,
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Reporte de Incidencias u Observaciones",
             vehiculo_id=vehiculo.id,
             nivel_combustible=25,
             observaciones="Ruido en el motor",
+            tiene_observaciones=True, severidad="leve", foto_observacion="/uploads/transportes/abc.jpg",
         ),
     )
     checklist = service.registrar_accion(
         conductor.id,
         RegistroAccionCreate(
+            km_inicial=100,
             accion_tipo="Check List y/o V°B° de vehículos",
             vehiculo_id=vehiculo.id,
             nivel_combustible=50,
@@ -355,6 +379,7 @@ def test_incidencias_y_checklist_guardan_campos_existentes(db_session):
 def test_cuatro_flujos_restantes_guardan_detalles(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
+    _abrir(service, conductor, vehiculo)
     casos = [
         ("Inspección Técnica", "detalles_inspeccion",
          {"fecha_inspeccion": "2026-10-08", "fecha_vencimiento": "2027-10-08"},
@@ -371,6 +396,7 @@ def test_cuatro_flujos_restantes_guardan_detalles(db_session):
         jornada = service.registrar_accion(
             conductor.id,
             RegistroAccionCreate(
+            km_inicial=100,
                 accion_tipo=accion,
                 vehiculo_id=vehiculo.id,
                 nivel_combustible=50,

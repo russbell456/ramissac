@@ -25,6 +25,17 @@ class JornadaTransporte(Base):
     checklist_flash = Column(JSON, nullable=True)
     observaciones = Column(Text, nullable=True)
 
+    estado_semaforo = Column(String(20), default="verde", nullable=False)
+    tiene_observaciones = Column(Boolean, default=False, nullable=False)
+    severidad = Column(String(20), nullable=True)
+    foto_observacion = Column(String(500), nullable=True)
+    jornada_padre_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=True, index=True)
+    sub_acciones = relationship("JornadaTransporte", cascade="all, delete-orphan", single_parent=True)
+    nivel_combustible_final = Column(Float, nullable=True)
+    galones_abastecidos = Column(Float, nullable=True)
+    galones_consumidos = Column(Float, nullable=True)
+    rendimiento_km_galon = Column(Float, nullable=True)
+
     # Campos calculados de cierre
     km_inicial = Column(Float, nullable=True)  # km al inicio de la jornada
     km_final = Column(Float, nullable=True)    # km al finalizar la jornada
@@ -70,6 +81,9 @@ class AccionCombustible(Base):
     jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
     galones = Column(Float, nullable=True)
     nivel_final = Column(Integer, nullable=True)
+    costo = Column(Float, nullable=True)
+    comprobante = Column(String(100), nullable=True)
+    odometro = Column(Float, nullable=True)
 
     jornada = relationship("JornadaTransporte", back_populates="detalles_combustible")
 
@@ -145,6 +159,8 @@ class IncidenciaRuta(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), nullable=False, index=True)
+    foto_incidencia = Column(String(500), nullable=True)
+    severidad = Column(String(20), nullable=True)
     tipo = Column(String, nullable=False)
     descripcion = Column(Text, nullable=False)
     fecha = Column(DateTime, default=datetime.utcnow, nullable=False)

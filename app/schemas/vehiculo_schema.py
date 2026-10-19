@@ -8,6 +8,8 @@ class VehiculoBase(BaseModel):
     placa: str = Field(..., description="Placa única del vehículo")
     marca: str = Field(..., description="Marca del vehículo")
     modelo: str = Field(..., description="Modelo del vehículo")
+    tipo: Optional[str] = None
+    capacidad_tanque_galones: Optional[float] = Field(None, gt=0)
     capacidad_carga: float = Field(..., description="Capacidad de carga en toneladas/kg")
 
 
@@ -23,6 +25,8 @@ class VehiculoCreate(VehiculoBase):
 
 
 class VehiculoUpdate(BaseModel):
+    tipo: Optional[str] = None
+    capacidad_tanque_galones: Optional[float] = Field(None, gt=0)
     placa: Optional[str] = None
     marca: Optional[str] = None
     modelo: Optional[str] = None
@@ -38,6 +42,8 @@ class VehiculoUpdate(BaseModel):
 
 
 class VehiculoResponse(VehiculoBase):
+    observaciones_pendientes: Optional[str] = None
+    estado_semaforo: str = "verde"
     id: int
     kilometraje_actual: float
     estado: str

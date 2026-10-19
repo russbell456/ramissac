@@ -93,6 +93,7 @@ class LifecycleService:
     def liberar_post_mantenimiento(self, vehiculo: Vehiculo) -> None:
         """Libera el vehículo a disponible tras inspección POST_MANTENIMIENTO aprobada."""
         self.cambiar_estado(vehiculo, EstadoVehiculo.DISPONIBLE.value)
+        vehiculo.estado_semaforo = "verde"
 
     def liberar_ruta_normal(self, vehiculo: Vehiculo) -> None:
         """Libera el vehículo a disponible al finalizar una ruta sin fallas."""

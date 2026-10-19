@@ -35,6 +35,8 @@ class VehiculoService:
             )
 
         nuevo_vehiculo = Vehiculo(
+            tipo=schema.tipo,
+            capacidad_tanque_galones=schema.capacidad_tanque_galones,
             placa=schema.placa,
             marca=schema.marca,
             modelo=schema.modelo,
@@ -63,6 +65,10 @@ class VehiculoService:
                 )
             vehiculo.placa = schema.placa
 
+        if schema.tipo is not None:
+            vehiculo.tipo = schema.tipo
+        if schema.capacidad_tanque_galones is not None:
+            vehiculo.capacidad_tanque_galones = schema.capacidad_tanque_galones
         if schema.marca is not None:
             vehiculo.marca = schema.marca
         if schema.modelo is not None:

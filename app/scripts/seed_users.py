@@ -78,12 +78,18 @@ def seed() -> None:
 
         # 2. Sembrar Vehículos
         vehiculos_seed = [
-            {"placa": "ABC-123", "marca": "Toyota", "modelo": "Hilux", "capacidad_carga": 1000.0, "kilometraje_actual": 15000.0, "estado": "disponible"},
-            {"placa": "XYZ-789", "marca": "Ford", "modelo": "Ranger", "capacidad_carga": 1200.0, "kilometraje_actual": 42000.5, "estado": "disponible"},
-            {"placa": "RAM-456", "marca": "Nissan", "modelo": "Frontier", "capacidad_carga": 1050.0, "kilometraje_actual": 8500.0, "estado": "disponible"},
+            {"placa": "Z7P-702", "marca": "Camioneta", "modelo": "Estándar", "capacidad_carga": 1000.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "Z8I-845", "marca": "Camioneta", "modelo": "Estándar", "capacidad_carga": 1000.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "ZDO-953", "marca": "Coaster", "modelo": "Estándar", "capacidad_carga": 2500.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "ZDX-965", "marca": "Coaster", "modelo": "Estándar", "capacidad_carga": 2500.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "Z7G-937", "marca": "HINO", "modelo": "Camión de carga", "capacidad_carga": 5000.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "Z8K-916", "marca": "FUSO", "modelo": "Camión de carga", "capacidad_carga": 5000.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "Z7F-777", "marca": "FUSO", "modelo": "Camión Grúa", "capacidad_carga": 8000.0, "kilometraje_actual": 0.0, "estado": "disponible"},
+            {"placa": "Z7M-813", "marca": "HINO", "modelo": "Camión Grúa", "capacidad_carga": 8000.0, "kilometraje_actual": 0.0, "estado": "disponible"},
         ]
 
         for v_data in vehiculos_seed:
+            v_data["tipo"] = v_data["marca"] if v_data["marca"] in {"Camioneta", "Coaster"} else ("Camión Grúa" if "Grúa" in v_data["modelo"] else "Camión de Carga")
             if not db.query(Vehiculo).filter_by(placa=v_data["placa"]).first():
                 vehiculo = Vehiculo(**v_data)
                 db.add(vehiculo)

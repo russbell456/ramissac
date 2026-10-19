@@ -45,3 +45,6 @@ security_chart.png
 *.code-workspace
 ramistoolx_image.tar 
 static/prestamos/
+
+# Versionar las migraciones del esquema
+!app/scripts/migrations/006_mejoras_v2.sql

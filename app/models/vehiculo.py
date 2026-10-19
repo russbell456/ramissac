@@ -15,6 +15,9 @@ class Vehiculo(Base):
     kilometraje_actual = Column(Float, default=0.0, nullable=False)
     # Valores válidos centralizados en transportes_enums.EstadoVehiculo
     estado = Column(String, default="disponible", nullable=False)
+    estado_semaforo = Column(String(20), default="verde", nullable=False)
+    tipo = Column(String(40), nullable=True)
+    capacidad_tanque_galones = Column(Float, nullable=True)
     fecha_baja = Column(DateTime, nullable=True)
     usuario_baja = Column(Integer, ForeignKey("users.id"), nullable=True)
 
@@ -30,3 +33,13 @@ class Vehiculo(Base):
         back_populates="vehiculo",
         cascade="all, delete-orphan",
     )
+
+    @property
+    def observaciones_pendientes(self):
+        if self.estado_semaforo == "verde":
+            return None
+        severidad = "grave" if self.estado_semaforo == "rojo" else "leve"
+        reportes = [j for j in self.jornadas if j.severidad == severidad and j.observaciones]
+        if reportes:
+            return max(reportes, key=lambda j: j.id).observaciones
+        return "Falla crítica pendiente de revisión" if severidad == "grave" else "Observaciones leves pendientes de revisión"
