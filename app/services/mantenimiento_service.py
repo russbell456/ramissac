@@ -10,7 +10,8 @@ from app.models.inspeccion import Inspeccion
 from app.models.mantenimiento_plan import PlanMantenimiento
 from app.models.user import User
 from app.models.transportes_enums import TipoControlMantenimiento
-from app.schemas.mantenimiento_schema import MantenimientoCreate, MantenimientoUpdate
+from app.models.auditoria_sistema import AuditoriaSistema
+from app.schemas.mantenimiento_schema import MantenimientoCerrar, MantenimientoCreate, MantenimientoUpdate
 
 class MantenimientoService:
     def __init__(self, db: Session):
@@ -84,6 +85,7 @@ class MantenimientoService:
             fecha=schema.fecha or schema.fecha_ingreso,
             descripcion_trabajo=schema.descripcion_trabajo,
             estado="en_taller"
+            , alcance=schema.alcance
         )
 
         # Cambiar estado del vehículo a "en_mantenimiento"
@@ -95,6 +97,8 @@ class MantenimientoService:
         return nuevo_mantenimiento
 
     def update_mantenimiento(self, mantenimiento_id: int, schema: MantenimientoUpdate) -> Mantenimiento:
+        if schema.estado == 'completado' or schema.fecha_cierre is not None:
+            raise HTTPException(409, 'Utilice Aprobar y Cerrar con firma y evidencias del administrador.')
         mantenimiento = self.get_mantenimiento_by_id(mantenimiento_id)
 
         if schema.fecha_ingreso is not None:
@@ -176,7 +180,7 @@ class MantenimientoService:
         proximo = False
         if tipo_control in ("kilometraje", "mixto") and km_umbral is not None:
             vencido |= vehiculo.kilometraje_actual >= km_umbral
-            proximo |= vehiculo.kilometraje_actual >= km_umbral * 0.8
+            proximo |= vehiculo.kilometraje_actual >= km_umbral - 500
         if tipo_control in ("fecha", "mixto") and dias_umbral is not None:
             dias = (ahora - schema.fecha_ingreso).days
             vencido |= dias >= dias_umbral
@@ -208,19 +212,55 @@ class MantenimientoService:
         mantenimiento.horas_ejecucion = horas_ejecucion
         mantenimiento.trabajador_id = trabajador_id
         mantenimiento.observaciones_ejecucion = observaciones
-        mantenimiento.estado = "completado"
-        mantenimiento.fecha_cierre = datetime.utcnow()
-        vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == mantenimiento.vehiculo_id).first()
-        if vehiculo and vehiculo.estado == "en_mantenimiento":
-            vehiculo.estado = "observado"
+        # El trabajador registra la ejecución; el cierre requiere aprobación administrativa.
         self.db.commit()
         self.db.refresh(mantenimiento)
         return mantenimiento
 
     def delete_mantenimiento(self, mantenimiento_id: int, usuario_id: int) -> dict:
         mantenimiento = self.get_mantenimiento_by_id(mantenimiento_id)
+        anterior = mantenimiento.estado
         mantenimiento.estado = "inactivo"
         mantenimiento.fecha_baja = datetime.now(timezone.utc)
         mantenimiento.usuario_baja = usuario_id
+        self.db.add(AuditoriaSistema(usuario_id=usuario_id, entidad='mantenimiento', registro_id=mantenimiento_id,
+            accion='baja_logica', valores_anteriores={'estado': anterior}, valores_nuevos={'estado': 'inactivo'}))
         self.db.commit()
         return {"detail": "Mantenimiento marcado como inactivo correctamente."}
+
+    def cerrar_mantenimiento(self, mantenimiento_id: int, data: MantenimientoCerrar, admin: User) -> Mantenimiento:
+        mantenimiento = self.get_mantenimiento_by_id(mantenimiento_id)
+        if mantenimiento.estado != "en_taller":
+            raise HTTPException(409, "El mantenimiento no está pendiente de cierre.")
+        vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == mantenimiento.vehiculo_id).with_for_update().first()
+        if data.km_cierre < (vehiculo.kilometraje_actual or 0):
+            raise HTTPException(400, "El kilometraje de cierre no puede disminuir.")
+        es_mayor = mantenimiento.alcance == 'mayor' or mantenimiento.tipo == "PREVENTIVO" or bool(mantenimiento.plan_id)
+        if es_mayor and not data.informe_url:
+            raise HTTPException(400, "El mantenimiento mayor requiere informe PDF.")
+        firma = admin.firma_url or data.firma_tactil_url
+        if not firma:
+            raise HTTPException(400, "Configure una firma precargada o adjunte una firma táctil.")
+        if not es_mayor and not (data.foto_cierre_url or data.fotos_cierre):
+            raise HTTPException(400, "La reparación menor requiere una fotografía del arreglo.")
+        anterior = {"estado": mantenimiento.estado, "km": vehiculo.kilometraje_actual}
+        mantenimiento.estado = "completado"
+        mantenimiento.fecha_cierre = datetime.now(timezone.utc)
+        mantenimiento.km_ejecucion = data.km_cierre
+        mantenimiento.descripcion_trabajo = data.descripcion
+        mantenimiento.informe_url = data.informe_url
+        mantenimiento.foto_cierre_url = data.foto_cierre_url
+        mantenimiento.fotos_cierre = data.fotos_cierre or ([data.foto_cierre_url] if data.foto_cierre_url else [])
+        mantenimiento.firma_admin_url = firma
+        mantenimiento.aprobado_por_id = admin.id
+        vehiculo.kilometraje_actual = data.km_cierre
+        vehiculo.estado = "observado"
+        self.db.add(AuditoriaSistema(
+            usuario_id=admin.id, entidad="mantenimiento", registro_id=mantenimiento.id,
+            accion="aprobacion_cierre", valores_anteriores=anterior,
+            valores_nuevos={"estado": "completado", "km": data.km_cierre},
+            motivo=data.descripcion,
+        ))
+        self.db.commit()
+        self.db.refresh(mantenimiento)
+        return mantenimiento

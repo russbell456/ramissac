@@ -1,5 +1,5 @@
 from __future__ import annotations
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Date, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database.base import Base
 
@@ -20,6 +20,11 @@ class Vehiculo(Base):
     capacidad_tanque_galones = Column(Float, nullable=True)
     fecha_baja = Column(DateTime, nullable=True)
     usuario_baja = Column(Integer, ForeignKey("users.id"), nullable=True)
+    soat_vencimiento = Column(Date, nullable=True)
+    rt_vencimiento = Column(Date, nullable=True)
+    tarjeta_propiedad_url = Column(String(500), nullable=True)
+    poliza_vencimiento = Column(Date, nullable=True)
+    pase_minero_vencimiento = Column(Date, nullable=True)
 
     # Relaciones
     asignaciones = relationship("RutaAsignacion", back_populates="vehiculo", cascade="all, delete-orphan")
@@ -38,8 +43,8 @@ class Vehiculo(Base):
     def observaciones_pendientes(self):
         if self.estado_semaforo == "verde":
             return None
-        severidad = "grave" if self.estado_semaforo == "rojo" else "leve"
-        reportes = [j for j in self.jornadas if j.severidad == severidad and j.observaciones]
+        severidad = "critica" if self.estado_semaforo == "rojo" else "moderada"
+        reportes = [j for j in self.jornadas if j.severidad == severidad and j.observaciones and not j.observacion_resuelta]
         if reportes:
             return max(reportes, key=lambda j: j.id).observaciones
-        return "Falla crítica pendiente de revisión" if severidad == "grave" else "Observaciones leves pendientes de revisión"
+        return "Falla crítica pendiente de revisión" if severidad == "critica" else "Observaciones moderadas pendientes de revisión"

@@ -17,12 +17,13 @@ from app.main import app
 # StaticPool hace que TODAS las sesiones usen
 # la misma conexión en memoria
 
-TEST_DATABASE_URL = "sqlite://"
+TEST_DATABASE_URL = os.getenv('TRANSPORTES_TEST_DATABASE_URL', 'sqlite://')
+if TEST_DATABASE_URL != 'sqlite://' and TEST_DATABASE_URL != 'postgresql+psycopg2://codex_test@127.0.0.1:55437/codex_v3_verify':
+    raise RuntimeError('Las pruebas PostgreSQL solo admiten la instancia temporal de verificación.')
 
 engine = create_engine(
     TEST_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool
+    **({'connect_args': {"check_same_thread": False}, 'poolclass': StaticPool} if TEST_DATABASE_URL == 'sqlite://' else {})
 )
 
 TestingSessionLocal = sessionmaker(

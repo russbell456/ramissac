@@ -2,15 +2,20 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
-from datetime import datetime
+from datetime import date, datetime
 
 class VehiculoBase(BaseModel):
     placa: str = Field(..., description="Placa única del vehículo")
-    marca: str = Field(..., description="Marca del vehículo")
-    modelo: str = Field(..., description="Modelo del vehículo")
+    marca: str = Field(default='Pendiente', description="Marca del vehículo")
+    modelo: str = Field(default='Pendiente', description="Nombre o modelo del vehículo")
     tipo: Optional[str] = None
     capacidad_tanque_galones: Optional[float] = Field(None, gt=0)
-    capacidad_carga: float = Field(..., description="Capacidad de carga en toneladas/kg")
+    capacidad_carga: float = Field(default=0, ge=0, description="Capacidad de carga en toneladas/kg")
+    soat_vencimiento: Optional[date] = None
+    rt_vencimiento: Optional[date] = None
+    tarjeta_propiedad_url: Optional[str] = Field(None, max_length=500)
+    poliza_vencimiento: Optional[date] = None
+    pase_minero_vencimiento: Optional[date] = None
 
 
 class VehiculoCreate(VehiculoBase):
@@ -32,6 +37,11 @@ class VehiculoUpdate(BaseModel):
     modelo: Optional[str] = None
     capacidad_carga: Optional[float] = None
     kilometraje_actual: Optional[float] = None
+    soat_vencimiento: Optional[date] = None
+    rt_vencimiento: Optional[date] = None
+    tarjeta_propiedad_url: Optional[str] = Field(None, max_length=500)
+    poliza_vencimiento: Optional[date] = None
+    pase_minero_vencimiento: Optional[date] = None
 
     @field_validator("kilometraje_actual", mode="after")
     @classmethod

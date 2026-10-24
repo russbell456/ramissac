@@ -1,5 +1,5 @@
 from __future__ import annotations
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Date, Integer, String
 from app.database.base import Base
 
 class User(Base):
@@ -14,3 +14,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     role = Column("rol", String, default="user")      # ← Mapea a la columna 'rol' en PostgreSQLA
+    licencia_vencimiento = Column(Date, nullable=True)
+    licencia_categoria = Column(String(20), nullable=True)
+    emo_vencimiento = Column(Date, nullable=True)
+    pase_minero_vencimiento = Column(Date, nullable=True)
+    firma_url = Column(String(500), nullable=True)

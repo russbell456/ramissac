@@ -16,6 +16,7 @@ from app.routers.inspeccion_router import router as inspeccion_router
 from app.routers.averia_router import router as averia_router
 from app.routers.incidente_router import router as incidente_router
 from app.routers.jornada_transporte_router import router as jornada_transporte_router
+from app.routers.transportes_v3_router import router as transportes_v3_router
 
 # Router contenedor: no añade prefijo propio para no alterar
 # las URLs existentes (ej. /api/vehiculos, /api/jornadas, etc.)
@@ -29,3 +30,4 @@ router.include_router(inspeccion_router)
 router.include_router(averia_router)
 router.include_router(incidente_router)
 router.include_router(jornada_transporte_router)
+router.include_router(transportes_v3_router)

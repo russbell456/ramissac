@@ -128,6 +128,9 @@ class EstadoJornada(enum.Enum):
     EN_CURSO = "en_curso"
     FINALIZADA = "finalizada"
     CANCELADA_POR_AVERIA = "cancelada_por_averia"
+    PENDIENTE_DE_CIERRE = 'pendiente_de_cierre'
+    CERRADA_POR_SISTEMA = 'cerrada_por_sistema'
+    CANCELADA = 'cancelada'
 
 
 class TipoChecklistJornada(enum.Enum):

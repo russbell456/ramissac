@@ -66,7 +66,7 @@ def test_checklist_inicial_conforme_inicia_jornada(db_session):
     assert actualizada.vehiculo.kilometraje_actual == 120
 
 
-def test_checklist_inicial_no_conforme_cancela_y_genera_averia(db_session):
+def test_checklist_inicial_no_conforme_reporta_sin_bloquear(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
     jornada = service.asignar(
@@ -86,9 +86,9 @@ def test_checklist_inicial_no_conforme_cancela_y_genera_averia(db_session):
         conductor.id,
     )
 
-    assert actualizada.estado == "cancelada_por_averia"
-    assert actualizada.vehiculo.estado == "en_mantenimiento"
-    assert len(vehiculo.averias) == 1
+    assert actualizada.estado == "en_curso"
+    assert actualizada.vehiculo.estado == "en_ruta"
+    assert len(vehiculo.averias) == 0
 
 
 def test_conducir_requiere_vehiculo():
@@ -248,7 +248,7 @@ def test_registro_conduccion_conserva_vehiculo_hasta_checklist_final(db_session)
     assert finalizada.vehiculo_id == vehiculo.id
 
 
-def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
+def test_accion_de_grua_inicia_con_detalle_y_vehiculo(db_session):
     conductor, vehiculo = _crear_base(db_session)
     service = JornadaTransporteService(db_session)
     vehiculo.tipo = "Camión Grúa"
@@ -269,8 +269,8 @@ def test_accion_de_grua_se_cierra_con_detalle_y_vehiculo(db_session):
             },
         ),
     )
-    assert jornada.estado == "finalizada"
-    assert jornada.fecha_fin is not None
+    assert jornada.estado == "en_curso"
+    assert jornada.fecha_fin is None
     assert jornada.km_inicial is None
     assert jornada.detalles_grua.actividad == "Izaje"
     assert jornada.detalles_grua.horometro_final == 11.5
@@ -404,6 +404,6 @@ def test_cuatro_flujos_restantes_guardan_detalles(db_session):
                 **{campo: valores},
             ),
         )
-        assert jornada.estado == "finalizada"
+        assert jornada.estado == ("en_curso" if accion == "Trabajos a Externos" else "finalizada")
         detalle = JornadaDetalleResponse.model_validate(jornada).model_dump(mode="json")
         assert detalle[campo][llave] == esperado

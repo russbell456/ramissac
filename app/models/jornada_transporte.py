@@ -35,6 +35,16 @@ class JornadaTransporte(Base):
     galones_abastecidos = Column(Float, nullable=True)
     galones_consumidos = Column(Float, nullable=True)
     rendimiento_km_galon = Column(Float, nullable=True)
+    motivo_cancelacion = Column(Text, nullable=True)
+    cancelado_por_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    odometro_evidencia_url = Column(String(500), nullable=True)
+    odometro_motivo = Column(Text, nullable=True)
+    odometro_requiere_revision = Column(Boolean, default=False, nullable=False)
+    cerrado_por_sistema = Column(Boolean, default=False, nullable=False)
+    fin_operativo = Column(DateTime, nullable=True)
+    solicitud_id = Column(String(80), nullable=True, unique=True)
+    fotos_observacion = Column(JSON, nullable=True)
+    observacion_resuelta = Column(Boolean, default=False, nullable=False)
 
     # Campos calculados de cierre
     km_inicial = Column(Float, nullable=True)  # km al inicio de la jornada
@@ -161,6 +171,9 @@ class IncidenciaRuta(Base):
     jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), nullable=False, index=True)
     foto_incidencia = Column(String(500), nullable=True)
     severidad = Column(String(20), nullable=True)
+    fotos = Column(JSON, nullable=True)
+    resuelta = Column(Boolean, default=False, nullable=False)
+    solicitud_id = Column(String(80), nullable=True, unique=True)
     tipo = Column(String, nullable=False)
     descripcion = Column(Text, nullable=False)
     fecha = Column(DateTime, default=datetime.utcnow, nullable=False)

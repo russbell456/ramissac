@@ -1,5 +1,5 @@
 from __future__ import annotations
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Float, Text
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Float, Text, JSON
 from sqlalchemy.orm import relationship
 from app.database.base import Base
 
@@ -39,6 +39,12 @@ class Mantenimiento(Base):
     estado = Column(String, default="en_taller", nullable=False)
     fecha_baja = Column(DateTime, nullable=True)
     usuario_baja = Column(Integer, ForeignKey("users.id"), nullable=True)
+    informe_url = Column(String(500), nullable=True)
+    firma_admin_url = Column(String(500), nullable=True)
+    foto_cierre_url = Column(String(500), nullable=True)
+    aprobado_por_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    alcance = Column(String(20), default="menor", nullable=False)
+    fotos_cierre = Column(JSON, nullable=True)
 
     # Relaciones
     vehiculo = relationship("Vehiculo", back_populates="mantenimientos")

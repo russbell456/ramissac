@@ -4,6 +4,9 @@ from app.models.user import User
 from app.models.almacen_articulos import AlmacenArticulo
 from app.models.almacen_articulo_imagen import AlmacenArticuloImagen
 from app.models.almacen_auditoria import AlmacenAuditoria
+from app.models.auditoria_sistema import AuditoriaSistema
+from app.models.documento_transporte import DocumentoTransporte
+from app.models.notificacion_transporte import NotificacionTransporte, DispositivoPush
 from app.models.almacen_prestamo import AlmacenPrestamo, AlmacenPrestamoDetalle
 from app.models.almacen_devolucion import AlmacenDevolucion, AlmacenDevolucionDetalle
 from app.models.almacen_obras import AlmacenObra
@@ -25,6 +28,8 @@ __all__ = [
     "AlmacenArticulo",
     "AlmacenArticuloImagen",
     "AlmacenAuditoria",
+    "AuditoriaSistema",
+    "DocumentoTransporte",
     "AlmacenPrestamo",
     "AlmacenPrestamoDetalle",
     "AlmacenDevolucion",

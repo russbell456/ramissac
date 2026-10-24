@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import asyncio
+from contextlib import suppress
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -30,7 +32,17 @@ from app.scripts.seed_users import seed
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
     seed()
-    yield
+    tarea = None
+    if os.getenv('TESTING') != '1' and os.getenv('TRANSPORTES_SCHEDULER', '1') == '1':
+        from app.services.transportes_scheduler import ejecutar_scheduler
+        tarea = asyncio.create_task(ejecutar_scheduler())
+    try:
+        yield
+    finally:
+        if tarea:
+            tarea.cancel()
+            with suppress(asyncio.CancelledError):
+                await tarea
 
 
 app = FastAPI(

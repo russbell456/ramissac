@@ -1,15 +1,21 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Literal, Optional
+from typing import Annotated, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel as PydanticBaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.transportes_enums import (
     EstadoJornada,
     TipoChecklistJornada,
     TipoIncidenciaRuta,
 )
+
+ImagenURL = Annotated[str, Field(max_length=500, pattern=r'^/uploads/transportes/[a-f0-9]+\.(jpg|png|webp)$')]
+
+
+class BaseModel(PydanticBaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
 
 
 class JornadaAsignacionCreate(BaseModel):
@@ -20,11 +26,11 @@ class JornadaAsignacionCreate(BaseModel):
 class AccionGruaCreate(BaseModel):
     actividad: str = Field(..., min_length=1)
     horometro_inicial: float = Field(..., gt=0)
-    horometro_final: float = Field(..., gt=0)
+    horometro_final: Optional[float] = Field(None, gt=0)
 
     @model_validator(mode="after")
     def validar_horometros(self) -> AccionGruaCreate:
-        if self.horometro_final < self.horometro_inicial:
+        if self.horometro_final is not None and self.horometro_final < self.horometro_inicial:
             raise ValueError("El horómetro final no puede ser menor al inicial.")
         return self
 
@@ -83,6 +89,36 @@ class AccionTrabajosExternosCreate(BaseModel):
         return value.strip()
 
 
+class SubaccionCerrar(BaseModel):
+    km_final: Optional[float] = Field(None, ge=0)
+    horometro_final: Optional[float] = Field(None, gt=0)
+    odometro_evidencia_url: Optional[ImagenURL] = None
+    odometro_motivo: Optional[str] = Field(None, min_length=15)
+
+
+class SubaccionCancelar(BaseModel):
+    motivo: str = Field(..., min_length=10)
+
+    @field_validator("motivo")
+    @classmethod
+    def normalizar_motivo(cls, value: str) -> str:
+        if len(value.strip()) < 10:
+            raise ValueError('El motivo debe tener al menos 10 caracteres.')
+        return value.strip()
+
+
+class KilometrajeCorregir(BaseModel):
+    kilometraje: float = Field(..., ge=0)
+    motivo: str = Field(..., min_length=15)
+
+    @field_validator("motivo")
+    @classmethod
+    def normalizar_motivo(cls, value: str) -> str:
+        if len(value.strip()) < 15:
+            raise ValueError('El motivo debe tener al menos 15 caracteres.')
+        return value.strip()
+
+
 class AccionGruaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -127,11 +163,23 @@ class AccionTrabajosExternosResponse(AccionTrabajosExternosCreate):
 
 class EvidenciaObservacion(BaseModel):
     tiene_observaciones: bool = False
-    severidad: Optional[Literal["leve", "grave"]] = None
+    fotos_observacion: list[ImagenURL] = Field(default_factory=list, max_length=5)
+    severidad: Optional[Literal["leve", "moderada", "critica"]] = None
     foto_observacion: Optional[str] = Field(None, max_length=500, pattern=r"^/uploads/transportes/[a-f0-9]+\.(jpg|png|webp)$")
+
+    @field_validator("severidad", mode="before")
+    @classmethod
+    def normalizar_severidad_historica(cls, value):
+        return "critica" if value in {"grave", "grave-critica"} else value
 
     @model_validator(mode="after")
     def validar_evidencia(self):
+        if self.foto_observacion and self.fotos_observacion and self.foto_observacion not in self.fotos_observacion:
+            if len(self.fotos_observacion) >= 5:
+                raise ValueError('Máximo cinco fotografías por observación.')
+            self.fotos_observacion.insert(0, self.foto_observacion)
+        if self.fotos_observacion and not self.foto_observacion:
+            self.foto_observacion = self.fotos_observacion[0]
         if self.tiene_observaciones or self.severidad:
             self.tiene_observaciones = True
             if not self.severidad or not self.foto_observacion or not (getattr(self, "observaciones", None) or "").strip():
@@ -140,6 +188,7 @@ class EvidenciaObservacion(BaseModel):
 
 
 class RegistroAccionCreate(EvidenciaObservacion):
+    solicitud_id: Optional[str] = Field(None, min_length=16, max_length=80)
     jornada_padre_id: Optional[int] = Field(None, gt=0)
     accion_tipo: Literal[
         "Empezar a Conducir",
@@ -154,11 +203,13 @@ class RegistroAccionCreate(EvidenciaObservacion):
         "Trabajos a Externos",
     ]
     vehiculo_id: int = Field(..., gt=0)
-    km_inicial: Optional[float] = Field(None, gt=0)
+    km_inicial: Optional[float] = Field(None, ge=0)
     ruta: Optional[str] = None
     nivel_combustible: Optional[int] = None
     checklist_flash: Optional[dict[str, bool]] = None
     observaciones: str = Field(..., min_length=1)
+    odometro_evidencia_url: Optional[ImagenURL] = None
+    odometro_motivo: Optional[str] = Field(None, min_length=15)
     detalles_grua: Optional[AccionGruaCreate] = None
     detalles_combustible: Optional[AccionCombustibleCreate] = None
     detalles_mantenimiento: Optional[AccionMantenimientoCreate] = None
@@ -217,6 +268,8 @@ class RegistroAccionCreate(EvidenciaObservacion):
 
 
 class JornadaResponse(BaseModel):
+    fotos_observacion: list[str] | None = None
+    observacion_resuelta: bool = False
     estado_semaforo: str = "verde"
     tiene_observaciones: bool = False
     severidad: Optional[str] = None
@@ -244,6 +297,12 @@ class JornadaResponse(BaseModel):
     alerta_horas: bool = False
     alerta_km: bool = False
     horas_efectivas: Optional[float] = None
+    motivo_cancelacion: Optional[str] = None
+    cancelado_por_id: Optional[int] = None
+    odometro_evidencia_url: Optional[str] = None
+    odometro_motivo: Optional[str] = None
+    odometro_requiere_revision: bool = False
+    cerrado_por_sistema: bool = False
 
 
 class ChecklistCreate(EvidenciaObservacion):
@@ -253,6 +312,8 @@ class ChecklistCreate(EvidenciaObservacion):
     estado_general: str = Field(..., min_length=1, max_length=100)
     conforme: bool
     observaciones: Optional[str] = None
+    odometro_evidencia_url: Optional[ImagenURL] = None
+    odometro_motivo: Optional[str] = Field(None, min_length=15)
 
     @field_validator("tipo")
     @classmethod
@@ -270,11 +331,28 @@ class ChecklistResponse(ChecklistCreate):
 
 
 class IncidenciaRutaCreate(BaseModel):
+    fotos: list[ImagenURL] = Field(default_factory=list, max_length=5)
+    solicitud_id: Optional[str] = Field(None, min_length=16, max_length=80)
     foto_incidencia: Optional[str] = Field(None, max_length=500, pattern=r"^/uploads/transportes/[a-f0-9]+\.(jpg|png|webp)$")
-    severidad: Optional[Literal["leve", "grave"]] = None
+    severidad: Optional[Literal["leve", "moderada", "critica"]] = None
     tipo: str
     descripcion: str = Field(..., min_length=1)
     fecha: Optional[datetime] = None
+
+    @model_validator(mode='after')
+    def validar_fotos(self):
+        if self.fotos and not self.foto_incidencia:
+            self.foto_incidencia = self.fotos[0]
+        if self.foto_incidencia and self.fotos and self.foto_incidencia not in self.fotos:
+            if len(self.fotos) >= 5:
+                raise ValueError('Máximo cinco fotografías por incidencia.')
+            self.fotos.insert(0, self.foto_incidencia)
+        return self
+
+    @field_validator("severidad", mode="before")
+    @classmethod
+    def normalizar_severidad_historica(cls, value):
+        return "critica" if value in {"grave", "grave-critica"} else value
 
     @field_validator("tipo")
     @classmethod
@@ -285,6 +363,8 @@ class IncidenciaRutaCreate(BaseModel):
 
 
 class IncidenciaRutaResponse(IncidenciaRutaCreate):
+    fotos: list[str] | None = None
+    resuelta: bool = False
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -306,6 +386,7 @@ class JornadaDetalleResponse(JornadaResponse):
 
 
 class MantenimientoAlertaResponse(BaseModel):
+    estado: str = 'verde'
     vehiculo_id: int
     kilometraje_actual: float
     proximo_kilometraje_mantenimiento: Optional[float]

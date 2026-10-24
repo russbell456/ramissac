@@ -44,7 +44,7 @@ def test_consumo_sin_capacidad_no_inventa_galones(db_session):
     assert j.galones_consumidos is None
     assert j.rendimiento_km_galon is None
 
-@pytest.mark.parametrize('severidad,color,estado', [('leve','amarillo','en_curso'), ('grave','rojo','en_curso')])
+@pytest.mark.parametrize('severidad,color,estado', [('leve','verde','en_curso'), ('moderada','amarillo','en_curso'), ('critica','rojo','en_curso')])
 def test_semaforo_subaccion_se_propaga_y_persiste(db_session, severidad, color, estado):
     c, v = _crear_base(db_session)
     s = JornadaTransporteService(db_session)
@@ -76,14 +76,14 @@ def test_grua_restringida_por_tipo_en_servidor(db_session):
     v.tipo = 'Camión Grúa'
     assert s.registrar_accion(c.id, datos).detalles_grua is not None
 
-def test_checklist_no_conforme_exige_evidencia_y_bloquea(db_session):
+def test_checklist_no_conforme_no_bloquea_pero_falla_critica_si(db_session):
     c, v = _crear_base(db_session)
     s = JornadaTransporteService(db_session)
     datos = accion(v, accion_tipo='Empezar a Conducir', detalles_combustible=None, ruta='Juliaca', checklist_flash={'Frenos':False})
-    with pytest.raises(HTTPException):
-        s.registrar_accion(c.id, datos)
-    datos = datos.model_copy(update={'tiene_observaciones':True,'severidad':'grave','foto_observacion':FOTO,'observaciones':'Frenos dañados'})
-    assert s.registrar_accion(c.id, datos).estado == 'cancelada_por_averia'
+    jornada = s.registrar_accion(c.id, datos)
+    assert jornada.estado == 'en_curso'
+    s.registrar_incidencia(jornada.id, IncidenciaRutaCreate(tipo='falla', severidad='critica', foto_incidencia=FOTO, descripcion='Frenos dañados'), c.id)
+    assert jornada.estado_semaforo == 'rojo'
     assert v.estado == 'en_mantenimiento'
 
 def test_evidencia_no_acepta_url_externa_o_descripcion_vacia():
@@ -116,7 +116,7 @@ def test_upload_imagen_valida_y_rechaza_contenido_falso(client, monkeypatch, tmp
     assert ruta.startswith('/uploads/transportes/')
     assert (tmp_path / ruta.lstrip('/')).exists()
     assert client.post('/api/jornadas/fotos', files={'file': ('falso.jpg', b'not-an-image', 'image/jpeg')}).status_code == 400
-    assert client.post('/api/jornadas/fotos', files={'file': ('grande.jpg', b'x' * (5 * 1024 * 1024 + 1), 'image/jpeg')}).status_code == 413
+    assert client.post('/api/jornadas/fotos', files={'file': ('grande.jpg', b'x' * (10 * 1024 * 1024 + 1), 'image/jpeg')}).status_code == 413
 
 
 def test_post_mantenimiento_restaurar_semaforo(db_session):
@@ -162,6 +162,8 @@ def test_grua_solo_horometros_no_actualiza_odometro_ni_cierra_padre(db_session):
         sub = s.registrar_accion(c.id, RegistroAccionCreate(accion_tipo='Operar Grúa', vehiculo_id=v.id, jornada_padre_id=padre.id, observaciones='Sin novedades', detalles_grua={'actividad':'Izaje','horometro_inicial':10,'horometro_final':12}))
         assert sub.jornada_padre_id == padre.id
         assert sub.km_inicial is None
+        from app.schemas.jornada_transporte_schema import SubaccionCerrar
+        s.cerrar_subaccion(sub.id, SubaccionCerrar(horometro_final=12), c)
     assert v.kilometraje_actual == padre.km_inicial == 100
     assert padre.estado == 'en_curso'
     assert padre.fecha_fin is None

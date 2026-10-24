@@ -48,3 +48,4 @@ static/prestamos/
 
 # Versionar las migraciones del esquema
 !app/scripts/migrations/006_mejoras_v2.sql
+!app/scripts/migrations/007_mejoras_v3_decisiones.sql

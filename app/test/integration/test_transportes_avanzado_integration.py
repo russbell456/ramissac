@@ -23,7 +23,7 @@ def override_auth(db_session):
         cargo="Almacenero",
         email="admin@test-avanzado.com",
         password="hashed_password",
-        role="almacenero",
+        role="admin",
     )
 
     db_session.add(user)
@@ -337,6 +337,15 @@ def test_finalizacion_ruta_con_falla_envia_a_mantenimiento(client, db_session, o
 # ----------------------------------------------------------------------
 # Mantenimiento: ciclo de vida en_mantenimiento -> observado -> disponible
 # ----------------------------------------------------------------------
+def _cerrar_con_aprobacion(client, mantenimiento_id):
+    return client.post(f'/api/mantenimientos/{mantenimiento_id}/cerrar', json={
+        'km_cierre': 0, 'descripcion': 'Trabajo revisado y aprobado por administrador',
+        'firma_tactil_url': '/uploads/transportes/abc.png',
+        'foto_cierre_url': '/uploads/transportes/abc.jpg',
+        'informe_url': '/uploads/transportes/abc.pdf',
+    })
+
+
 def test_mantenimiento_no_libera_directamente_a_disponible(client, db_session, override_auth):
     vehiculo = _crear_vehiculo(client)
 
@@ -354,10 +363,7 @@ def test_mantenimiento_no_libera_directamente_a_disponible(client, db_session, o
     manto_id = manto.json()["id"]
     assert manto.json()["estado"] == "en_taller"
 
-    completado = client.put(
-        f"/api/mantenimientos/{manto_id}",
-        json={"estado": "completado"},
-    )
+    completado = _cerrar_con_aprobacion(client, manto_id)
     assert completado.status_code == 200
 
     vehiculo_obs = client.get(f"/api/vehiculos/{vehiculo['id']}")
@@ -379,7 +385,7 @@ def test_post_mantenimiento_aprobada_libera_vehiculo(client, db_session, overrid
         },
     )
     manto_id = manto.json()["id"]
-    client.put(f"/api/mantenimientos/{manto_id}", json={"estado": "completado"})
+    assert _cerrar_con_aprobacion(client, manto_id).status_code == 200
 
     obs = client.get(f"/api/vehiculos/{vehiculo['id']}")
     assert obs.json()["estado"] == "observado"
@@ -421,7 +427,7 @@ def test_post_mantenimiento_rechazada_mantiene_observado(client, db_session, ove
         },
     )
     manto_id = manto.json()["id"]
-    client.put(f"/api/mantenimientos/{manto_id}", json={"estado": "completado"})
+    assert _cerrar_con_aprobacion(client, manto_id).status_code == 200
 
     item = _crear_checklist_item(client, criticidad="media")
     insp = client.post(
@@ -586,7 +592,7 @@ def test_kilometraje_no_puede_disminuir_al_actualizar(client, db_session, overri
         f"/api/vehiculos/{vehiculo['id']}",
         json={"kilometraje_actual": 4000.0},
     )
-    assert resp.status_code == 400
+    assert resp.status_code == 409
     assert "kilometraje" in resp.json()["detail"].lower()
 
 

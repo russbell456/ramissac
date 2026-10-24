@@ -10,7 +10,7 @@ from app.models.user import User
 
 @pytest.fixture(autouse=True)
 def override_auth(db_session):
-    # Crear un usuario almacenero para los flujos de gestión de transportes.
+    # La gestión V3 es exclusiva de administración.
     user = User(
         nombre="Admin",
         apellidos="Principal",
@@ -18,7 +18,7 @@ def override_auth(db_session):
         cargo="Almacenero",
         email="admin@test.com",
         password="hashed_password",
-        role="almacenero"
+        role="admin"
     )
     db_session.add(user)
     db_session.commit()

@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
+from app.schemas.jornada_transporte_schema import ImagenURL
 
 from app.models.transportes_enums import (
     EstadoControl,
@@ -19,6 +20,7 @@ class MantenimientoBase(BaseModel):
 
 
 class MantenimientoCreate(MantenimientoBase):
+    alcance: Literal['menor', 'mayor'] = 'menor'
     vehiculo_id: int = Field(..., description="ID del vehículo")
     tipo: str = Field(default="CORRECTIVO", description="PREVENTIVO|CORRECTIVO")
     averia_id: Optional[int] = None
@@ -81,6 +83,8 @@ class MantenimientoUpdate(BaseModel):
 
 
 class MantenimientoResponse(MantenimientoBase):
+    alcance: str = 'menor'
+    fotos_cierre: list[str] | None = None
     id: int
     vehiculo_id: int
     averia_id: Optional[int] = None
@@ -103,9 +107,22 @@ class MantenimientoResponse(MantenimientoBase):
     kilometraje_mantenimiento: Optional[float] = None
     proximo_kilometraje_mantenimiento: Optional[float] = None
     fecha: Optional[datetime] = None
+    informe_url: Optional[str] = None
+    firma_admin_url: Optional[str] = None
+    foto_cierre_url: Optional[str] = None
+    aprobado_por_id: Optional[int] = None
 
     class Config:
         from_attributes = True
+
+
+class MantenimientoCerrar(BaseModel):
+    fotos_cierre: list[ImagenURL] = Field(default_factory=list, max_length=3)
+    km_cierre: float = Field(..., ge=0)
+    descripcion: str = Field(..., min_length=10)
+    informe_url: Optional[str] = Field(None, max_length=500, pattern=r'^/uploads/transportes/[a-f0-9]+\.pdf$')
+    foto_cierre_url: Optional[ImagenURL] = None
+    firma_tactil_url: Optional[ImagenURL] = None
 
 
 class PlanDetalleMantenimientoSchema(BaseModel):

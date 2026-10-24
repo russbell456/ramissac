@@ -7,17 +7,19 @@ from app.database.connection import get_db
 from app.dependencies.auth_dependencies import get_current_user
 from app.models.mantenimiento import Mantenimiento
 from app.models.user import User
-from app.schemas.mantenimiento_schema import MantenimientoCreate, MantenimientoUpdate, MantenimientoResponse
+from app.schemas.mantenimiento_schema import MantenimientoCerrar, MantenimientoCreate, MantenimientoUpdate, MantenimientoResponse
 from app.services.mantenimiento_service import MantenimientoService
 from app.models.vehiculo import Vehiculo
 from app.schemas.jornada_transporte_schema import MantenimientoAlertaResponse
+from fastapi.responses import StreamingResponse
+from app.utils.mantenimiento_report import generar_acta
 
 router = APIRouter(prefix="/api/mantenimientos", tags=["Mantenimiento"])
 DbDep = Annotated[Session, Depends(get_db)]
 
 
 def require_reader(user: User = Depends(get_current_user)) -> User:
-    if user.role not in ["admin", "trabajador"]:
+    if user.role not in ["admin", "trabajador", "conductor"]:
         raise HTTPException(status_code=403, detail="No autorizado.")
     return user
 
@@ -25,6 +27,12 @@ def require_reader(user: User = Depends(get_current_user)) -> User:
 def require_manager(user: User = Depends(get_current_user)) -> User:
     if user.role not in ["admin", "trabajador"]:
         raise HTTPException(status_code=403, detail="No autorizado para gestionar mantenimientos.")
+    return user
+
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Acción exclusiva del administrador.")
     return user
 
 
@@ -57,7 +65,8 @@ def alertas_mantenimiento(db: DbDep, _: User = Depends(require_reader)):
             "vehiculo_id": vehiculo.id,
             "kilometraje_actual": vehiculo.kilometraje_actual,
             "proximo_kilometraje_mantenimiento": proximo,
-            "alerta": proximo is not None and vehiculo.kilometraje_actual >= proximo,
+            "alerta": proximo is not None and proximo - vehiculo.kilometraje_actual <= 500,
+            "estado": 'rojo' if proximo is not None and vehiculo.kilometraje_actual >= proximo else 'amarillo' if proximo is not None and proximo - vehiculo.kilometraje_actual <= 500 else 'verde',
         })
     return resultado
 
@@ -111,6 +120,23 @@ def actualizar_mantenimiento(id: int, schema: MantenimientoUpdate, db: DbDep, _:
     return MantenimientoService(db).update_mantenimiento(id, schema)
 
 
+@router.post("/{id}/cerrar", response_model=MantenimientoResponse)
+def cerrar_mantenimiento(id: int, data: MantenimientoCerrar, db: DbDep, user: User = Depends(require_admin)):
+    return MantenimientoService(db).cerrar_mantenimiento(id, data, user)
+
+
+@router.get('/{id}/acta-pdf')
+def acta_pdf(id: int, db: DbDep, user: User = Depends(require_reader)):
+    item = MantenimientoService(db).get_mantenimiento_by_id(id)
+    if item.estado != 'completado' or item.aprobado_por_id is None:
+        raise HTTPException(409, 'El mantenimiento todavía no tiene aprobación administrativa.')
+    admin = db.query(User).filter_by(id=item.aprobado_por_id).first()
+    if not admin:
+        raise HTTPException(404, 'Administrador de aprobación no encontrado.')
+    return StreamingResponse(generar_acta(item, admin), media_type='application/pdf',
+        headers={'Content-Disposition': f'attachment; filename="mantenimiento-{id}.pdf"'})
+
+
 @router.delete("/{id}")
-def eliminar_mantenimiento(id: int, db: DbDep, user: User = Depends(require_manager)):
+def eliminar_mantenimiento(id: int, db: DbDep, user: User = Depends(require_admin)):
     return MantenimientoService(db).delete_mantenimiento(id, user.id)
