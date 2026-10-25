@@ -2,7 +2,8 @@ from datetime import date, datetime
 from pathlib import Path
 from uuid import uuid4
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
@@ -16,9 +17,10 @@ from app.models.mantenimiento import Mantenimiento
 from app.models.notificacion_transporte import NotificacionTransporte, DispositivoPush
 from app.schemas.transportes_v3_schema import (
     DocumentoCrear, DocumentoResponse, DispositivoCrear, FirmaActualizar,
-    ResolverObservacion, ConductorRapido, ConductorAcceso,
+    ResolverObservacion, ConductorRapido, ConductorAcceso, DocumentoRevision,
 )
 from app.schemas.jornada_transporte_schema import KilometrajeCorregir
+from app.schemas.vehiculo_schema import VehiculoCreate
 from app.services.documento_transporte_service import DocumentoTransporteService
 from app.services.jornada_transporte_service import JornadaTransporteService
 from app.utils.transport_time import utc_naive
@@ -56,9 +58,70 @@ def vigencias(entidad: str, entidad_id: int, db: Db, usuario: Usuario):
     return DocumentoTransporteService(db).vigencias(entidad, entidad_id)
 
 
-@router.post('/documentos/{entidad}/{entidad_id}', response_model=DocumentoResponse, status_code=201)
-def renovar(entidad: str, entidad_id: int, data: DocumentoCrear, db: Db, usuario: Admin):
-    return DocumentoTransporteService(db).renovar(entidad, entidad_id, data, usuario)
+@router.post('/documentos/{documento_id}/revisar', response_model=DocumentoResponse)
+def revisar_documento(documento_id: int, data: DocumentoRevision, db: Db, usuario: Admin):
+    return DocumentoTransporteService(db).revisar(documento_id, data.estado, data.motivo, usuario)
+
+
+@router.post('/documentos/{entidad}/{entidad_id}', response_model=DocumentoResponse, status_code=201,
+    openapi_extra={'requestBody': {'content': {'multipart/form-data': {'schema': {
+        'type': 'object', 'required': ['tipo', 'file', 'solicitud_id'], 'properties': {
+            'tipo': {'type': 'string'}, 'fecha_vencimiento': {'type': 'string', 'format': 'date'},
+            'licencia_categoria': {'type': 'string'}, 'solicitud_id': {'type': 'string'},
+            'file': {'type': 'string', 'format': 'binary'}}}},
+        'application/json': {'schema': DocumentoCrear.model_json_schema()}}}})
+async def renovar(entidad: str, entidad_id: int, request: Request, db: Db, usuario: Usuario):
+    lector(usuario, entidad, entidad_id)
+    service = DocumentoTransporteService(db)
+    service.titular(entidad, entidad_id)
+    if request.headers.get('content-type', '').startswith('application/json'):
+        if usuario.role != 'admin':
+            raise HTTPException(403, 'El conductor debe adjuntar el archivo para revisión.')
+        try:
+            data = DocumentoCrear.model_validate(await request.json())
+        except (ValidationError, ValueError) as error:
+            raise HTTPException(422, str(error))
+        return service.renovar(entidad, entidad_id, data, usuario)
+    form = await request.form()
+    archivo = form.get('file')
+    solicitud_id = str(form.get('solicitud_id', '')).strip()
+    if not archivo or not hasattr(archivo, 'read') or not 16 <= len(solicitud_id) <= 80:
+        raise HTTPException(422, 'Adjunte un archivo e identificador de solicitud válido.')
+    contenido = await archivo.read(10 * 1024 * 1024 + 1)
+    if not contenido or len(contenido) > 10 * 1024 * 1024:
+        raise HTTPException(413, 'El archivo debe tener contenido y no superar 10 MB.')
+    if contenido.startswith(b'%PDF-') and b'%%EOF' in contenido[-2048:]:
+        extension = 'pdf'
+    else:
+        from io import BytesIO
+        from PIL import Image, UnidentifiedImageError
+        try:
+            with Image.open(BytesIO(contenido)) as imagen:
+                extension = {'JPEG': 'jpg', 'PNG': 'png', 'WEBP': 'webp'}.get(imagen.format)
+                if not extension or imagen.width * imagen.height > 25000000:
+                    raise HTTPException(400, 'Use una imagen JPG, PNG o WEBP válida.')
+                imagen.verify()
+        except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError):
+            raise HTTPException(400, 'Adjunte una imagen o PDF válido.')
+    carpeta = Path('uploads/transportes')
+    nombre = uuid4().hex + '.' + extension
+    try:
+        data = DocumentoCrear(tipo=str(form.get('tipo', '')), archivo_url='/uploads/transportes/' + nombre,
+            fecha_vencimiento=form.get('fecha_vencimiento') or None,
+            licencia_categoria=form.get('licencia_categoria') or None)
+    except ValidationError as error:
+        raise HTTPException(422, str(error))
+    carpeta.mkdir(parents=True, exist_ok=True)
+    destino = carpeta / nombre
+    destino.write_bytes(contenido)
+    try:
+        documento = service.cargar(entidad, entidad_id, data, usuario, solicitud_id)
+        if documento.archivo_url != data.archivo_url:
+            destino.unlink(missing_ok=True)
+        return documento
+    except Exception:
+        destino.unlink(missing_ok=True)
+        raise
 
 
 @router.get('/notificaciones')
@@ -237,7 +300,7 @@ def alta_conductor(data: ConductorRapido, db: Db, usuario: Admin):
     if db.query(User).filter_by(dni=data.dni).first():
         raise HTTPException(409, 'El DNI ya está registrado.')
     from app.security.hashing import Hash
-    item = User(nombre=data.nombre, apellidos='', dni=data.dni,
+    item = User(nombre=data.nombre, apellidos=data.apellidos, dni=data.dni,
         email=f'{data.dni}@pendiente.ramis.com', password=Hash.get_password_hash(uuid4().hex), role='conductor')
     db.add(item)
     db.flush()
@@ -262,3 +325,33 @@ def configurar_acceso(id: int, data: ConductorAcceso, db: Db, usuario: Admin):
         accion='configuracion_acceso', valores_anteriores={'email': anterior}, valores_nuevos={'email': item.email}))
     db.commit()
     return {'id': id, 'email': item.email}
+
+
+@router.get('/conductores')
+def conductores(db: Db, usuario: Admin):
+    service = DocumentoTransporteService(db)
+    return [{'id': c.id, 'nombre': c.nombre, 'apellidos': c.apellidos, 'dni': c.dni, 'email': c.email,
+        'documentos': service.vigencias('conductor', c.id)} for c in db.query(User).filter_by(role='conductor').order_by(User.nombre).all()]
+
+
+@router.get('/vehiculos')
+def flota_v3(db: Db, usuario: Usuario):
+    lector(usuario)
+    from app.schemas.vehiculo_schema import VehiculoResponse
+    return [VehiculoResponse.model_validate(v) for v in db.query(Vehiculo).filter(Vehiculo.estado != 'inactivo').all()]
+
+
+@router.post('/vehiculos', status_code=201)
+def vehiculo_alta(data: VehiculoCreate, db: Db, usuario: Admin):
+    from app.services.vehiculo_service import VehiculoService
+    from app.schemas.vehiculo_schema import VehiculoResponse
+    return VehiculoResponse.model_validate(VehiculoService(db).create_vehiculo(data))
+
+
+@router.get('/vehiculos/{id}/reporte-pdf')
+def vehiculo_pdf(id: int, db: Db, usuario: Usuario, estado: str = 'pendientes', desde: date | None = None, hasta: date | None = None):
+    lector(usuario)
+    if estado not in {'pendientes', 'todas'}:
+        raise HTTPException(422, 'Filtro inválido.')
+    from app.routers.vehiculo_router import reporte_pdf
+    return reporte_pdf(id, db, usuario, estado, desde, hasta)

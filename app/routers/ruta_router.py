@@ -28,6 +28,7 @@ def require_route_manager(user: CurrentUserDep) -> User:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No autorizado para gestionar rutas.")
     return user
 
+@router.get("", response_model=list[RutaAsignacionResponse], include_in_schema=False)
 @router.get("/", response_model=list[RutaAsignacionResponse])
 def listar_rutas(db: DbDep, current_user: CurrentUserDep):
     service = RutaService(db)

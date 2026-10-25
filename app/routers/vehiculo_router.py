@@ -35,6 +35,7 @@ def require_admin(user: CurrentUserDep) -> User:
         raise HTTPException(status_code=403, detail="Acción exclusiva del administrador.")
     return user
 
+@router.get("", response_model=list[VehiculoResponse], include_in_schema=False)
 @router.get("/", response_model=list[VehiculoResponse])
 def listar_vehiculos(db: DbDep, _: Annotated[User, Depends(require_transport_role)]):
     service = VehiculoService(db)
@@ -45,6 +46,7 @@ def obtener_vehiculo(id: int, db: DbDep, _: Annotated[User, Depends(require_tran
     service = VehiculoService(db)
     return service.get_vehiculo_by_id(id)
 
+@router.post("", response_model=VehiculoResponse, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @router.post("/", response_model=VehiculoResponse, status_code=status.HTTP_201_CREATED)
 def crear_vehiculo(schema: VehiculoCreate, db: DbDep, _: Annotated[User, Depends(require_admin)]):
     service = VehiculoService(db)

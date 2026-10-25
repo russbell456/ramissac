@@ -71,6 +71,7 @@ def alertas_mantenimiento(db: DbDep, _: User = Depends(require_reader)):
     return resultado
 
 
+@router.get("", response_model=list[MantenimientoResponse], include_in_schema=False)
 @router.get("/", response_model=list[MantenimientoResponse])
 def listar_mantenimientos(db: DbDep, _: User = Depends(require_reader), vehiculo_id: int | None = None, tipo: str | None = None):
     items = MantenimientoService(db).get_all_mantenimientos()

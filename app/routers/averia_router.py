@@ -38,6 +38,7 @@ def require_operational_actor(user: CurrentUserDep) -> User:
     return user
 
 
+@router.get("", response_model=list[AveriaResponse], include_in_schema=False)
 @router.get("/", response_model=list[AveriaResponse])
 def listar_averias(db: DbDep, _: Annotated[User, Depends(require_averia_manager)]):
     return AveriaService(db).get_all_averias()

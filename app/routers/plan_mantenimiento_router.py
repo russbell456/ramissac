@@ -33,6 +33,7 @@ def require_plan_manager(user: CurrentUserDep) -> User:
     return user
 
 
+@router.get("", response_model=list[PlanMantenimientoResponse], include_in_schema=False)
 @router.get("/", response_model=list[PlanMantenimientoResponse])
 def listar_planes(db: DbDep, _: Annotated[User, Depends(require_plan_manager)]):
     return PlanMantenimientoService(db).get_all_planes()

@@ -29,6 +29,7 @@ DbDep = Annotated[Session, Depends(get_db)]
 UserDep = Annotated[User, Depends(get_current_user)]
 
 
+@router.get("", response_model=list[JornadaResponse], include_in_schema=False)
 @router.get("/", response_model=list[JornadaResponse])
 def listar_jornadas(db: DbDep, user: UserDep):
     if user.role not in {'admin', 'conductor'}:

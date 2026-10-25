@@ -71,6 +71,7 @@ def crear_checklist_item(
 # ----------------------------------------------------------------------
 # Inspecciones
 # ----------------------------------------------------------------------
+@router.get("", response_model=list[InspeccionResponse], include_in_schema=False)
 @router.get("/", response_model=list[InspeccionResponse])
 def listar_inspecciones(db: DbDep, _: Annotated[User, Depends(require_inspector)]):
     return InspeccionService(db).get_all_inspecciones()
