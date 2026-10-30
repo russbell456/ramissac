@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Annotated
+from typing import Annotated, Literal
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 
 Imagen = Annotated[str, Field(pattern=r'^/uploads/transportes/[a-f0-9]+\.(jpg|png|webp)$', max_length=500)]
@@ -40,7 +40,13 @@ class FirmaActualizar(BaseModel):
 
 class ConductorRapido(BaseModel):
     nombre: str = Field(min_length=2)
+    apellidos: str = Field(default='', max_length=150)
     dni: str = Field(pattern=r'^\d{8}$')
+
+
+class DocumentoRevision(BaseModel):
+    estado: Literal['aprobado', 'rechazado']
+    motivo: str = Field(default='', max_length=2000)
 
 
 class ConductorAcceso(BaseModel):
