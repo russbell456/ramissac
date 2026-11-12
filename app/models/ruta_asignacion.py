@@ -25,7 +25,7 @@ class RutaAsignacion(Base):
     observaciones_salida = Column(String, nullable=True)
     observaciones_llegada = Column(String, nullable=True)
 
-    # Firmas y verificaciones de seguridad
+    # Firmas y verificaciones de seguridad (legacy, por compatibilidad)
     firma_trabajador = Column(String, nullable=True)
     check_llantas = Column(Boolean, default=False, nullable=True)
     check_frenos = Column(Boolean, default=False, nullable=True)
@@ -34,3 +34,9 @@ class RutaAsignacion(Base):
     # Relaciones
     vehiculo = relationship("Vehiculo", back_populates="asignaciones")
     trabajador = relationship("User", foreign_keys=[trabajador_id])
+    # Inspecciones formales asociadas a esta ruta (SALIDA, LLEGADA, etc.)
+    inspecciones = relationship(
+        "Inspeccion",
+        back_populates="ruta",
+        foreign_keys="Inspeccion.ruta_id",
+    )

@@ -1,0 +1,181 @@
+from __future__ import annotations
+
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, ForeignKey, Integer, Numeric, String, Text, JSON
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class JornadaTransporte(Base):
+    __tablename__ = "jornadas_transporte"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vehiculo_id = Column(Integer, ForeignKey("vehiculos.id"), nullable=True, index=True)
+    conductor_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    fecha_inicio = Column(DateTime, default=datetime.utcnow, nullable=True)
+    fecha_fin = Column(DateTime, nullable=True)
+    estado = Column(String, default="en_curso", nullable=False, index=True)
+    
+    # Nuevos campos del registro de acción
+    accion_tipo = Column(String, nullable=True)
+    ruta = Column(String, nullable=True)
+    nivel_combustible = Column(Integer, nullable=True)
+    checklist_flash = Column(JSON, nullable=True)
+    observaciones = Column(Text, nullable=True)
+
+    estado_semaforo = Column(String(20), default="verde", nullable=False)
+    tiene_observaciones = Column(Boolean, default=False, nullable=False)
+    severidad = Column(String(20), nullable=True)
+    foto_observacion = Column(String(500), nullable=True)
+    jornada_padre_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=True, index=True)
+    sub_acciones = relationship("JornadaTransporte", cascade="all, delete-orphan", single_parent=True)
+    nivel_combustible_final = Column(Float, nullable=True)
+    galones_abastecidos = Column(Float, nullable=True)
+    galones_consumidos = Column(Float, nullable=True)
+    rendimiento_km_galon = Column(Float, nullable=True)
+    motivo_cancelacion = Column(Text, nullable=True)
+    cancelado_por_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    odometro_evidencia_url = Column(String(500), nullable=True)
+    odometro_motivo = Column(Text, nullable=True)
+    odometro_requiere_revision = Column(Boolean, default=False, nullable=False)
+    cerrado_por_sistema = Column(Boolean, default=False, nullable=False)
+    fin_operativo = Column(DateTime, nullable=True)
+    solicitud_id = Column(String(80), nullable=True, unique=True)
+    fotos_observacion = Column(JSON, nullable=True)
+    observacion_resuelta = Column(Boolean, default=False, nullable=False)
+
+    # Campos calculados de cierre
+    km_inicial = Column(Float, nullable=True)  # km al inicio de la jornada
+    km_final = Column(Float, nullable=True)    # km al finalizar la jornada
+    alerta_horas = Column(Boolean, default=False, nullable=False)
+    alerta_km = Column(Boolean, default=False, nullable=False)
+    horas_efectivas = Column(Float, nullable=True)
+
+    vehiculo = relationship("Vehiculo", back_populates="jornadas")
+    checklists = relationship(
+        "Checklist",
+        back_populates="jornada",
+        cascade="all, delete-orphan",
+        order_by="Checklist.id",
+    )
+    incidencias = relationship(
+        "IncidenciaRuta",
+        back_populates="jornada",
+        cascade="all, delete-orphan",
+        order_by="IncidenciaRuta.fecha",
+    )
+
+    detalles_grua = relationship("AccionGrua", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_combustible = relationship("AccionCombustible", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_mantenimiento = relationship("AccionMantenimiento", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_inspeccion = relationship("AccionInspeccion", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_cocada = relationship("AccionCocada", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_torque = relationship("AccionTorque", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+    detalles_trabajos_externos = relationship("AccionTrabajosExternos", back_populates="jornada", uselist=False, cascade="all, delete-orphan")
+
+class AccionGrua(Base):
+    __tablename__ = "accion_grua"
+
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
+    actividad = Column(String, nullable=True)
+    horometro_inicial = Column(Float, nullable=True)
+    horometro_final = Column(Float, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_grua")
+
+class AccionCombustible(Base):
+    __tablename__ = "accion_combustible"
+
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
+    galones = Column(Float, nullable=True)
+    nivel_final = Column(Integer, nullable=True)
+    costo = Column(Float, nullable=True)
+    comprobante = Column(String(100), nullable=True)
+    odometro = Column(Float, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_combustible")
+
+class AccionMantenimiento(Base):
+    __tablename__ = "accion_mantenimiento"
+
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), primary_key=True)
+    taller = Column(String, nullable=True)
+    tipo = Column(String, nullable=True)
+    trabajos_preventivos = Column(JSON, nullable=True)
+    descripcion_correctivo = Column(String, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_mantenimiento")
+
+
+class AccionInspeccion(Base):
+    __tablename__ = "accion_inspeccion"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    fecha_inspeccion = Column(Date, nullable=False)
+    fecha_vencimiento = Column(Date, nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_inspeccion")
+
+
+class AccionCocada(Base):
+    __tablename__ = "accion_cocada"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    medida = Column(Numeric(10, 2), nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_cocada")
+
+
+class AccionTorque(Base):
+    __tablename__ = "accion_torque"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    medida = Column(Numeric(10, 2), nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_torque")
+
+
+class AccionTrabajosExternos(Base):
+    __tablename__ = "accion_trabajos_externos"
+
+    id = Column(Integer, primary_key=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id", ondelete="CASCADE"), nullable=False, unique=True)
+    descripcion_trabajos = Column(Text, nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="detalles_trabajos_externos")
+
+class Checklist(Base):
+    __tablename__ = "checklists_transporte"
+
+    id = Column(Integer, primary_key=True, index=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), nullable=False, index=True)
+    tipo = Column(String, nullable=False)
+    kilometraje = Column(Float, nullable=False)
+    nivel_combustible = Column(String, nullable=False)
+    estado_general = Column(String, nullable=False)
+    conforme = Column(Boolean, nullable=False)
+    observaciones = Column(Text, nullable=True)
+
+    jornada = relationship("JornadaTransporte", back_populates="checklists")
+
+
+class IncidenciaRuta(Base):
+    __tablename__ = "incidencias_ruta"
+
+    id = Column(Integer, primary_key=True, index=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas_transporte.id"), nullable=False, index=True)
+    foto_incidencia = Column(String(500), nullable=True)
+    severidad = Column(String(20), nullable=True)
+    fotos = Column(JSON, nullable=True)
+    resuelta = Column(Boolean, default=False, nullable=False)
+    solicitud_id = Column(String(80), nullable=True, unique=True)
+    tipo = Column(String, nullable=False)
+    descripcion = Column(Text, nullable=False)
+    fecha = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    jornada = relationship("JornadaTransporte", back_populates="incidencias")

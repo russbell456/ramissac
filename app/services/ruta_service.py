@@ -14,6 +14,10 @@ from app.schemas.ruta_asignacion_schema import (
     RutaAsignacionIniciar
 )
 from app.utils.pdf_generator import generar_pdf_ruta
+from app.services.inspeccion_service import (
+    InspeccionService,
+    RESULTADOS_SALIDA_APROBADA,
+)
 
 class RutaService:
     def __init__(self, db: Session):
@@ -106,12 +110,36 @@ class RutaService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Solo se puede iniciar una ruta pendiente."
             )
-        
-        # Validar que los checks sean True (doble validación)
+
+        # Validar que los checks sean True (doble validación) - compatibilidad,
+        # pero NO son suficientes por sí solos para iniciar la ruta.
         if not (schema.check_llantas and schema.check_frenos and schema.check_luces):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Todos los checks de inspección deben ser aprobados (True) para iniciar la ruta."
+            )
+
+        # REGLA CRÍTICA DE SALIDA:
+        # La ruta NO puede iniciarse solo con los checks legacy. Debe existir una
+        # inspección formal SALIDA asociada al vehículo/ruta con resultado
+        # APROBADA o APROBADA_CON_OBSERVACIONES.
+        inspeccion_service = InspeccionService(self.db)
+        salida = inspeccion_service.obtener_salida(ruta.id, ruta.vehiculo_id)
+        if salida is None or salida.resultado is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "No se puede iniciar la ruta: no existe una inspección "
+                    "SALIDA aprobada para el vehículo/ruta."
+                ),
+            )
+        if salida.resultado not in RESULTADOS_SALIDA_APROBADA:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "No se puede iniciar la ruta: la inspección SALIDA está "
+                    "rechazada. Corrija la inspección antes de iniciar."
+                ),
             )
 
         # Buscar el vehículo
@@ -121,6 +149,19 @@ class RutaService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Vehículo no encontrado."
             )
+
+        # Kilometraje monotónico: el kilometraje de salida no puede ser menor
+        # que el kilometraje actual del vehículo.
+        km_actual = vehiculo.kilometraje_actual or 0.0
+        if schema.kilometraje_salida < km_actual:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "El kilometraje de salida no puede ser menor que el "
+                    "kilometraje actual del vehículo."
+                ),
+            )
+        vehiculo.kilometraje_actual = schema.kilometraje_salida
 
         # Actualizar datos de inicio
         ruta.estado_ruta = "en_progreso"
@@ -160,6 +201,20 @@ class RutaService:
         # Cambiar el estado del vehículo asociado
         vehiculo = self.db.query(Vehiculo).filter(Vehiculo.id == ruta.vehiculo_id).first()
         if vehiculo:
+            # Kilometraje monotónico: el kilometraje de llegada no puede ser
+            # menor que el kilometraje actual del vehículo.
+            km_actual = vehiculo.kilometraje_actual or 0.0
+            if schema.kilometraje_llegada < km_actual:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "El kilometraje de llegada no puede ser menor que el "
+                        "kilometraje actual del vehículo."
+                    ),
+                )
+            vehiculo.kilometraje_actual = schema.kilometraje_llegada
+
+
             obs = (schema.observaciones_llegada or "").strip().lower()
             tiene_falla = False
             # Solo las observaciones que describen una incidencia envían el vehículo a mantenimiento.
