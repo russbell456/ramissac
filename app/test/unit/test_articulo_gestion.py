@@ -2,10 +2,14 @@ import pytest
 import io
 import asyncio
 import pandas as pd
+from sqlalchemy import event
 from unittest.mock import MagicMock
 from app.services.almacen_articulo_service import AlmacenArticuloService
 from app.models.almacen_articulos import AlmacenArticulo, TipoArticulo
+from app.models.almacen_articulo_imagen import AlmacenArticuloImagen
 from app.models.almacen_auditoria import AlmacenAuditoria
+from app.repositories.almacen_articulo_repository import AlmacenArticuloRepository
+from app.schemas.almacen_articulo_schema import ArticuloSchema
 
 
 def test_desactivar_articulo_exitoso(db_session):
@@ -180,3 +184,64 @@ def test_procesar_inventario_excel(db_session):
     # El tercero ("PRODUCTO_INCOMPLETO") tiene Codigo = None (NaN), no debe insertarse
     articulo_3 = db_session.query(AlmacenArticulo).filter(AlmacenArticulo.nombre == "PRODUCTO_INCOMPLETO").first()
     assert articulo_3 is None
+
+
+def test_listar_articulos_carga_imagenes_en_consulta_por_lote(db_session):
+    articulos = [
+        AlmacenArticulo(
+            nombre=f"Artículo con foto {index}",
+            unidad_medida="UND",
+            tipo=TipoArticulo.EQUIPO,
+            stock_actual=1,
+        )
+        for index in range(3)
+    ]
+    db_session.add_all(articulos)
+    db_session.flush()
+    db_session.add_all(
+        [
+            AlmacenArticuloImagen(
+                articulo_id=articulo.id,
+                nombre_archivo=f"foto_{index}.jpg",
+                ruta=f"/uploads/articulos/foto_{index}.jpg",
+                tipo_mime="image/jpeg",
+            )
+            for index, articulo in enumerate(articulos)
+        ]
+    )
+    db_session.commit()
+
+    statements = []
+
+    def record_statement(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.lstrip().lower().startswith("select"):
+            statements.append(statement)
+
+    event.listen(db_session.bind, "before_cursor_execute", record_statement)
+    try:
+        result = AlmacenArticuloRepository(db_session).get_all()
+        image_counts = [len(articulo.imagenes) for articulo in result]
+    finally:
+        event.remove(db_session.bind, "before_cursor_execute", record_statement)
+
+    assert image_counts == [1, 1, 1]
+    assert len(statements) == 2
+
+
+def test_articulo_alto_valor_refleja_fotos_obligatorias_en_respuesta(db_session):
+    articulo = AlmacenArticulo(
+        nombre="Artículo de alto valor",
+        unidad_medida="UND",
+        tipo=TipoArticulo.EQUIPO,
+        stock_actual=1,
+        es_activo_alto_valor=True,
+        requiere_foto_prestamo=False,
+        requiere_foto_devolucion=False,
+    )
+    db_session.add(articulo)
+    db_session.commit()
+
+    response = ArticuloSchema.model_validate(articulo)
+
+    assert response.requiere_foto_prestamo is True
+    assert response.requiere_foto_devolucion is True

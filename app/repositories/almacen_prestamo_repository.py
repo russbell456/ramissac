@@ -86,3 +86,26 @@ class AlmacenPrestamoRepository:
             )
             .first()
         )
+
+    def obtener_por_codigo(
+        self,
+        codigo_unico: str,
+        bloquear: bool = False,
+    ) -> AlmacenPrestamo | None:
+        query = self.db.query(AlmacenPrestamo).filter(
+            AlmacenPrestamo.codigo_unico == codigo_unico
+        )
+        if bloquear:
+            query = query.with_for_update()
+        return query.first()
+
+    def obtener_prestamo_bloqueado(
+        self,
+        prestamo_id: int,
+    ) -> AlmacenPrestamo | None:
+        return (
+            self.db.query(AlmacenPrestamo)
+            .filter(AlmacenPrestamo.id == prestamo_id)
+            .with_for_update()
+            .first()
+        )

@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from pydantic import (
     BaseModel,
@@ -18,6 +19,11 @@ class ItemDevolucion(BaseModel):
     cantidad: int = Field(
         ...,
         gt=0,
+    )
+
+    foto_estado_devuelto: str | None = Field(
+        default=None,
+        min_length=1,
     )
 
 
@@ -49,7 +55,11 @@ class DevolucionQRData(BaseModel):
         min_length=1,
     )
 
-    fecha_devolucion: datetime
+    # Compatibilidad: la fecha persistida siempre la asigna el servidor.
+    fecha_devolucion: datetime | None = Field(
+        default=None,
+        deprecated=True,
+    )
 
     prestamo_id: int = Field(
         ...,
@@ -76,6 +86,8 @@ class DevolucionQRData(BaseModel):
         min_length=1,
     )
 
+    model_config = ConfigDict(extra="forbid")
+
     @model_validator(mode="after")
     def validar_devolucion(self):
 
@@ -96,7 +108,26 @@ class DevolucionQRData(BaseModel):
                 "de una devolución"
             )
 
+        if self.foto_estado_devuelto and len(self.items) != 1:
+            raise ValueError(
+                "Envía la foto dentro del detalle correspondiente a cada artículo"
+            )
+
         return self
+
+
+class DevolucionDetalleResultado(BaseModel):
+    prestamo_detalle_id: int
+    cantidad_devuelta: int
+    minutos_efectivos: int
+    dias_tarifa: int
+    minutos_residuales: int
+    costo_hora_aplicado: Decimal | None
+    costo_dia_aplicado: Decimal | None
+    importe_informativo: Decimal
+    foto_estado_fin_url: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DevolucionResponse(BaseModel):
@@ -106,6 +137,15 @@ class DevolucionResponse(BaseModel):
     codigo_unico: str
 
     estado: str
+
+    fecha_devolucion: datetime
+
+    detalles: list[DevolucionDetalleResultado]
+
+    importe_informativo_total: Decimal
+    almacenero_id: int | None = None
+    almacenero_nombre: str | None = None
+    firma_url: str | None = None
 
     message: str = (
         "Devolución registrada correctamente"

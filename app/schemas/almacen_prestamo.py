@@ -17,6 +17,7 @@ class TipoArticuloSchema(str, Enum):
 
 class TipoPrestamoSchema(str, Enum):
     INTERNO = "interno"
+    OBRA = "obra"
     EXTERNO = "externo"
 
 
@@ -31,6 +32,88 @@ class ItemPrestamo(BaseModel):
         gt=0,
     )
 
+    foto_estado_inicio: str | None = Field(
+        default=None,
+        min_length=1,
+    )
+
+
+class SolicitudPrestamoData(BaseModel):
+    """Datos que solicita el trabajador antes de la entrega."""
+
+    fecha_devolucion_prevista: datetime
+    items: list[ItemPrestamo] = Field(..., min_length=1)
+    tipo_prestamo: TipoPrestamoSchema = TipoPrestamoSchema.INTERNO
+    obra_id: int | None = Field(default=None, gt=0)
+    empresa_ruc: str | None = Field(default=None, min_length=1, max_length=20)
+    empresa_nombre: str | None = Field(default=None, min_length=1, max_length=150)
+    persona_dni: str | None = Field(default=None, pattern=r"^\d{8}$")
+    persona_nombres: str | None = Field(default=None, min_length=1, max_length=150)
+    persona_telefono: str | None = Field(default=None, min_length=1, max_length=20)
+
+    @model_validator(mode="after")
+    def validar_solicitud(self):
+        ids = [item.articulo_id for item in self.items]
+        if len(ids) != len(set(ids)):
+            raise ValueError("No se puede repetir un artículo en la solicitud")
+
+        datos_externos = any([
+            self.empresa_ruc,
+            self.empresa_nombre,
+            self.persona_dni,
+            self.persona_nombres,
+            self.persona_telefono,
+        ])
+
+        if self.tipo_prestamo == TipoPrestamoSchema.INTERNO:
+            if self.obra_id is not None or datos_externos:
+                raise ValueError(
+                    "Un préstamo interno no debe asociarse a obra ni incluir datos externos"
+                )
+        elif self.tipo_prestamo == TipoPrestamoSchema.OBRA:
+            if self.obra_id is None:
+                raise ValueError("Un préstamo para obra debe indicar una obra")
+            if datos_externos:
+                raise ValueError("Un préstamo para obra no debe incluir datos externos")
+        else:
+            if self.obra_id is not None:
+                raise ValueError("Un préstamo externo no puede asociarse a una obra")
+            if not all([
+                self.empresa_ruc,
+                self.empresa_nombre,
+                self.persona_dni,
+                self.persona_nombres,
+                self.persona_telefono,
+            ]):
+                raise ValueError(
+                    "El préstamo externo requiere RUC, empresa y datos completos del responsable"
+                )
+        return self
+
+
+class FotoArticuloPrestamo(BaseModel):
+    articulo_id: int = Field(..., gt=0)
+    foto_estado_inicio: str = Field(..., min_length=1)
+
+
+class ConfirmacionSolicitudPrestamo(BaseModel):
+    firma_base64: str = Field(..., min_length=1)
+    fotos: list[FotoArticuloPrestamo] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validar_fotos_sin_duplicados(self):
+        ids = [foto.articulo_id for foto in self.fotos]
+        if len(ids) != len(set(ids)):
+            raise ValueError("No se puede repetir la foto de un artículo")
+        return self
+
+
+class SolicitudPrestamoCreada(BaseModel):
+    id: int
+    codigo_unico: str
+    estado: str
+    message: str = "Solicitud creada; el stock no se modifica hasta confirmar la entrega"
+
 
 class PrestamoDetalleSchema(BaseModel):
     id: int
@@ -40,14 +123,56 @@ class PrestamoDetalleSchema(BaseModel):
     cantidad_pendiente: int
     esta_devuelto: bool
     requiere_devolucion: bool
+    requiere_foto_devolucion: bool = False
 
     articulo_nombre: str
     articulo_tipo: str
     articulo_unidad: str
+    foto_estado_inicio_url: str | None = Field(
+        default=None,
+        validation_alias="foto_estado_inicio",
+    )
+    foto_estado_fin_url: str | None = None
 
     model_config = ConfigDict(
-        from_attributes=True
+        from_attributes=True,
+        populate_by_name=True,
     )
+
+
+class PrestamoDevolucionDetalleSchema(BaseModel):
+    prestamo_detalle_id: int
+    cantidad_devuelta: int
+    foto_estado_fin_url: str | None = None
+
+
+class PrestamoDevolucionSchema(BaseModel):
+    id: int
+    codigo_unico: str
+    fecha_devolucion: datetime
+    almacenero_id: int | None = None
+    almacenero_nombre: str | None = None
+    firma_url: str | None = None
+    detalles: list[PrestamoDevolucionDetalleSchema]
+
+
+class SolicitudPrestamoResumen(BaseModel):
+    id: int
+    trabajador_id: int
+    nombres_completos: str
+    dni: str
+    cargo: str
+    codigo_unico: str
+    fecha_devolucion_prevista: datetime
+    estado: str
+    tipo_prestamo: str
+    obra_id: int | None
+    empresa_ruc: str | None
+    empresa_nombre: str | None
+    persona_dni: str | None
+    persona_nombres: str | None
+    persona_telefono: str | None
+    detalles: list[PrestamoDetalleSchema]
 
 
 class PrestamoQRData(BaseModel):
@@ -132,6 +257,7 @@ class PrestamoQRData(BaseModel):
     foto_estado_inicio: str | None = Field(
         default=None,
         min_length=1,
+        deprecated=True,
     )
 
     @model_validator(mode="after")
@@ -166,32 +292,32 @@ class PrestamoQRData(BaseModel):
                 "artículo dentro del préstamo"
             )
 
-        # -----------------------------------------
-        # PRÉSTAMO INTERNO
-        # -----------------------------------------
+        datos_externos = any([
+            self.empresa_ruc,
+            self.empresa_nombre,
+            self.persona_dni,
+            self.persona_nombres,
+            self.persona_telefono,
+        ])
 
-        if (
-            self.tipo_prestamo
-            == TipoPrestamoSchema.INTERNO
-        ):
-
-            if self.obra_id is None:
+        if self.tipo_prestamo == TipoPrestamoSchema.INTERNO:
+            if self.obra_id is not None:
                 raise ValueError(
-                    "Los préstamos internos "
-                    "deben indicar una obra"
+                    "Un préstamo interno no debe indicar una obra"
+                )
+            if datos_externos:
+                raise ValueError(
+                    "Un préstamo interno no debe contener datos externos"
                 )
 
-            if any([
-                self.empresa_ruc,
-                self.empresa_nombre,
-                self.persona_dni,
-                self.persona_nombres,
-                self.persona_telefono,
-            ]):
+        if self.tipo_prestamo == TipoPrestamoSchema.OBRA:
+            if self.obra_id is None:
                 raise ValueError(
-                    "Un préstamo interno no debe "
-                    "contener datos de empresa "
-                    "ni responsable externo"
+                    "Un préstamo para obra debe indicar una obra"
+                )
+            if datos_externos:
+                raise ValueError(
+                    "Un préstamo para obra no debe contener datos externos"
                 )
 
         # -----------------------------------------
@@ -238,6 +364,11 @@ class PrestamoQRData(BaseModel):
                     "es obligatorio"
                 )
 
+        if self.foto_estado_inicio and len(self.items) != 1:
+            raise ValueError(
+                "Envía la foto dentro del artículo correspondiente"
+            )
+
         return self
 
 
@@ -245,6 +376,7 @@ class PrestamoResponse(BaseModel):
     id: int
     codigo_unico: str
     estado: str
+    pdf_url: str | None = None
 
     message: str = (
         "Préstamo registrado correctamente"
@@ -273,10 +405,15 @@ class PrestamoSchema(BaseModel):
     fecha_prestamo: datetime
     fecha_devolucion_prevista: datetime
 
-    firma_base64: str
+    firma_url: str | None = Field(
+        default=None,
+        validation_alias="firma_base64",
+    )
 
     estado: str
     registrado_por: str
+    almacenero_id: int | None = None
+    almacenero_nombre: str | None = None
     fecha_registro: datetime
 
     tipo_prestamo: str
@@ -290,7 +427,9 @@ class PrestamoSchema(BaseModel):
     persona_telefono: str | None
 
     detalles: list[PrestamoDetalleSchema]
+    devoluciones: list[PrestamoDevolucionSchema] = Field(default_factory=list)
 
     model_config = ConfigDict(
-        from_attributes=True
+        from_attributes=True,
+        populate_by_name=True,
     )

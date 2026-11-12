@@ -99,10 +99,11 @@ def listar_articulos(
 )
 def listar_disponibles(
     db: DbDep,
+    q: str = "",
 ):
     service = AlmacenArticuloService(db)
 
-    return service.repo.get_all_disponibles()
+    return service.repo.get_all_disponibles(q)
 
 
 @router.get(

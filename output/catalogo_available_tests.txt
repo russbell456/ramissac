@@ -1,0 +1,789 @@
+........FFFFFFFF..FF.FFFF...............FF.....F..FFFFFFF....F...F....FF [ 59%]
+.FFEFEF..FFF.EEEEE.FF..F..F...FFFF.FF..FF.......F.                       [100%]
+=================================== ERRORS ====================================
+________ ERROR at setup of test_registrar_devolucion_qr_router_exitoso ________
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_devolucion.py, line 273
+  def test_registrar_devolucion_qr_router_exitoso(client, mocker, mock_current_user_almacenero):
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_devolucion.py:273
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin creado correctamente.
+___ ERROR at setup of test_registrar_devolucion_qr_router_error_bad_request ___
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_devolucion.py, line 336
+  def test_registrar_devolucion_qr_router_error_bad_request(client, mocker, mock_current_user_almacenero):
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_devolucion.py:336
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+_______ ERROR at setup of test_rf04_recupera_datos_trabajador_desde_db ________
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_rf04_sincronizacion_identidad.py, line 11
+  @patch('app.services.almacen_prestamo_service.generar_pdf_prestamo')
+  def test_rf04_recupera_datos_trabajador_desde_db(mock_generar_pdf, mock_db, mocker):
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_rf04_sincronizacion_identidad.py:11
+__________ ERROR at setup of test_rf05_registrar_prestamo_qr_exitoso __________
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_rf05_interaccion_qr.py, line 8
+  def test_rf05_registrar_prestamo_qr_exitoso(client, mocker, mock_current_user_almacenero):
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_rf05_interaccion_qr.py:8
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+___________ ERROR at setup of test_rf06_rf07_generacion_pdf_y_firma ___________
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py, line 14
+  def test_rf06_rf07_generacion_pdf_y_firma(mock_db, mocker):
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py:14
+_____________ ERROR at setup of test_rf08_descargar_pdf_existente _____________
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py, line 121
+  def test_rf08_descargar_pdf_existente(client, mocker):
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py:121
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+__________ ERROR at setup of test_rf08_obtener_prestamos_trabajador ___________
+file C:\upeu\ci-cd\ramissac\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py, line 145
+  def test_rf08_obtener_prestamos_trabajador(
+E       fixture 'mocker' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, clean_db, client, cov, db_session, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, mock_current_user_almacenero, mock_current_user_trabajador, mock_db, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\upeu\ci-cd\ramissac\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py:145
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+================================== FAILURES ===================================
+____ TestAuthServiceRegister.test_register_raises_if_email_already_exists _____
+..\..\app\test\unit\test_auth_full.py:127: in test_register_raises_if_email_already_exists
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+____ TestAuthServiceRegister.test_register_does_not_create_if_email_exists ____
+..\..\app\test\unit\test_auth_full.py:137: in test_register_does_not_create_if_email_exists
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+____________ TestAuthServiceRegister.test_register_hashes_password ____________
+..\..\app\test\unit\test_auth_full.py:152: in test_register_hashes_password
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+____ TestAuthServiceRegister.test_register_stores_hashed_password_in_user _____
+..\..\app\test\unit\test_auth_full.py:171: in test_register_stores_hashed_password_in_user
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+_______ TestAuthServiceRegister.test_register_assigns_default_role_user _______
+..\..\app\test\unit\test_auth_full.py:185: in test_register_assigns_default_role_user
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+__________ TestAuthServiceRegister.test_register_assigns_custom_role __________
+..\..\app\test\unit\test_auth_full.py:199: in test_register_assigns_custom_role
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+____________ TestAuthServiceRegister.test_register_sets_all_fields ____________
+..\..\app\test\unit\test_auth_full.py:214: in test_register_sets_all_fields
+    self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+_________ TestAuthServiceRegister.test_register_returns_created_user __________
+..\..\app\test\unit\test_auth_full.py:234: in test_register_returns_created_user
+    result = self.service.register_user(
+E   TypeError: AuthService.register_user() missing 10 required keyword-only arguments: 'tipo_documento', 'genero', 'fecha_nacimiento', 'telefono', 'telefono_secundario', 'direccion', 'area', 'fecha_ingreso', 'supervisor_id', and 'codigo_unico'
+____ TestAuthServiceAuthenticate.test_authenticate_returns_user_on_success ____
+..\..\app\test\unit\test_auth_full.py:278: in test_authenticate_returns_user_on_success
+    assert result is user
+E   assert None is <app.models.user.User object at 0x000002080A1BC410>
+_ TestAuthServiceAuthenticate.test_authenticate_calls_verify_with_plain_and_hashed _
+..\..\app\test\unit\test_auth_full.py:289: in test_authenticate_calls_verify_with_plain_and_hashed
+    mock_verify.assert_called_once_with("plaintext", "hashed_pw")
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\unittest\mock.py:997: in assert_called_once_with
+    raise AssertionError(msg)
+E   AssertionError: Expected 'verify_password' to be called once. Called 0 times.
+__ TestAuthServiceObtenerTrabajadores.test_obtener_trabajadores_returns_list __
+..\..\app\test\unit\test_auth_full.py:321: in test_obtener_trabajadores_returns_list
+    assert result == trabajadores
+E   AssertionError: assert <MagicMock na...233552819872'> == [<app.models....020809DBFD40>]
+E     
+E     Use -v to get more diff
+_ TestAuthServiceObtenerTrabajadores.test_obtener_trabajadores_filters_by_role _
+..\..\app\test\unit\test_auth_full.py:330: in test_obtener_trabajadores_filters_by_role
+    self.db.query.assert_called_once_with(User)
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\unittest\mock.py:997: in assert_called_once_with
+    raise AssertionError(msg)
+E   AssertionError: Expected 'query' to be called once. Called 0 times.
+_ TestAuthServiceObtenerTrabajadores.test_obtener_trabajadores_returns_empty_list_when_none _
+..\..\app\test\unit\test_auth_full.py:342: in test_obtener_trabajadores_returns_empty_list_when_none
+    assert result == []
+E   AssertionError: assert <MagicMock na...233552827264'> == []
+E     
+E     Use -v to get more diff
+_ TestAuthServiceObtenerTrabajadores.test_obtener_trabajadores_uses_service_db_session _
+..\..\app\test\unit\test_auth_full.py:350: in test_obtener_trabajadores_uses_service_db_session
+    self.db.query.assert_called()
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\unittest\mock.py:955: in assert_called
+    raise AssertionError(msg)
+E   AssertionError: Expected 'query' to have been called.
+_______________ TestUserCreateSchema.test_dni_must_be_8_digits ________________
+..\..\app\test\unit\test_auth_full.py:451: in test_dni_must_be_8_digits
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+_________________ TestUserCreateSchema.test_dni_max_length_8 __________________
+..\..\app\test\unit\test_auth_full.py:457: in test_dni_max_length_8
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+_____________ TestUserCreateSchema.test_role_can_be_set_to_admin ______________
+..\..\app\test\unit\test_auth_full.py:489: in test_role_can_be_set_to_admin
+    u = UserCreate(**self._valid_data(role="admin"))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for UserCreate
+E   role
+E     Input should be 'user' or 'trabajador' [type=literal_error, input_value='admin', input_type=str]
+E       For further information visit https://errors.pydantic.dev/2.13/v/literal_error
+_____________ TestUserResponseSchema.test_valid_response_from_orm _____________
+..\..\app\test\unit\test_auth_full.py:510: in test_valid_response_from_orm
+    resp = UserResponse.model_validate(user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 5 validation errors for UserResponse
+E   tipo_documento
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   estado_laboral
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   activo
+E     Input should be a valid boolean [type=bool_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/bool_type
+E   fecha_creacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+E   fecha_actualizacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+_____________ TestUserResponseSchema.test_cargo_defaults_to_none ______________
+..\..\app\test\unit\test_auth_full.py:517: in test_cargo_defaults_to_none
+    resp = UserResponse.model_validate(user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 5 validation errors for UserResponse
+E   tipo_documento
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   estado_laboral
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   activo
+E     Input should be a valid boolean [type=bool_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/bool_type
+E   fecha_creacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+E   fecha_actualizacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+__________ TestUserResponseSchema.test_codigo_unico_defaults_to_none __________
+..\..\app\test\unit\test_auth_full.py:523: in test_codigo_unico_defaults_to_none
+    resp = UserResponse.model_validate(user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 5 validation errors for UserResponse
+E   tipo_documento
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   estado_laboral
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   activo
+E     Input should be a valid boolean [type=bool_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/bool_type
+E   fecha_creacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+E   fecha_actualizacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+______________ TestUserResponseSchema.test_role_defaults_to_user ______________
+..\..\app\test\unit\test_auth_full.py:529: in test_role_defaults_to_user
+    resp = UserResponse.model_validate(user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 6 validation errors for UserResponse
+E   tipo_documento
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   estado_laboral
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   role
+E     Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/string_type
+E   activo
+E     Input should be a valid boolean [type=bool_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/bool_type
+E   fecha_creacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+E   fecha_actualizacion
+E     Input should be a valid datetime [type=datetime_type, input_value=None, input_type=NoneType]
+E       For further information visit https://errors.pydantic.dev/2.13/v/datetime_type
+___________________ TestTokenSchema.test_token_schema_valid ___________________
+..\..\app\test\unit\test_auth_full.py:545: in test_token_schema_valid
+    token = Token(**payload)
+            ^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 5 validation errors for Token
+E   user.tipo_documento
+E     Field required [type=missing, input_value={'id': 1, 'nombre': 'Juan...t.com', 'role': 'admin'}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   user.estado_laboral
+E     Field required [type=missing, input_value={'id': 1, 'nombre': 'Juan...t.com', 'role': 'admin'}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   user.activo
+E     Field required [type=missing, input_value={'id': 1, 'nombre': 'Juan...t.com', 'role': 'admin'}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   user.fecha_creacion
+E     Field required [type=missing, input_value={'id': 1, 'nombre': 'Juan...t.com', 'role': 'admin'}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   user.fecha_actualizacion
+E     Field required [type=missing, input_value={'id': 1, 'nombre': 'Juan...t.com', 'role': 'admin'}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+______ TestRegisterEndpoint.test_register_returns_201_or_200_on_success _______
+..\..\app\test\unit\test_auth_full.py:595: in test_register_returns_201_or_200_on_success
+    resp = c.post("/auth/register", json=self._valid_payload())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\starlette\testclient.py:555: in post
+    return super().post(
+..\..\venv\Lib\site-packages\httpx\_client.py:1144: in post
+    return self.request(
+..\..\venv\Lib\site-packages\starlette\testclient.py:454: in request
+    return super().request(
+..\..\venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\starlette\testclient.py:356: in handle_request
+    raise exc
+..\..\venv\Lib\site-packages\starlette\testclient.py:353: in handle_request
+    portal.call(self.app, scope, receive, send)
+..\..\venv\Lib\site-packages\anyio\from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:450: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:395: in __get_result
+    raise self._exception
+..\..\venv\Lib\site-packages\anyio\from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+..\..\venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+..\..\venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+..\..\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:2531: in app
+    await route.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1700: in handle
+    await self.original_router.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:2586: in handle
+    await included_router._handle_selected(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1720: in _handle_selected
+    await original_route.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1239: in handle
+    await app(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:150: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+..\..\venv\Lib\site-packages\fastapi\routing.py:136: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\fastapi\routing.py:711: in app
+    content = await serialize_response(
+..\..\venv\Lib\site-packages\fastapi\routing.py:316: in serialize_response
+    raise ResponseValidationError(
+E   fastapi.exceptions.ResponseValidationError: 5 validation errors:
+E     {'type': 'string_type', 'loc': ('response', 'tipo_documento'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'string_type', 'loc': ('response', 'estado_laboral'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'bool_type', 'loc': ('response', 'activo'), 'msg': 'Input should be a valid boolean', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 'fecha_creacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 'fecha_actualizacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E   
+E     File "C:\upeu\ci-cd\ramissac\app\routers\auth_router.py", line 184, in register
+E       POST /auth/register
+_______ TestRegisterEndpoint.test_register_returns_400_for_invalid_role _______
+..\..\app\test\unit\test_auth_full.py:601: in test_register_returns_400_for_invalid_role
+    assert resp.status_code == 400
+E   assert 422 == 400
+E    +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+_________ TestObtenerTrabajadoresEndpoint.test_returns_200_for_admin __________
+..\..\app\test\unit\test_auth_full.py:642: in test_returns_200_for_admin
+    resp = c.get("/auth/trabajadores")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\starlette\testclient.py:482: in get
+    return super().get(
+..\..\venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+..\..\venv\Lib\site-packages\starlette\testclient.py:454: in request
+    return super().request(
+..\..\venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\starlette\testclient.py:356: in handle_request
+    raise exc
+..\..\venv\Lib\site-packages\starlette\testclient.py:353: in handle_request
+    portal.call(self.app, scope, receive, send)
+..\..\venv\Lib\site-packages\anyio\from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:450: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:395: in __get_result
+    raise self._exception
+..\..\venv\Lib\site-packages\anyio\from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+..\..\venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+..\..\venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+..\..\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:2531: in app
+    await route.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1700: in handle
+    await self.original_router.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:2586: in handle
+    await included_router._handle_selected(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1720: in _handle_selected
+    await original_route.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1239: in handle
+    await app(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:150: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+..\..\venv\Lib\site-packages\fastapi\routing.py:136: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\fastapi\routing.py:711: in app
+    content = await serialize_response(
+..\..\venv\Lib\site-packages\fastapi\routing.py:316: in serialize_response
+    raise ResponseValidationError(
+E   fastapi.exceptions.ResponseValidationError: 5 validation errors:
+E     {'type': 'string_type', 'loc': ('response', 0, 'tipo_documento'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'string_type', 'loc': ('response', 0, 'estado_laboral'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'bool_type', 'loc': ('response', 0, 'activo'), 'msg': 'Input should be a valid boolean', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 0, 'fecha_creacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 0, 'fecha_actualizacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E   
+E     File "C:\upeu\ci-cd\ramissac\app\routers\auth_router.py", line 754, in obtener_trabajadores
+E       GET /auth/trabajadores
+________ TestObtenerTrabajadoresEndpoint.test_returns_list_of_workers _________
+..\..\app\test\unit\test_auth_full.py:671: in test_returns_list_of_workers
+    resp = c.get("/auth/trabajadores")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\starlette\testclient.py:482: in get
+    return super().get(
+..\..\venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+..\..\venv\Lib\site-packages\starlette\testclient.py:454: in request
+    return super().request(
+..\..\venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+..\..\venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+..\..\venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\starlette\testclient.py:356: in handle_request
+    raise exc
+..\..\venv\Lib\site-packages\starlette\testclient.py:353: in handle_request
+    portal.call(self.app, scope, receive, send)
+..\..\venv\Lib\site-packages\anyio\from_thread.py:338: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:450: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:395: in __get_result
+    raise self._exception
+..\..\venv\Lib\site-packages\anyio\from_thread.py:263: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\applications.py:90: in __call__
+    await self.middleware_stack(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+..\..\venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+..\..\venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+..\..\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\routing.py:660: in __call__
+    await self.middleware_stack(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:2531: in app
+    await route.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1700: in handle
+    await self.original_router.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:2586: in handle
+    await included_router._handle_selected(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1720: in _handle_selected
+    await original_route.handle(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:1239: in handle
+    await app(scope, receive, send)
+..\..\venv\Lib\site-packages\fastapi\routing.py:150: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+..\..\venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+..\..\venv\Lib\site-packages\fastapi\routing.py:136: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\fastapi\routing.py:711: in app
+    content = await serialize_response(
+..\..\venv\Lib\site-packages\fastapi\routing.py:316: in serialize_response
+    raise ResponseValidationError(
+E   fastapi.exceptions.ResponseValidationError: 10 validation errors:
+E     {'type': 'string_type', 'loc': ('response', 0, 'tipo_documento'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'string_type', 'loc': ('response', 0, 'estado_laboral'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'bool_type', 'loc': ('response', 0, 'activo'), 'msg': 'Input should be a valid boolean', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 0, 'fecha_creacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 0, 'fecha_actualizacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E     {'type': 'string_type', 'loc': ('response', 1, 'tipo_documento'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'string_type', 'loc': ('response', 1, 'estado_laboral'), 'msg': 'Input should be a valid string', 'input': None}
+E     {'type': 'bool_type', 'loc': ('response', 1, 'activo'), 'msg': 'Input should be a valid boolean', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 1, 'fecha_creacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E     {'type': 'datetime_type', 'loc': ('response', 1, 'fecha_actualizacion'), 'msg': 'Input should be a valid datetime', 'input': None}
+E   
+E     File "C:\upeu\ci-cd\ramissac\app\routers\auth_router.py", line 754, in obtener_trabajadores
+E       GET /auth/trabajadores
+_____________ test_registrar_devolucion_desde_qr_exitoso_parcial ______________
+..\..\app\test\unit\test_devolucion.py:78: in test_registrar_devolucion_desde_qr_exitoso_parcial
+    devolucion = service.registrar_devolucion_desde_qr(data, almacenero_id=999)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\app\services\almacen_devolucion_service.py:332: in registrar_devolucion_desde_qr
+    self.repo.devolver_stock(
+..\..\app\repositories\almacen_devolucion_repository.py:133: in devolver_stock
+    raise ValueError(
+E   ValueError: El art�culo Taladro Bosch tiene inconsistencia en la cantidad prestada
+______________ test_registrar_devolucion_desde_qr_exitoso_total _______________
+..\..\app\test\unit\test_devolucion.py:154: in test_registrar_devolucion_desde_qr_exitoso_total
+    devolucion = service.registrar_devolucion_desde_qr(data, almacenero_id=999)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\app\services\almacen_devolucion_service.py:332: in registrar_devolucion_desde_qr
+    self.repo.devolver_stock(
+..\..\app\repositories\almacen_devolucion_repository.py:133: in devolver_stock
+    raise ValueError(
+E   ValueError: El art�culo Taladro Bosch tiene inconsistencia en la cantidad prestada
+________________ test_registrar_devolucion_detalle_inexistente ________________
+..\..\app\test\unit\test_devolucion.py:211: in test_registrar_devolucion_detalle_inexistente
+    with pytest.raises(ValueError, match="Detalle no encontrado"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Detalle no encontrado'
+E     Actual message: 'Pr�stamo no encontrado'
+_____________ test_registrar_devolucion_cantidad_excede_pendiente _____________
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:1969: in _exec_single_context
+    self.dialect.do_execute(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+E   sqlite3.IntegrityError: NOT NULL constraint failed: almacen_articulos.unidad_medida
+
+The above exception was the direct cause of the following exception:
+..\..\app\test\unit\test_devolucion.py:250: in test_registrar_devolucion_cantidad_excede_pendiente
+    db_session.commit()
+..\..\venv\Lib\site-packages\sqlalchemy\orm\session.py:2035: in commit
+    trans.commit(_to_root=True)
+<string>:2: in commit
+    ???
+..\..\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\sqlalchemy\orm\session.py:1316: in commit
+    self._prepare_impl()
+<string>:2: in _prepare_impl
+    ???
+..\..\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\sqlalchemy\orm\session.py:1290: in _prepare_impl
+    self.session.flush()
+..\..\venv\Lib\site-packages\sqlalchemy\orm\session.py:4353: in flush
+    self._flush(objects)
+..\..\venv\Lib\site-packages\sqlalchemy\orm\session.py:4488: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+..\..\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:122: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+..\..\venv\Lib\site-packages\sqlalchemy\orm\session.py:4449: in _flush
+    flush_context.execute()
+..\..\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py:465: in execute
+    rec.execute(self)
+..\..\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py:641: in execute
+    util.preloaded.orm_persistence.save_obj(
+..\..\venv\Lib\site-packages\sqlalchemy\orm\persistence.py:94: in save_obj
+    _emit_insert_statements(
+..\..\venv\Lib\site-packages\sqlalchemy\orm\persistence.py:1049: in _emit_insert_statements
+    result = connection.execute(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:1421: in execute
+    return meth(
+..\..\venv\Lib\site-packages\sqlalchemy\sql\elements.py:526: in _execute_on_connection
+    return connection._execute_clauseelement(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:1643: in _execute_clauseelement
+    ret = self._execute_context(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:1848: in _execute_context
+    return self._exec_single_context(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:1988: in _exec_single_context
+    self._handle_dbapi_exception(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:2365: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+..\..\venv\Lib\site-packages\sqlalchemy\engine\base.py:1969: in _exec_single_context
+    self.dialect.do_execute(
+..\..\venv\Lib\site-packages\sqlalchemy\engine\default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+E   sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: almacen_articulos.unidad_medida
+E   [SQL: INSERT INTO almacen_articulos (id, nombre, marca, modelo, serie, descripcion, categoria, unidad_medida, tipo, codigo_excel, stock_total, stock_actual, en_prestamo, estado_fisico, costo_hora, costo_dia, costo_reposicion, requiere_foto_prestamo, requiere_foto_devolucion, es_activo_alto_valor, activo, fecha_baja) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+E   [parameters: (1, 'Taladro', None, None, None, None, None, None, 'EQUIPO', None, 0, 5, 0, None, None, None, None, 0, 0, 0, 1, None)]
+E   (Background on this error at: https://sqlalche.me/e/20/gkpj)
+_______________ test_registrar_devolucion_qr_router_sin_permiso _______________
+..\..\app\test\unit\test_devolucion.py:330: in test_registrar_devolucion_qr_router_sin_permiso
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+E   assert 400 == 403
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+E    +  and   403 = status.HTTP_403_FORBIDDEN
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+_______ test_prestamo_schema_accepts_optional_obra_and_external_fields ________
+..\..\app\test\unit\test_prestamo_extension_compat.py:9: in test_prestamo_schema_accepts_optional_obra_and_external_fields
+    data = PrestamoQRData(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for PrestamoQRData
+E     Value error, Un pr�stamo externo no puede estar asociado a una obra [type=value_error, input_value={'trabajador_id': 1, 'cod..._telefono': '987654321'}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+___________________ test_rf01_obtener_catalogo_disponibles ____________________
+..\..\app\test\unit\test_rf01_catalogo_seleccion.py:9: in test_rf01_obtener_catalogo_disponibles
+    repo.upsert_articulo({
+    ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'AlmacenArticuloRepository' object has no attribute 'upsert_articulo'
+_______________ test_rf01_buscar_articulos_por_nombre_o_codigo ________________
+..\..\app\test\unit\test_rf01_catalogo_seleccion.py:33: in test_rf01_buscar_articulos_por_nombre_o_codigo
+    repo.upsert_articulo({
+    ^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'AlmacenArticuloRepository' object has no attribute 'upsert_articulo'
+_________________ test_rf02_stock_insuficiente_levanta_error __________________
+..\..\app\test\unit\test_rf02_validacion_disponibilidad.py:25: in test_rf02_stock_insuficiente_levanta_error
+    with pytest.raises(ValueError, match="stock suficiente|Stock insuficiente"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'stock suficiente|Stock insuficiente'
+E     Actual message: 'El DNI no coincide con el trabajador'
+_______________________ test_actualizar_usuario_exitoso _______________________
+..\..\app\test\unit\test_user_update.py:25: in test_actualizar_usuario_exitoso
+    updated_user = service.actualizar_usuario(
+E   TypeError: AuthService.actualizar_usuario() got an unexpected keyword argument 'nombre'
+_____________________ test_actualizar_usuario_inexistente _____________________
+..\..\app\test\unit\test_user_update.py:57: in test_actualizar_usuario_inexistente
+    service.actualizar_usuario(
+E   TypeError: AuthService.actualizar_usuario() got an unexpected keyword argument 'nombre'
+__________________ test_user_create_rejects_dni_with_letters __________________
+..\..\app\test\unit\test_validation_handler.py:55: in test_user_create_rejects_dni_with_letters
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+___________________ test_user_login_rejects_short_password ____________________
+..\..\app\test\unit\test_validation_handler.py:87: in test_user_login_rejects_short_password
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+____________________ test_registrar_devolucion_qr_success _____________________
+..\..\app\test\integration\test_devolucion_integration.py:35: in test_registrar_devolucion_qr_success
+    token = login_response.json()["access_token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+___________________ test_registrar_devolucion_qr_forbidden ____________________
+..\..\app\test\integration\test_devolucion_integration.py:165: in test_registrar_devolucion_qr_forbidden
+    assert response.status_code == 403
+E   assert 400 == 403
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+__________________ test_registrar_devolucion_qr_bad_request ___________________
+..\..\app\test\integration\test_devolucion_integration.py:190: in test_registrar_devolucion_qr_bad_request
+    token = login_response.json()["access_token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+_______________________ test_registrar_prestamo_success _______________________
+..\..\app\test\integration\test_prestamo_integration.py:45: in test_registrar_prestamo_success
+    assert register_admin.status_code == 201
+E   assert 400 == 201
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+_________________ test_registrar_prestamo_stock_insuficiente __________________
+..\..\app\test\integration\test_prestamo_integration.py:178: in test_registrar_prestamo_stock_insuficiente
+    assert register_admin.status_code == 201
+E   assert 400 == 201
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+______________________ test_registrar_prestamo_forbidden ______________________
+..\..\app\test\integration\test_prestamo_integration.py:326: in test_registrar_prestamo_forbidden
+    assert response.status_code == 403
+E   assert 400 == 403
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+______________________ test_obtener_prestamos_trabajador ______________________
+..\..\app\test\integration\test_prestamo_integration.py:450: in test_obtener_prestamos_trabajador
+    token_admin = login_admin.json()["access_token"]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+_______________________ test_obtener_prestamos_articulo _______________________
+..\..\app\test\integration\test_prestamo_integration.py:540: in test_obtener_prestamos_articulo
+    token_admin = login_admin.json()["access_token"]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+________________ test_ruta_rechaza_usuario_sin_rol_trabajador _________________
+..\..\app\test\integration\test_transportes_integration.py:338: in test_ruta_rechaza_usuario_sin_rol_trabajador
+    assert usuario.status_code == 201
+E   assert 400 == 201
+E    +  where 400 = <Response [400 Bad Request]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Usuario admin ya existe.
+=========================== short test summary info ===========================
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_raises_if_email_already_exists
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_does_not_create_if_email_exists
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_hashes_password
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_stores_hashed_password_in_user
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_assigns_default_role_user
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_assigns_custom_role
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_sets_all_fields
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceRegister::test_register_returns_created_user
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceAuthenticate::test_authenticate_returns_user_on_success
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceAuthenticate::test_authenticate_calls_verify_with_plain_and_hashed
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceObtenerTrabajadores::test_obtener_trabajadores_returns_list
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceObtenerTrabajadores::test_obtener_trabajadores_filters_by_role
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceObtenerTrabajadores::test_obtener_trabajadores_returns_empty_list_when_none
+FAILED ..\..\app\test\unit\test_auth_full.py::TestAuthServiceObtenerTrabajadores::test_obtener_trabajadores_uses_service_db_session
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserCreateSchema::test_dni_must_be_8_digits
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserCreateSchema::test_dni_max_length_8
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserCreateSchema::test_role_can_be_set_to_admin
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserResponseSchema::test_valid_response_from_orm
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserResponseSchema::test_cargo_defaults_to_none
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserResponseSchema::test_codigo_unico_defaults_to_none
+FAILED ..\..\app\test\unit\test_auth_full.py::TestUserResponseSchema::test_role_defaults_to_user
+FAILED ..\..\app\test\unit\test_auth_full.py::TestTokenSchema::test_token_schema_valid
+FAILED ..\..\app\test\unit\test_auth_full.py::TestRegisterEndpoint::test_register_returns_201_or_200_on_success
+FAILED ..\..\app\test\unit\test_auth_full.py::TestRegisterEndpoint::test_register_returns_400_for_invalid_role
+FAILED ..\..\app\test\unit\test_auth_full.py::TestObtenerTrabajadoresEndpoint::test_returns_200_for_admin
+FAILED ..\..\app\test\unit\test_auth_full.py::TestObtenerTrabajadoresEndpoint::test_returns_list_of_workers
+FAILED ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_desde_qr_exitoso_parcial
+FAILED ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_desde_qr_exitoso_total
+FAILED ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_detalle_inexistente
+FAILED ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_cantidad_excede_pendiente
+FAILED ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_qr_router_sin_permiso
+FAILED ..\..\app\test\unit\test_prestamo_extension_compat.py::test_prestamo_schema_accepts_optional_obra_and_external_fields
+FAILED ..\..\app\test\unit\test_rf01_catalogo_seleccion.py::test_rf01_obtener_catalogo_disponibles
+FAILED ..\..\app\test\unit\test_rf01_catalogo_seleccion.py::test_rf01_buscar_articulos_por_nombre_o_codigo
+FAILED ..\..\app\test\unit\test_rf02_validacion_disponibilidad.py::test_rf02_stock_insuficiente_levanta_error
+FAILED ..\..\app\test\unit\test_user_update.py::test_actualizar_usuario_exitoso
+FAILED ..\..\app\test\unit\test_user_update.py::test_actualizar_usuario_inexistente
+FAILED ..\..\app\test\unit\test_validation_handler.py::test_user_create_rejects_dni_with_letters
+FAILED ..\..\app\test\unit\test_validation_handler.py::test_user_login_rejects_short_password
+FAILED ..\..\app\test\integration\test_devolucion_integration.py::test_registrar_devolucion_qr_success
+FAILED ..\..\app\test\integration\test_devolucion_integration.py::test_registrar_devolucion_qr_forbidden
+FAILED ..\..\app\test\integration\test_devolucion_integration.py::test_registrar_devolucion_qr_bad_request
+FAILED ..\..\app\test\integration\test_prestamo_integration.py::test_registrar_prestamo_success
+FAILED ..\..\app\test\integration\test_prestamo_integration.py::test_registrar_prestamo_stock_insuficiente
+FAILED ..\..\app\test\integration\test_prestamo_integration.py::test_registrar_prestamo_forbidden
+FAILED ..\..\app\test\integration\test_prestamo_integration.py::test_obtener_prestamos_trabajador
+FAILED ..\..\app\test\integration\test_prestamo_integration.py::test_obtener_prestamos_articulo
+FAILED ..\..\app\test\integration\test_transportes_integration.py::test_ruta_rechaza_usuario_sin_rol_trabajador
+ERROR ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_qr_router_exitoso
+ERROR ..\..\app\test\unit\test_devolucion.py::test_registrar_devolucion_qr_router_error_bad_request
+ERROR ..\..\app\test\unit\test_rf04_sincronizacion_identidad.py::test_rf04_recupera_datos_trabajador_desde_db
+ERROR ..\..\app\test\unit\test_rf05_interaccion_qr.py::test_rf05_registrar_prestamo_qr_exitoso
+ERROR ..\..\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py::test_rf06_rf07_generacion_pdf_y_firma
+ERROR ..\..\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py::test_rf08_descargar_pdf_existente
+ERROR ..\..\app\test\unit\test_rf06_rf07_rf08_documentacion_firma_persistencia.py::test_rf08_obtener_prestamos_trabajador
+48 failed, 67 passed, 44 warnings, 7 errors in 11.23s

@@ -17,12 +17,14 @@ from app.database.base import Base
 
 
 class EstadoPrestamo(enum.Enum):
+    PENDIENTE = "pendiente"
     ABIERTO = "abierto"
     CERRADO = "cerrado"
 
 
 class TipoPrestamo(enum.Enum):
     INTERNO = "interno"
+    OBRA = "obra"
     EXTERNO = "externo"
 
 
@@ -70,9 +72,11 @@ class AlmacenPrestamo(Base):
         nullable=False,
     )
 
+    # New records store a relative file path here. Existing Base64 rows remain
+    # readable until their retention/migration policy is decided.
     firma_base64 = Column(
         Text,
-        nullable=False,
+        nullable=True,
     )
 
     estado = Column(
@@ -125,7 +129,7 @@ class AlmacenPrestamo(Base):
         nullable=True,
     )
 
-    # Evidencia fotográfica inicial
+    # Legacy compatibility: new photos are stored on each detail as file paths.
     foto_estado_inicio = Column(
         Text,
         nullable=True,
@@ -145,6 +149,13 @@ class AlmacenPrestamo(Base):
     almacenero = relationship(
         "User",
         foreign_keys=[almacenero_id],
+    )
+
+    devoluciones = relationship(
+        "AlmacenDevolucion",
+        back_populates="prestamo",
+        cascade="all, delete-orphan",
+        order_by="AlmacenDevolucion.fecha_devolucion",
     )
 
     obra = relationship(
@@ -189,6 +200,12 @@ class AlmacenPrestamoDetalle(Base):
         Boolean,
         default=False,
         nullable=False,
+    )
+
+    # Relative file path for new article evidence; legacy Base64 remains readable.
+    foto_estado_inicio = Column(
+        Text,
+        nullable=True,
     )
 
     prestamo = relationship(

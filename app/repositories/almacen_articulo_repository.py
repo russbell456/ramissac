@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from sqlalchemy.orm import Session, selectinload
 
 from app.models.almacen_articulos import (
     AlmacenArticulo,
@@ -18,6 +19,7 @@ class AlmacenArticuloRepository:
     def get_all(self):
         return (
             self.db.query(AlmacenArticulo)
+            .options(selectinload(AlmacenArticulo.imagenes))
             .filter(
                 AlmacenArticulo.activo.is_(True)
             )
@@ -27,18 +29,35 @@ class AlmacenArticuloRepository:
             .all()
         )
 
-    def get_all_disponibles(self):
-        return (
+    def get_all_disponibles(self, q: str = ""):
+        query = (
             self.db.query(AlmacenArticulo)
+            .options(selectinload(AlmacenArticulo.imagenes))
             .filter(
                 AlmacenArticulo.stock_actual > 0,
                 AlmacenArticulo.activo.is_(True),
             )
-            .order_by(
-                AlmacenArticulo.nombre.asc()
-            )
-            .all()
         )
+        if q.strip():
+            # Treat user input literally, including SQL wildcard characters.
+            query = query.filter(self._search_filter(q.strip(), literal=True))
+        return query.order_by(AlmacenArticulo.nombre.asc()).all()
+
+    @staticmethod
+    def _search_filter(query: str, *, literal: bool = False):
+        if literal:
+            query = query.replace("/", "//").replace("%", "/%").replace("_", "/_")
+        pattern = f"%{query}%"
+        return or_(*(
+            column.ilike(pattern, escape="/" if literal else None)
+            for column in (
+                AlmacenArticulo.nombre,
+                AlmacenArticulo.codigo_excel,
+                AlmacenArticulo.serie,
+                AlmacenArticulo.marca,
+                AlmacenArticulo.modelo,
+            )
+        ))
 
     def get_by_id(
         self,
@@ -46,6 +65,7 @@ class AlmacenArticuloRepository:
     ):
         return (
             self.db.query(AlmacenArticulo)
+            .options(selectinload(AlmacenArticulo.imagenes))
             .filter(
                 AlmacenArticulo.id == articulo_id
             )
@@ -135,47 +155,12 @@ class AlmacenArticuloRepository:
         self,
         query: str,
     ):
-        search = f"%{query}%"
-
         return (
             self.db.query(AlmacenArticulo)
-            .filter(
-                AlmacenArticulo.activo.is_(True)
-            )
-            .filter(
-                (
-                    AlmacenArticulo.nombre.ilike(
-                        search
-                    )
-                )
-                |
-                (
-                    AlmacenArticulo.codigo_excel.ilike(
-                        search
-                    )
-                )
-                |
-                (
-                    AlmacenArticulo.serie.ilike(
-                        search
-                    )
-                )
-                |
-                (
-                    AlmacenArticulo.marca.ilike(
-                        search
-                    )
-                )
-                |
-                (
-                    AlmacenArticulo.modelo.ilike(
-                        search
-                    )
-                )
-            )
-            .order_by(
-                AlmacenArticulo.nombre.asc()
-            )
+            .options(selectinload(AlmacenArticulo.imagenes))
+            .filter(AlmacenArticulo.activo.is_(True))
+            .filter(self._search_filter(query))
+            .order_by(AlmacenArticulo.nombre.asc())
             .all()
         )
 

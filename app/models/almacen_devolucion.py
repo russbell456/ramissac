@@ -7,6 +7,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Integer,
+    Numeric,
     String,
     Text,
 )
@@ -58,6 +59,8 @@ class AlmacenDevolucion(Base):
         nullable=False,
     )
 
+    # New records store a relative file path; the column name is retained to
+    # avoid a database migration and legacy Base64 rows remain supported.
     firma_base64 = Column(
         Text,
         nullable=False,
@@ -81,8 +84,7 @@ class AlmacenDevolucion(Base):
         nullable=False,
     )
 
-    # Evidencia fotográfica del estado
-    # en el momento de la devolución.
+    # Legacy compatibility field; new evidence is stored on the return detail.
     foto_estado_devuelto = Column(
         Text,
         nullable=True,
@@ -112,6 +114,7 @@ class AlmacenDevolucion(Base):
     prestamo = relationship(
         "AlmacenPrestamo",
         foreign_keys=[prestamo_id],
+        back_populates="devoluciones",
     )
 
 
@@ -139,6 +142,46 @@ class AlmacenDevolucionDetalle(Base):
     cantidad_devuelta = Column(
         Integer,
         nullable=False,
+    )
+
+    # Relative file path for this partial return's evidence.
+    foto_estado_devuelto = Column(
+        Text,
+        nullable=True,
+    )
+
+    minutos_efectivos = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    dias_tarifa = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    minutos_residuales = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    costo_hora_aplicado = Column(
+        Numeric(10, 2),
+        nullable=True,
+    )
+
+    costo_dia_aplicado = Column(
+        Numeric(10, 2),
+        nullable=True,
+    )
+
+    importe_informativo = Column(
+        Numeric(12, 2),
+        nullable=False,
+        default=0,
     )
 
     devolucion = relationship(

@@ -1,0 +1,27 @@
+
+=================================== ERRORS ====================================
+___________ ERROR collecting app/test/unit/test_articulo_gestion.py ___________
+ImportError while importing test module 'C:\upeu\ci-cd\ramissac\app\test\unit\test_articulo_gestion.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\app\test\unit\test_articulo_gestion.py:4: in <module>
+    import pandas as pd
+E   ModuleNotFoundError: No module named 'pandas'
+_____ ERROR collecting app/test/integration/test_articulo_integration.py ______
+ImportError while importing test module 'C:\upeu\ci-cd\ramissac\app\test\integration\test_articulo_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\Russbell\AppData\Local\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\app\test\integration\test_articulo_integration.py:2: in <module>
+    import pandas as pd
+E   ModuleNotFoundError: No module named 'pandas'
+=========================== short test summary info ===========================
+ERROR ..\..\app\test\unit\test_articulo_gestion.py
+ERROR ..\..\app\test\integration\test_articulo_integration.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!
+4 warnings, 2 errors in 1.06s

@@ -37,6 +37,7 @@ class AlmacenArticuloService:
         data: dict,
         usuario_id: int,
     ):
+        self._sincronizar_reglas_fotografia(data)
         codigo = data.get("codigo_excel")
         serie = data.get("serie")
 
@@ -92,6 +93,10 @@ class AlmacenArticuloService:
         articulo = self.obtener_articulo(
             articulo_id
         )
+        self._sincronizar_reglas_fotografia(
+            data,
+            es_activo_alto_valor_actual=articulo.es_activo_alto_valor,
+        )
 
         codigo = data.get("codigo_excel")
 
@@ -131,6 +136,24 @@ class AlmacenArticuloService:
         )
 
         return articulo
+
+    @staticmethod
+    def _sincronizar_reglas_fotografia(
+        data: dict,
+        es_activo_alto_valor_actual: bool = False,
+    ) -> None:
+        """El alto valor es la fuente única de las fotos obligatorias."""
+        es_alto_valor = data.get(
+            "es_activo_alto_valor",
+            es_activo_alto_valor_actual,
+        )
+        if es_alto_valor is None:
+            es_alto_valor = es_activo_alto_valor_actual
+
+        es_alto_valor = bool(es_alto_valor)
+        data["es_activo_alto_valor"] = es_alto_valor
+        data["requiere_foto_prestamo"] = es_alto_valor
+        data["requiere_foto_devolucion"] = es_alto_valor
 
     def desactivar_articulo(
         self,
@@ -227,7 +250,9 @@ class AlmacenArticuloService:
                 "Use JPG, PNG o WEBP"
             )
 
-        content = await file.read()
+        # Stop after the accepted limit plus one byte instead of buffering an
+        # arbitrarily large upload before rejecting it.
+        content = await file.read(MAX_IMAGE_SIZE + 1)
 
         if len(content) > MAX_IMAGE_SIZE:
             raise ValueError(

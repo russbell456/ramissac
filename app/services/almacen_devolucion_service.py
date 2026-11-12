@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from app.models.almacen_articulos import (
@@ -29,6 +31,11 @@ from app.schemas.almacen_devolucion import (
 from app.services.auditoria_service import (
     AuditoriaService,
 )
+from app.services.prestamo_calculo_service import (
+    PrestamoCalculoService,
+)
+from app.utils.evidence_storage import rename_stored_upload
+from app.utils.pdf_generator import generar_pdf_prestamo
 
 
 class AlmacenDevolucionService:
@@ -178,6 +185,8 @@ class AlmacenDevolucionService:
                     "al préstamo"
                 )
 
+            fecha_devolucion_real = datetime.utcnow()
+
             # ==========================================
             # 9. PROCESAR ITEMS
             # ==========================================
@@ -282,18 +291,19 @@ class AlmacenDevolucionService:
                 # FOTOGRAFÍA
                 # ======================================
 
-                requiere_foto = (
-                    getattr(
-                        articulo,
-                        "requiere_foto_devolucion",
-                        False,
+                requiere_foto = articulo.es_activo_alto_valor
+                foto_estado_devuelto = (
+                    item.foto_estado_devuelto
+                    or (
+                        data.foto_estado_devuelto
+                        if len(data.items) == 1
+                        else None
                     )
-                    or articulo.es_activo_alto_valor
                 )
 
                 if (
                     requiere_foto
-                    and not data.foto_estado_devuelto
+                    and not foto_estado_devuelto
                 ):
 
                     raise ValueError(
@@ -301,6 +311,19 @@ class AlmacenDevolucionService:
                         "devolución es obligatoria "
                         f"para {articulo.nombre}"
                     )
+
+                minutos_efectivos = (
+                    PrestamoCalculoService.calcular_minutos_efectivos(
+                        prestamo.fecha_prestamo,
+                        fecha_devolucion_real,
+                    )
+                )
+                calculo = PrestamoCalculoService.calcular_importe(
+                    minutos_efectivos=minutos_efectivos,
+                    cantidad=item.cantidad,
+                    costo_hora=articulo.costo_hora,
+                    costo_dia=articulo.costo_dia,
+                )
 
                 # ======================================
                 # ACTUALIZAR STOCK
@@ -332,6 +355,29 @@ class AlmacenDevolucionService:
                         cantidad_devuelta=(
                             item.cantidad
                         ),
+                        foto_estado_devuelto=(
+                            foto_estado_devuelto
+                            if requiere_foto
+                            else None
+                        ),
+                        minutos_efectivos=(
+                            minutos_efectivos
+                        ),
+                        dias_tarifa=(
+                            calculo["dias_tarifa"]
+                        ),
+                        minutos_residuales=(
+                            calculo["minutos_residuales"]
+                        ),
+                        costo_hora_aplicado=(
+                            calculo["costo_hora_aplicado"]
+                        ),
+                        costo_dia_aplicado=(
+                            calculo["costo_dia_aplicado"]
+                        ),
+                        importe_informativo=(
+                            calculo["importe_informativo"]
+                        ),
                     )
                 )
 
@@ -358,7 +404,7 @@ class AlmacenDevolucionService:
                 ),
 
                 fecha_devolucion=(
-                    data.fecha_devolucion
+                    fecha_devolucion_real
                 ),
 
                 firma_base64=(
@@ -373,6 +419,11 @@ class AlmacenDevolucionService:
 
                 foto_estado_devuelto=(
                     data.foto_estado_devuelto
+                    if any(
+                        detalle.foto_estado_devuelto
+                        for detalle in detalles_devolucion
+                    )
+                    else None
                 ),
 
                 observacion_estado=(
@@ -386,6 +437,21 @@ class AlmacenDevolucionService:
                     detalles_devolucion,
                 )
             )
+
+            # Assign stable, traceable filenames once both generated IDs exist.
+            devolucion.firma_base64 = rename_stored_upload(
+                devolucion.firma_base64,
+                f"firma_devolucion_{devolucion.id}.png",
+            )
+            for detalle_dev in devolucion.detalles:
+                if detalle_dev.foto_estado_devuelto:
+                    detalle_dev.foto_estado_devuelto = rename_stored_upload(
+                        detalle_dev.foto_estado_devuelto,
+                        f"devolucion_{devolucion.id}_prestamo_{prestamo.id}_"
+                        f"detalle_{detalle_dev.prestamo_detalle_id}.png",
+                    )
+            if devolucion not in prestamo.devoluciones:
+                prestamo.devoluciones.append(devolucion)
 
             # ==========================================
             # 11. CERRAR PRÉSTAMO SI CORRESPONDE
@@ -412,6 +478,11 @@ class AlmacenDevolucionService:
                 )
 
                 self.db.flush()
+
+            # Keep the loan document aligned with the latest return status and
+            # its evidence; it is regenerated after every partial/full return.
+            self.db.flush()
+            generar_pdf_prestamo(prestamo)
 
             # ==========================================
             # 12. AUDITORÍA

@@ -6,6 +6,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    model_validator,
 )
 
 
@@ -202,3 +203,9 @@ class ArticuloSchema(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
     )
+
+    @model_validator(mode="after")
+    def reflejar_reglas_fotografia_alto_valor(self):
+        self.requiere_foto_prestamo = self.es_activo_alto_valor
+        self.requiere_foto_devolucion = self.es_activo_alto_valor
+        return self

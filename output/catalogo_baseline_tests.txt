@@ -1,0 +1,12 @@
+ImportError while loading conftest 'C:\upeu\ci-cd\ramissac\app\conftest.py'.
+app\conftest.py:8: in <module>
+    from app.main import app
+app\main.py:47: in <module>
+    from app.routers.almacen_devolucion import (
+app\routers\almacen_devolucion.py:32: in <module>
+    from app.services.almacen_devolucion_service import (
+app\services\almacen_devolucion_service.py:38: in <module>
+    from app.utils.pdf_generator import generar_pdf_prestamo
+app\utils\pdf_generator.py:1: in <module>
+    from reportlab.platypus import (
+E   ModuleNotFoundError: No module named 'reportlab'
