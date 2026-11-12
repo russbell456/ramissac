@@ -2,61 +2,49 @@ from __future__ import annotations
 
 import base64
 import binascii
+
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from sqlalchemy.orm import Session
 
+from app.core.security import hash_password, verify_password
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.services.auditoria_service import AuditoriaService
-from app.core.security import (
-    hash_password,
-    verify_password,
-)
 
 
 # ============================================================
-# CONFIGURACIÓN DE LOGIN
+# CONFIGURACIÓN DE SEGURIDAD
 # ============================================================
 
 MAX_INTENTOS = 5
-
 MINUTOS_BLOQUEO = 15
 
-
-# ============================================================
-# ROLES DEL SISTEMA
-# ============================================================
-
+# Roles válidos del ERP.
+# Esta lista NO concede permisos.
 ROLES_VALIDOS = {
     "user",
     "trabajador",
     "almacenero",
     "admin",
+    "conductor",
+    "ingeniero",
+    "supervisor",
 }
 
-
-# Roles permitidos durante el registro público.
-#
-# IMPORTANTE:
-# admin y almacenero NO pueden crearse mediante
-# el registro público.
+# Los nuevos roles no pueden registrarse públicamente.
 PUBLIC_REGISTRATION_ROLES = {
     "user",
     "trabajador",
 }
 
-
+# Se conserva la clasificación existente.
+# No se agregan conductor, ingeniero ni supervisor.
 ROLES_ADMINISTRATIVOS = {
     "almacenero",
     "admin",
 }
-
-
-# ============================================================
-# ESTADOS LABORALES
-# ============================================================
 
 ESTADOS_LABORALES = {
     "activo",
@@ -64,37 +52,67 @@ ESTADOS_LABORALES = {
     "cesado",
 }
 
+# Campos modificables por el flujo normal de usuarios.
+CAMPOS_EDITABLES = {
+    "nombre",
+    "apellidos",
+    "tipo_documento",
+    "dni",
+    "genero",
+    "fecha_nacimiento",
+    "telefono",
+    "telefono_secundario",
+    "direccion",
+    "cargo",
+    "area",
+    "fecha_ingreso",
+    "supervisor_id",
+    "codigo_unico",
+    "foto_url",
+}
 
-# ============================================================
-# DIRECTORIOS LOCALES
-# ============================================================
+# Exclusivos de la edición administrativa autorizada.
+CAMPOS_ADMIN = {
+    "role",
+    "activo",
+    "estado_laboral",
+    "licencia_vencimiento",
+    "licencia_categoria",
+    "emo_vencimiento",
+    "pase_minero_vencimiento",
+}
 
-BASE_DIR = Path(
-    __file__
-).resolve().parents[2]
+# Campos que pueden borrarse enviando null explícito.
+CAMPOS_ANULABLES = {
+    "supervisor_id",
+    "telefono",
+    "telefono_secundario",
+    "direccion",
+    "foto_url",
+    "cargo",
+    "area",
+    "licencia_vencimiento",
+    "licencia_categoria",
+    "emo_vencimiento",
+    "pase_minero_vencimiento",
+}
 
+CAMPOS_AUDITORIA = (
+    CAMPOS_EDITABLES
+    | CAMPOS_ADMIN
+    | {"foto_url"}
+)
+
+BASE_DIR = Path(__file__).resolve().parents[2]
 STATIC_DIR = BASE_DIR / "static"
-
-FIRMAS_DIR = (
-    STATIC_DIR / "firmas"
-)
-
-FOTOS_USUARIOS_DIR = (
-    STATIC_DIR / "fotos_usuarios"
-)
+FIRMAS_DIR = STATIC_DIR / "firmas"
+FOTOS_USUARIOS_DIR = STATIC_DIR / "fotos_usuarios"
 
 
 class AuthService:
-
-    def __init__(
-        self,
-        db: Session,
-    ):
+    def __init__(self, db: Session):
         self.db = db
-
-        self.user_repo = UserRepository(
-            db
-        )
+        self.user_repo = UserRepository(db)
 
     # ========================================================
     # AUDITORÍA
@@ -107,10 +125,7 @@ class AuthService:
         entidad_id: int,
         descripcion: str,
     ) -> None:
-
-        AuditoriaService(
-            self.db
-        ).registrar(
+        AuditoriaService(self.db).registrar(
             usuario_id=usuario_auditoria,
             accion=accion,
             entidad="users",
@@ -144,96 +159,46 @@ class AuthService:
         role: str = "user",
     ) -> User:
 
-        email = (
-            email
-            .strip()
-            .lower()
-        )
-
-        dni = (
-            dni
-            .strip()
-            .upper()
-        )
+        email = email.strip().lower()
+        dni = dni.strip().upper()
 
         if codigo_unico is not None:
-            codigo_unico = (
-                codigo_unico
-                .strip()
-            )
+            codigo_unico = codigo_unico.strip() or None
 
-            if not codigo_unico:
-                codigo_unico = None
-
-        # ====================================================
-        # SEGURIDAD PRINCIPAL DEL REGISTRO
-        # ====================================================
-
+        # Prohibir creación pública de roles especiales.
         if role not in PUBLIC_REGISTRATION_ROLES:
             raise ValueError(
-                "El registro público solamente "
-                "permite los roles user y trabajador."
+                "El registro público solamente permite "
+                "los roles user y trabajador."
             )
 
-        # ====================================================
-        # EMAIL
-        # ====================================================
-
-        if self.user_repo.get_by_email(
-            email
-        ):
+        if self.user_repo.get_by_email(email):
             raise ValueError(
                 "El email ya está registrado"
             )
 
-        # ====================================================
-        # DOCUMENTO
-        # ====================================================
-
-        if self.user_repo.get_by_document(
-            dni
-        ):
+        if self.user_repo.get_by_document(dni):
             raise ValueError(
                 "El documento ya está registrado"
             )
 
-        # ====================================================
-        # CÓDIGO ÚNICO
-        # ====================================================
-
         if (
             codigo_unico
-            and self.user_repo.get_by_codigo_unico(
-                codigo_unico
-            )
+            and self.user_repo.get_by_codigo_unico(codigo_unico)
         ):
             raise ValueError(
                 "El código interno ya está registrado"
             )
 
-        # ====================================================
-        # SUPERVISOR
-        # ====================================================
-
         if supervisor_id is not None:
-
-            supervisor = (
-                self.user_repo.get_by_id(
-                    supervisor_id
-                )
+            supervisor = self.user_repo.get_by_id(
+                supervisor_id
             )
 
-            if (
-                not supervisor
-                or not supervisor.activo
-            ):
+            if not supervisor or not supervisor.activo:
                 raise ValueError(
                     "El supervisor no existe o está inactivo"
                 )
-
-        # ====================================================
-        # CREAR USUARIO
-        # ====================================================
 
         user = User(
             nombre=nombre,
@@ -250,18 +215,14 @@ class AuthService:
             fecha_ingreso=fecha_ingreso,
             supervisor_id=supervisor_id,
             email=email,
-            password=hash_password(
-                password
-            ),
+            password=hash_password(password),
             codigo_unico=codigo_unico,
             role=role,
             estado_laboral="activo",
             activo=True,
         )
 
-        return self.user_repo.create_user(
-            user
-        )
+        return self.user_repo.create_user(user)
 
     # ========================================================
     # AUTENTICACIÓN
@@ -280,20 +241,17 @@ class AuthService:
         if not user:
             return None
 
+        # Mantener las restricciones del sistema actual.
         if (
             not user.activo
             or user.estado_laboral != "activo"
         ):
             return None
 
-        ahora = datetime.now(
-            timezone.utc
-        )
-
+        ahora = datetime.now(timezone.utc)
         bloqueo = user.bloqueado_hasta
 
         if bloqueo is not None:
-
             if bloqueo.tzinfo is None:
                 bloqueo = bloqueo.replace(
                     tzinfo=timezone.utc
@@ -305,66 +263,62 @@ class AuthService:
             user.bloqueado_hasta = None
             user.intentos_fallidos = 0
 
-        # ====================================================
-        # PASSWORD INCORRECTO
-        # ====================================================
-
         if not verify_password(
             password,
             user.password,
         ):
-
             user.intentos_fallidos += 1
 
-            if (
-                user.intentos_fallidos
-                >= MAX_INTENTOS
-            ):
-
+            if user.intentos_fallidos >= MAX_INTENTOS:
                 user.bloqueado_hasta = (
                     ahora
-                    + timedelta(
-                        minutes=MINUTOS_BLOQUEO
-                    )
+                    + timedelta(minutes=MINUTOS_BLOQUEO)
                 )
-
                 user.intentos_fallidos = 0
 
-            self.user_repo.update_user(
-                user
-            )
-
+            self.user_repo.update_user(user)
             return None
 
-        # ====================================================
-        # LOGIN CORRECTO
-        # ====================================================
-
         user.intentos_fallidos = 0
-
         user.bloqueado_hasta = None
-
         user.ultimo_acceso = ahora
 
-        return self.user_repo.update_user(
-            user
-        )
+        return self.user_repo.update_user(user)
 
     # ========================================================
     # TRABAJADORES
     # ========================================================
 
-    def obtener_trabajadores(
-        self,
-    ) -> list[User]:
+    def obtener_trabajadores(self) -> list[User]:
+        """
+        Integra conductor al listado utilizado por la
+        rama del compañero.
 
+        Se conservan los filtros de cuentas activas y
+        estado laboral activo del sistema principal.
+
+        Ingeniero y supervisor no se incluyen aquí
+        automáticamente.
+        """
         return (
-            self.user_repo
-            .list_trabajadores()
+            self.db.query(User)
+            .filter(
+                User.role.in_(
+                    [
+                        "trabajador",
+                        "almacenero",
+                        "conductor",
+                    ]
+                ),
+                User.activo.is_(True),
+                User.estado_laboral == "activo",
+            )
+            .order_by(User.apellidos.asc())
+            .all()
         )
 
     # ========================================================
-    # LISTAR USUARIOS
+    # LISTADO GENERAL
     # ========================================================
 
     def listar_usuarios(
@@ -391,9 +345,7 @@ class AuthService:
         user_id: int,
     ) -> User:
 
-        user = self.user_repo.get_by_id(
-            user_id
-        )
+        user = self.user_repo.get_by_id(user_id)
 
         if not user:
             raise ValueError(
@@ -405,26 +357,6 @@ class AuthService:
     # ========================================================
     # ACTUALIZAR USUARIO
     # ========================================================
-    #
-    # Este método sirve tanto para:
-    #
-    # 1. Actualización normal.
-    # 2. Actualización administrativa.
-    #
-    # permitir_admin=False:
-    #   No permite role, activo ni estado_laboral.
-    #
-    # permitir_admin=True:
-    #   Permite esos campos.
-    #
-    # IMPORTANTE:
-    #
-    # - EMAIL ES INMUTABLE.
-    # - PASSWORD NO SE MODIFICA AQUÍ.
-    # - FIRMA SE MODIFICA POR SU MÉTODO PROPIO.
-    # - FOTO SE PUEDE MODIFICAR POR SU MÉTODO PROPIO.
-    #
-    # ========================================================
 
     def actualizar_usuario(
         self,
@@ -434,64 +366,65 @@ class AuthService:
         permitir_admin: bool = False,
     ) -> User:
 
-        user = self.obtener_usuario(
-            user_id
-        )
-
-        # Crear una copia para no modificar
-        # accidentalmente el diccionario recibido
-        # desde el router.
+        user = self.obtener_usuario(user_id)
         datos = dict(datos)
 
-        # ====================================================
-        # PROTECCIÓN DEL EMAIL
-        # ====================================================
-        #
-        # El email es el identificador de acceso.
-        # No se permite modificarlo desde este método.
-        #
-        # Esto también protege el caso en que una petición
-        # antigua todavía envíe el campo "email".
-        # ====================================================
-
+        # Preservar el correo como identificador inmutable.
         if "email" in datos:
-
             raise ValueError(
                 "El correo electrónico no puede modificarse."
             )
 
-        # ====================================================
-        # PROTECCIÓN DE PASSWORD
-        # ====================================================
-        #
-        # La contraseña solamente se modifica mediante:
-        #
-        # cambiar_password()
-        #
-        # Nunca mediante la edición administrativa.
-        # ====================================================
-
+        # La contraseña solo se modifica con su método propio.
         if "password" in datos:
-
             raise ValueError(
                 "La contraseña no puede modificarse "
                 "mediante la edición del usuario."
             )
 
-        # ====================================================
+        # No permitir modificación genérica de firmas.
+        if (
+            "firma_base64" in datos
+            or "firma_url" in datos
+        ):
+            raise ValueError(
+                "La firma debe modificarse mediante "
+                "su flujo autorizado."
+            )
+
+        # Conservar la restricción de campos administrativos.
+        # Los permisos efectivos deben verificarse en el router.
+        if not permitir_admin:
+            for campo in CAMPOS_ADMIN:
+                datos.pop(campo, None)
+
+        # Restringir el método a campos conocidos.
+        # Evita cambios accidentales de columnas de seguridad.
+        campos_permitidos = set(CAMPOS_EDITABLES)
+
+        if permitir_admin:
+            campos_permitidos |= CAMPOS_ADMIN
+
+        campos_desconocidos = (
+            set(datos) - campos_permitidos
+        )
+
+        if campos_desconocidos:
+            raise ValueError(
+                "Campos no permitidos para actualizar "
+                "el usuario: "
+                + ", ".join(sorted(campos_desconocidos))
+            )
+
+        # ----------------------------------------------------
         # DOCUMENTO
-        # ====================================================
+        # ----------------------------------------------------
 
         if (
             "dni" in datos
             and datos["dni"] is not None
         ):
-
-            dni = (
-                str(datos["dni"])
-                .strip()
-                .upper()
-            )
+            dni = str(datos["dni"]).strip().upper()
 
             if self.user_repo.document_exists(
                 dni,
@@ -503,29 +436,16 @@ class AuthService:
 
             datos["dni"] = dni
 
-        # ====================================================
+        # ----------------------------------------------------
         # CÓDIGO ÚNICO
-        # ====================================================
+        # ----------------------------------------------------
 
         if "codigo_unico" in datos:
-
-            codigo = datos[
-                "codigo_unico"
-            ]
+            codigo = datos["codigo_unico"]
 
             if codigo is not None:
-
-                codigo = (
-                    str(codigo)
-                    .strip()
-                )
-
-                if not codigo:
-                    codigo = None
-
-                datos["codigo_unico"] = (
-                    codigo
-                )
+                codigo = str(codigo).strip() or None
+                datos["codigo_unico"] = codigo
 
                 if (
                     codigo
@@ -538,29 +458,22 @@ class AuthService:
                         "El código interno ya está registrado"
                     )
 
-        # ====================================================
+        # ----------------------------------------------------
         # SUPERVISOR
-        # ====================================================
+        # ----------------------------------------------------
 
         if "supervisor_id" in datos:
-
-            supervisor_id = (
-                datos["supervisor_id"]
-            )
+            supervisor_id = datos["supervisor_id"]
 
             if supervisor_id == user_id:
-
                 raise ValueError(
                     "Un usuario no puede ser "
                     "su propio supervisor"
                 )
 
             if supervisor_id is not None:
-
-                supervisor = (
-                    self.user_repo.get_by_id(
-                        supervisor_id
-                    )
+                supervisor = self.user_repo.get_by_id(
+                    supervisor_id
                 )
 
                 if (
@@ -572,247 +485,106 @@ class AuthService:
                         "o está inactivo"
                     )
 
-        # ====================================================
-        # PROTECCIÓN DE CAMPOS ADMINISTRATIVOS
-        # ====================================================
-
-        if not permitir_admin:
-
-            datos.pop(
-                "role",
-                None,
-            )
-
-            datos.pop(
-                "activo",
-                None,
-            )
-
-            datos.pop(
-                "estado_laboral",
-                None,
-            )
-
-        # ====================================================
-        # VALIDACIÓN DEL ROLE
-        # ====================================================
+        # ----------------------------------------------------
+        # ROL
+        # ----------------------------------------------------
 
         if (
             "role" in datos
             and datos["role"] is not None
         ):
+            if datos["role"] not in ROLES_VALIDOS:
+                raise ValueError("Rol no válido")
 
-            nuevo_role = datos[
-                "role"
-            ]
-
-            if nuevo_role not in ROLES_VALIDOS:
-
-                raise ValueError(
-                    "Rol no válido"
-                )
-
-        # ====================================================
-        # VALIDACIÓN DEL ESTADO LABORAL
-        # ====================================================
+        # ----------------------------------------------------
+        # ESTADO LABORAL
+        # ----------------------------------------------------
 
         if (
             "estado_laboral" in datos
-            and datos["estado_laboral"]
-            is not None
+            and datos["estado_laboral"] is not None
         ):
-
-            nuevo_estado = datos[
-                "estado_laboral"
-            ]
-
             if (
-                nuevo_estado
+                datos["estado_laboral"]
                 not in ESTADOS_LABORALES
             ):
-
                 raise ValueError(
                     "Estado laboral no válido"
                 )
 
-        # ====================================================
-        # GUARDAR VALORES ANTERIORES
-        # ====================================================
-        #
-        # Se guardan antes de modificar el usuario para que
-        # la auditoría pueda indicar qué cambió.
-        #
-        # No incluimos:
-        # - password
-        # - firma_base64
-        #
-        # para evitar almacenar información sensible
-        # en la auditoría.
-        # ====================================================
-
-        campos_auditoria = {
-            "nombre",
-            "apellidos",
-            "tipo_documento",
-            "dni",
-            "genero",
-            "fecha_nacimiento",
-            "telefono",
-            "telefono_secundario",
-            "direccion",
-            "cargo",
-            "area",
-            "fecha_ingreso",
-            "supervisor_id",
-            "codigo_unico",
-            "role",
-            "estado_laboral",
-            "activo",
-            "foto_url",
-        }
+        # ----------------------------------------------------
+        # AUDITORÍA: VALORES ANTERIORES
+        # ----------------------------------------------------
 
         valores_anteriores = {
-            campo: getattr(
-                user,
-                campo,
-                None,
-            )
+            campo: getattr(user, campo)
             for campo in datos
-            if campo in campos_auditoria
+            if campo in CAMPOS_AUDITORIA
         }
 
-        # ====================================================
+        # ----------------------------------------------------
         # APLICAR CAMBIOS
-        # ====================================================
+        # ----------------------------------------------------
 
         for campo, valor in datos.items():
-
-            # Nunca modificar password desde este método.
-            if campo == "password":
-                continue
-
-            # Nunca modificar email desde este método.
-            if campo == "email":
-                continue
-
             if (
                 valor is not None
-                or campo in {
-                    "supervisor_id",
-                    "telefono",
-                    "telefono_secundario",
-                    "direccion",
-                    "foto_url",
-                    "cargo",
-                    "area",
-                }
+                or campo in CAMPOS_ANULABLES
             ):
+                setattr(user, campo, valor)
 
-                if hasattr(
-                    user,
-                    campo,
-                ):
-
-                    setattr(
-                        user,
-                        campo,
-                        valor,
-                    )
-
-        # ====================================================
+        # ----------------------------------------------------
         # SINCRONIZAR ESTADO LABORAL
-        # ====================================================
-        #
-        # Si el admin cambia el estado laboral:
-        #
-        # activo:
-        #   fecha_baja = None
-        #
-        # suspendido:
-        #   activo = False
-        #
-        # cesado:
-        #   activo = False
-        #   fecha_baja = fecha actual
-        #
-        # Si el admin NO modifica estado_laboral, no tocamos
-        # la fecha de baja automáticamente.
-        # ====================================================
+        # ----------------------------------------------------
 
         if (
             permitir_admin
-            and "estado_laboral" in datos
-            and datos["estado_laboral"]
-            is not None
+            and datos.get("estado_laboral") is not None
         ):
-
-            nuevo_estado = (
-                datos["estado_laboral"]
-            )
+            nuevo_estado = datos["estado_laboral"]
 
             if nuevo_estado == "cesado":
-
-                user.fecha_baja = (
-                    datetime.now(
-                        timezone.utc
-                    ).date()
-                )
-
+                user.fecha_baja = datetime.now(
+                    timezone.utc
+                ).date()
                 user.activo = False
 
             elif nuevo_estado == "suspendido":
-
                 user.activo = False
 
             elif nuevo_estado == "activo":
-
                 user.fecha_baja = None
 
-        # ====================================================
-        # GUARDAR EN BASE DE DATOS
-        # ====================================================
+        # ----------------------------------------------------
+        # PERSISTIR
+        # ----------------------------------------------------
 
-        self.user_repo.update_user(
-            user
-        )
+        self.user_repo.update_user(user)
 
-        # ====================================================
-        # CONSTRUIR AUDITORÍA DE CAMBIOS
-        # ====================================================
+        # ----------------------------------------------------
+        # REGISTRAR AUDITORÍA
+        # ----------------------------------------------------
 
         cambios = []
 
         for campo, valor_anterior in (
             valores_anteriores.items()
         ):
-
-            valor_nuevo = getattr(
-                user,
-                campo,
-                None,
-            )
+            valor_nuevo = getattr(user, campo)
 
             if valor_anterior != valor_nuevo:
-
                 cambios.append(
                     f"{campo}: "
                     f"{valor_anterior!s} -> "
                     f"{valor_nuevo!s}"
                 )
 
-        # ====================================================
-        # AUDITORÍA
-        # ====================================================
-
         if cambios:
-
             descripcion = (
                 "Se actualizaron datos del usuario. "
                 + "; ".join(cambios)
             )
-
         else:
-
             descripcion = (
                 "Se ejecutó una actualización "
                 "del usuario sin cambios en los "
@@ -831,17 +603,6 @@ class AuthService:
     # ========================================================
     # GUARDAR FIRMA BASE64
     # ========================================================
-    #
-    # Puede utilizarse tanto por:
-    #
-    # - el propio usuario
-    # - un administrador
-    #
-    # Cuando usuario_auditoria se proporciona, se registra
-    # la modificación en auditoría.
-    #
-    # Nunca se guarda el Base64 de la firma en la auditoría.
-    # ========================================================
 
     def guardar_firma_base64(
         self,
@@ -850,144 +611,70 @@ class AuthService:
         usuario_auditoria: int | None = None,
     ) -> User:
 
-        user = self.obtener_usuario(
-            user_id
-        )
+        user = self.obtener_usuario(user_id)
 
         if not firma_base64:
-
             raise ValueError(
                 "La firma Base64 no puede estar vacía."
             )
 
-        firma_limpia = (
-            firma_base64.strip()
-        )
+        firma_limpia = firma_base64.strip()
 
-        # ====================================================
-        # SOPORTAR DATA URL
-        # ====================================================
-        #
-        # Ejemplo:
-        #
-        # data:image/png;base64,iVBORw0...
-        #
-        # Se almacena solamente el contenido Base64.
-        # ====================================================
-
+        # Admitir el formato data:image/png;base64,...
         if "," in firma_limpia:
-
             encabezado, contenido = (
-                firma_limpia.split(
-                    ",",
-                    1,
-                )
+                firma_limpia.split(",", 1)
             )
 
-            if (
-                "base64"
-                not in encabezado.lower()
-            ):
-
+            if "base64" not in encabezado.lower():
                 raise ValueError(
                     "El formato de la firma no es válido."
                 )
 
-            firma_limpia = (
-                contenido.strip()
-            )
-
-        # ====================================================
-        # VALIDAR BASE64
-        # ====================================================
+            firma_limpia = contenido.strip()
 
         try:
-
             datos = base64.b64decode(
                 firma_limpia,
                 validate=True,
             )
-
         except (
             ValueError,
             binascii.Error,
         ) as exc:
-
             raise ValueError(
                 "La firma no contiene un Base64 válido."
             ) from exc
 
         if not datos:
-
             raise ValueError(
                 "La firma Base64 está vacía."
             )
 
-        # ====================================================
-        # VALIDAR PNG
-        # ====================================================
+        firma_png = b"\x89PNG\r\n\x1a\n"
 
-        firma_png = (
-            b"\x89PNG\r\n\x1a\n"
-        )
-
-        if not datos.startswith(
-            firma_png
-        ):
-
+        if not datos.startswith(firma_png):
             raise ValueError(
                 "La firma debe ser una imagen PNG válida."
             )
 
-        # ====================================================
-        # SABER SI YA EXISTÍA FIRMA
-        # ====================================================
+        tenia_firma = bool(user.firma_base64)
 
-        tenia_firma = bool(
-            user.firma_base64
-        )
-
-        # ====================================================
-        # GUARDAR BASE64 EN BD
-        # ====================================================
-
-        user.firma_base64 = (
-            firma_limpia
-        )
-
-        self.user_repo.update_user(
-            user
-        )
-
-        # ====================================================
-        # AUDITORÍA OPCIONAL
-        # ====================================================
+        # Conservar la firma almacenada en PostgreSQL.
+        user.firma_base64 = firma_limpia
+        self.user_repo.update_user(user)
 
         if usuario_auditoria is not None:
-
-            accion = (
-                "ACTUALIZAR_FIRMA_USUARIO"
+            descripcion = (
+                "Se actualizó la firma digital del usuario."
+                if tenia_firma
+                else "Se registró una firma digital "
+                     "para el usuario."
             )
 
-            if tenia_firma:
-
-                descripcion = (
-                    "Se actualizó la firma "
-                    "digital del usuario."
-                )
-
-            else:
-
-                descripcion = (
-                    "Se registró una firma "
-                    "digital para el usuario."
-                )
-
             self._auditar(
-                usuario_auditoria=(
-                    usuario_auditoria
-                ),
-                accion=accion,
+                usuario_auditoria=usuario_auditoria,
+                accion="ACTUALIZAR_FIRMA_USUARIO",
                 entidad_id=user.id,
                 descripcion=descripcion,
             )
@@ -995,7 +682,7 @@ class AuthService:
         return user
 
     # ========================================================
-    # CONVERTIR FIRMA BASE64 A PNG
+    # GENERAR IMAGEN DE LA FIRMA
     # ========================================================
 
     def generar_imagen_firma(
@@ -1003,94 +690,55 @@ class AuthService:
         user_id: int,
     ) -> str:
 
-        user = self.obtener_usuario(
-            user_id
-        )
+        user = self.obtener_usuario(user_id)
 
         if not user.firma_base64:
-
             raise ValueError(
                 "El usuario no tiene una firma registrada."
             )
 
-        firma_base64 = (
-            user.firma_base64.strip()
-        )
-
         try:
-
             datos = base64.b64decode(
-                firma_base64,
+                user.firma_base64.strip(),
                 validate=True,
             )
-
         except (
             ValueError,
             binascii.Error,
         ) as exc:
-
             raise ValueError(
                 "La firma almacenada no contiene "
                 "un Base64 válido."
             ) from exc
 
-        firma_png = (
-            b"\x89PNG\r\n\x1a\n"
-        )
-
         if not datos.startswith(
-            firma_png
+            b"\x89PNG\r\n\x1a\n"
         ):
-
             raise ValueError(
                 "La firma almacenada no es un PNG válido."
             )
-
-        # ====================================================
-        # CREAR DIRECTORIO
-        # ====================================================
 
         FIRMAS_DIR.mkdir(
             parents=True,
             exist_ok=True,
         )
 
-        # ====================================================
-        # NOMBRE DEL ARCHIVO
-        # ====================================================
-
         nombre_archivo = (
             f"firma_usuario_{user.id}.png"
         )
 
         ruta_archivo = (
-            FIRMAS_DIR
-            / nombre_archivo
+            FIRMAS_DIR / nombre_archivo
         )
 
-        # ====================================================
-        # ESCRIBIR IMAGEN
-        # ====================================================
-
-        ruta_archivo.write_bytes(
-            datos
-        )
+        ruta_archivo.write_bytes(datos)
 
         return (
             f"/static/firmas/{nombre_archivo}"
         )
 
     # ========================================================
-    # GUARDAR FOTO LOCAL
-    # ========================================================
-    #
-    # Puede utilizarse tanto para:
-    #
-    # - usuario propio
-    # - administrador
-    #
-    # Si usuario_auditoria se proporciona, se registra
-    # el cambio.
+    # GUARDAR FOTO DE USUARIO
     # ========================================================
 
     def guardar_foto_usuario(
@@ -1101,20 +749,14 @@ class AuthService:
         usuario_auditoria: int | None = None,
     ) -> User:
 
-        user = self.obtener_usuario(
-            user_id
-        )
+        user = self.obtener_usuario(user_id)
 
         if not contenido:
-
             raise ValueError(
                 "La foto está vacía."
             )
 
-        extension = (
-            extension.lower()
-            .strip()
-        )
+        extension = extension.lower().strip()
 
         extensiones_permitidas = {
             ".jpg",
@@ -1123,57 +765,34 @@ class AuthService:
             ".webp",
         }
 
-        if (
-            extension
-            not in extensiones_permitidas
-        ):
-
+        if extension not in extensiones_permitidas:
             raise ValueError(
                 "Formato de imagen no permitido. "
                 "Use JPG, JPEG, PNG o WEBP."
             )
-
-        # ====================================================
-        # CREAR DIRECTORIO
-        # ====================================================
 
         FOTOS_USUARIOS_DIR.mkdir(
             parents=True,
             exist_ok=True,
         )
 
-        # ====================================================
-        # GUARDAR REFERENCIA ANTERIOR
-        # ====================================================
-
-        foto_anterior = (
-            user.foto_url
-        )
-
-        # ====================================================
-        # NOMBRE DEL ARCHIVO
-        # ====================================================
+        foto_anterior = user.foto_url
 
         nombre_archivo = (
             f"usuario_{user.id}{extension}"
         )
 
         ruta_archivo = (
-            FOTOS_USUARIOS_DIR
-            / nombre_archivo
+            FOTOS_USUARIOS_DIR / nombre_archivo
         )
 
-        # ====================================================
-        # ELIMINAR FOTO ANTERIOR
-        # ====================================================
-
+        # Conservar el comportamiento de reemplazo
+        # de fotos utilizado por el servicio actual.
         if user.foto_url:
-
             nombre_anterior = (
                 user.foto_url
                 .rstrip("/")
-                .split("/")
-                [-1]
+                .split("/")[-1]
             )
 
             ruta_anterior = (
@@ -1185,54 +804,25 @@ class AuthService:
                 ruta_anterior.exists()
                 and ruta_anterior != ruta_archivo
             ):
-
                 ruta_anterior.unlink()
 
-        # ====================================================
-        # GUARDAR NUEVA FOTO
-        # ====================================================
-
-        ruta_archivo.write_bytes(
-            contenido
-        )
-
-        # ====================================================
-        # GUARDAR SOLAMENTE URL EN BD
-        # ====================================================
+        ruta_archivo.write_bytes(contenido)
 
         user.foto_url = (
-            f"/static/fotos_usuarios/"
-            f"{nombre_archivo}"
+            f"/static/fotos_usuarios/{nombre_archivo}"
         )
 
-        self.user_repo.update_user(
-            user
-        )
-
-        # ====================================================
-        # AUDITORÍA OPCIONAL
-        # ====================================================
+        self.user_repo.update_user(user)
 
         if usuario_auditoria is not None:
-
-            if foto_anterior:
-
-                descripcion = (
-                    "Se actualizó la foto "
-                    "del usuario."
-                )
-
-            else:
-
-                descripcion = (
-                    "Se registró una foto "
-                    "para el usuario."
-                )
+            descripcion = (
+                "Se actualizó la foto del usuario."
+                if foto_anterior
+                else "Se registró una foto para el usuario."
+            )
 
             self._auditar(
-                usuario_auditoria=(
-                    usuario_auditoria
-                ),
+                usuario_auditoria=usuario_auditoria,
                 accion="ACTUALIZAR_FOTO_USUARIO",
                 entidad_id=user.id,
                 descripcion=descripcion,
@@ -1241,7 +831,7 @@ class AuthService:
         return user
 
     # ========================================================
-    # CAMBIAR ESTADO
+    # CAMBIAR ESTADO DE USUARIO
     # ========================================================
 
     def cambiar_estado(
@@ -1252,80 +842,34 @@ class AuthService:
         usuario_auditoria: int,
     ) -> User:
 
-        user = self.obtener_usuario(
-            user_id
-        )
+        user = self.obtener_usuario(user_id)
 
-        if (
-            estado_laboral
-            not in ESTADOS_LABORALES
-        ):
-
+        if estado_laboral not in ESTADOS_LABORALES:
             raise ValueError(
                 "Estado laboral no válido"
             )
 
-        estado_anterior = (
-            user.estado_laboral
-        )
-
-        activo_anterior = (
-            user.activo
-        )
-
-        fecha_baja_anterior = (
-            user.fecha_baja
-        )
-
-        # ====================================================
-        # CESADO
-        # ====================================================
+        estado_anterior = user.estado_laboral
+        activo_anterior = user.activo
+        fecha_baja_anterior = user.fecha_baja
 
         if estado_laboral == "cesado":
-
-            user.fecha_baja = (
-                datetime.now(
-                    timezone.utc
-                ).date()
-            )
-
+            user.fecha_baja = datetime.now(
+                timezone.utc
+            ).date()
             user.activo = False
-
-        # ====================================================
-        # OTROS ESTADOS
-        # ====================================================
-
         else:
-
             user.activo = activo
 
-        # ====================================================
-        # SUSPENDIDO
-        # ====================================================
-
         if estado_laboral == "suspendido":
-
             user.activo = False
 
-        # ====================================================
-        # ACTIVO
-        # ====================================================
-
         if estado_laboral == "activo":
-
             user.fecha_baja = None
 
-        user.estado_laboral = (
-            estado_laboral
-        )
+        user.estado_laboral = estado_laboral
 
-        self.user_repo.update_user(
-            user
-        )
-
-        # ====================================================
-        # AUDITORÍA
-        # ====================================================
+        self.user_repo.update_user(user)
 
         self._auditar(
             usuario_auditoria=usuario_auditoria,
@@ -1347,7 +891,7 @@ class AuthService:
         return user
 
     # ========================================================
-    # CAMBIAR PASSWORD
+    # CAMBIAR CONTRASEÑA
     # ========================================================
 
     def cambiar_password(
@@ -1357,24 +901,17 @@ class AuthService:
         password_nueva: str,
     ) -> None:
 
-        user = self.obtener_usuario(
-            user_id
-        )
+        user = self.obtener_usuario(user_id)
 
         if not verify_password(
             password_actual,
             user.password,
         ):
-
             raise ValueError(
                 "La contraseña actual es incorrecta"
             )
 
-        if (
-            password_actual
-            == password_nueva
-        ):
-
+        if password_actual == password_nueva:
             raise ValueError(
                 "La nueva contraseña debe ser diferente"
             )
@@ -1383,6 +920,4 @@ class AuthService:
             password_nueva
         )
 
-        self.user_repo.update_user(
-            user
-        )
+        self.user_repo.update_user(user)

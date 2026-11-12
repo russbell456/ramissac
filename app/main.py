@@ -8,6 +8,25 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from app.routers.averia_router import (
+    router as averia_router,
+)
+
+from app.routers.incidente_router import (
+    router as incidentes_router,  # o incidente_router segun tu archivo
+)
+
+from app.routers.inspeccion_router import (
+    router as inspeccion_router,
+)
+
+from app.routers.plan_mantenimiento_router import (
+    router as plan_mantenimiento_router,
+)
+
+from app.routers.transportes_v3_router import (
+    router as transportes_v3_router,
+)
 
 from app.core.validation_handler import (
     request_validation_exception_handler,
@@ -74,6 +93,10 @@ from app.routers.ruta_router import (
 
 from app.routers.mantenimiento_router import (
     router as mantenimiento_router,
+)
+
+from app.routers.jornada_transporte_router import (
+    router as jornada_transporte_router,
 )
 
 
@@ -353,3 +376,9 @@ app.include_router(
 app.include_router(
     mantenimiento_router
 )
+app.include_router(averia_router)
+app.include_router(incidentes_router)
+app.include_router(inspeccion_router)
+app.include_router(plan_mantenimiento_router)
+app.include_router(transportes_v3_router)
+app.include_router(jornada_transporte_router)

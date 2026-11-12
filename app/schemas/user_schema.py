@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -39,23 +40,78 @@ EstadoLaboral = Literal[
 
 
 # ============================================================
-# ROLES
+# ROLES DEL SISTEMA
 # ============================================================
+
+# Se conservan los roles existentes y se incorporan
+# conductor, ingeniero y supervisor.
+#
+# Esta definición solo establece valores válidos.
+# NO otorga permisos ni acceso a módulos.
 
 Role = Literal[
     "user",
     "trabajador",
     "almacenero",
     "admin",
+    "conductor",
+    "ingeniero",
+    "supervisor",
 ]
 
-# Roles permitidos durante el registro público.
-# IMPORTANTE:
-# No se permite registrar públicamente como almacenero o admin.
+# Registro público: mantener exactamente la restricción
+# de seguridad existente.
+#
+# Conductor, ingeniero y supervisor deberán ser asignados
+# por el flujo administrativo autorizado.
+
 PublicRole = Literal[
     "user",
     "trabajador",
 ]
+
+
+# ============================================================
+# VALIDACIONES REUTILIZABLES
+# ============================================================
+
+def _normalizar_nombre(value: str) -> str:
+    value = " ".join(value.split())
+
+    if len(value) < 2:
+        raise ValueError(
+            "Debe contener al menos 2 caracteres"
+        )
+
+    return value
+
+
+def _normalizar_documento(
+    value: str,
+    *,
+    permitir_vacio: bool = False,
+) -> str:
+    value = value.strip().upper()
+
+    if not value and not permitir_vacio:
+        raise ValueError(
+            "El documento no puede estar vacío"
+        )
+
+    return value
+
+
+def _normalizar_email(value: EmailStr) -> str:
+    return str(value).strip().lower()
+
+
+def _normalizar_texto_opcional(
+    value: str | None,
+) -> str | None:
+    if value is None:
+        return None
+
+    return value.strip() or None
 
 
 # ============================================================
@@ -129,6 +185,7 @@ class UserCreate(BaseModel):
         max_length=30,
     )
 
+    # No permitir asignación pública de roles privilegiados.
     role: PublicRole = Field(
         default="user",
         validation_alias=AliasChoices(
@@ -146,17 +203,7 @@ class UserCreate(BaseModel):
         cls,
         value: str,
     ) -> str:
-
-        value = " ".join(
-            value.split()
-        )
-
-        if len(value) < 2:
-            raise ValueError(
-                "Debe contener al menos 2 caracteres"
-            )
-
-        return value
+        return _normalizar_nombre(value)
 
     @field_validator("dni")
     @classmethod
@@ -164,11 +211,7 @@ class UserCreate(BaseModel):
         cls,
         value: str,
     ) -> str:
-
-        value = (
-            value.strip()
-            .upper()
-        )
+        value = value.strip().upper()
 
         if not value:
             raise ValueError(
@@ -183,12 +226,7 @@ class UserCreate(BaseModel):
         cls,
         value: EmailStr,
     ) -> str:
-
-        return (
-            str(value)
-            .strip()
-            .lower()
-        )
+        return _normalizar_email(value)
 
     @field_validator(
         "telefono",
@@ -203,13 +241,7 @@ class UserCreate(BaseModel):
         cls,
         value: str | None,
     ) -> str | None:
-
-        if value is None:
-            return None
-
-        value = value.strip()
-
-        return value or None
+        return _normalizar_texto_opcional(value)
 
 
 # ============================================================
@@ -220,6 +252,9 @@ class UserLogin(BaseModel):
 
     email: EmailStr
 
+    # Conservar la validación actual.
+    # No exigir 8 caracteres al iniciar sesión porque
+    # podrían existir credenciales antiguas válidas.
     password: str = Field(
         min_length=1,
         max_length=128,
@@ -231,31 +266,21 @@ class UserLogin(BaseModel):
         cls,
         value: EmailStr,
     ) -> str:
-
-        return (
-            str(value)
-            .strip()
-            .lower()
-        )
+        return _normalizar_email(value)
 
 
 # ============================================================
 # ACTUALIZACIÓN NORMAL
 # ============================================================
+
+# No incluye:
+# - password
+# - role
+# - activo
+# - estado_laboral
+# - email
 #
-# IMPORTANTE:
-#
-# - NO contiene password.
-# - NO contiene role.
-# - NO contiene activo.
-# - NO contiene estado_laboral.
-#
-# Esos campos administrativos solo pueden ser modificados
-# mediante UserAdminUpdate y desde un endpoint protegido
-# exclusivamente para administradores.
-#
-# El EMAIL tampoco se incluye porque será INMUTABLE.
-# ============================================================
+# Se conservan las restricciones actuales.
 
 class UserUpdate(BaseModel):
 
@@ -329,20 +354,10 @@ class UserUpdate(BaseModel):
         cls,
         value: str | None,
     ) -> str | None:
-
         if value is None:
             return None
 
-        value = " ".join(
-            value.split()
-        )
-
-        if len(value) < 2:
-            raise ValueError(
-                "Debe contener al menos 2 caracteres"
-            )
-
-        return value
+        return _normalizar_nombre(value)
 
     @field_validator("dni")
     @classmethod
@@ -350,21 +365,10 @@ class UserUpdate(BaseModel):
         cls,
         value: str | None,
     ) -> str | None:
-
         if value is None:
             return None
 
-        value = (
-            value.strip()
-            .upper()
-        )
-
-        if not value:
-            raise ValueError(
-                "El documento no puede estar vacío"
-            )
-
-        return value
+        return _normalizar_documento(value)
 
     @field_validator(
         "telefono",
@@ -379,46 +383,21 @@ class UserUpdate(BaseModel):
         cls,
         value: str | None,
     ) -> str | None:
-
-        if value is None:
-            return None
-
-        value = value.strip()
-
-        return value or None
+        return _normalizar_texto_opcional(value)
 
 
 # ============================================================
 # ACTUALIZACIÓN ADMINISTRATIVA
 # ============================================================
+
+# Solo debe utilizarse en endpoints protegidos para admin.
 #
-# Este esquema es utilizado por el endpoint protegido de admin.
+# Se incorporan los roles nuevos y los campos de
+# documentación del conductor.
 #
-# Un ADMIN puede modificar:
-#
-# - datos personales
-# - DNI
-# - género
-# - fecha de nacimiento
-# - teléfonos
-# - dirección
-# - cargo
-# - área
-# - fecha de ingreso
-# - supervisor
-# - código único
-# - role
-# - estado laboral
-# - activo
-#
-# NO puede modificar:
-#
-# - email
-# - password
-#
-# La contraseña tiene su propio flujo de cambio.
-# El email se mantiene como identificador inmutable.
-# ============================================================
+# No se incluyen email ni password.
+# Tampoco firma_base64 ni firma_url:
+# la firma debe conservar su propio flujo autorizado.
 
 class UserAdminUpdate(UserUpdate):
 
@@ -427,6 +406,29 @@ class UserAdminUpdate(UserUpdate):
     estado_laboral: EstadoLaboral | None = None
 
     activo: bool | None = None
+
+    # Documentación del conductor.
+    # Todos los campos son opcionales para no exigir
+    # documentación de conductor a los demás roles.
+
+    licencia_vencimiento: date | None = None
+
+    licencia_categoria: str | None = Field(
+        default=None,
+        max_length=20,
+    )
+
+    emo_vencimiento: date | None = None
+
+    pase_minero_vencimiento: date | None = None
+
+    @field_validator("licencia_categoria")
+    @classmethod
+    def limpiar_licencia_categoria(
+        cls,
+        value: str | None,
+    ) -> str | None:
+        return _normalizar_texto_opcional(value)
 
 
 # ============================================================
@@ -452,7 +454,7 @@ class UserSignatureUpdate(BaseModel):
 
 
 # ============================================================
-# RESPUESTA
+# RESPUESTA COMPLETA DEL USUARIO
 # ============================================================
 
 class UserResponse(BaseModel):
@@ -487,7 +489,11 @@ class UserResponse(BaseModel):
 
     foto_url: str | None = None
 
+    # Se conserva la implementación actual de firma.
     firma_base64: str | None = None
+
+    # Compatibilidad con la implementación de la otra rama.
+    firma_url: str | None = None
 
     cargo: str | None = None
 
@@ -505,6 +511,15 @@ class UserResponse(BaseModel):
 
     activo: bool
 
+    # Documentación del conductor.
+    licencia_vencimiento: date | None = None
+
+    licencia_categoria: str | None = None
+
+    emo_vencimiento: date | None = None
+
+    pase_minero_vencimiento: date | None = None
+
     ultimo_acceso: datetime | None = None
 
     fecha_creacion: datetime
@@ -515,22 +530,21 @@ class UserResponse(BaseModel):
 # ============================================================
 # PERFIL PROPIO
 # ============================================================
-#
-# Este esquema se mantiene separado de UserAdminUpdate.
-#
-# El usuario puede actualizar únicamente:
+
+# El usuario conserva únicamente las operaciones
+# que ya estaban permitidas:
 # - teléfono
 # - teléfono secundario
 # - dirección
 # - foto_url
 #
-# No puede modificar:
+# No puede cambiar desde este schema:
 # - email
 # - role
 # - password
-# - estado laboral
+# - estado_laboral
 # - activo
-# ============================================================
+# - documentación administrativa del conductor
 
 class UserProfileUpdate(BaseModel):
 
@@ -565,22 +579,11 @@ class UserProfileUpdate(BaseModel):
         cls,
         value: str | None,
     ) -> str | None:
-
-        if value is None:
-            return None
-
-        value = value.strip()
-
-        return value or None
+        return _normalizar_texto_opcional(value)
 
 
 # ============================================================
-# PASSWORD
-# ============================================================
-#
-# Este es el ÚNICO esquema destinado al cambio de contraseña.
-#
-# La edición administrativa de usuario NO contiene password.
+# CAMBIO DE CONTRASEÑA
 # ============================================================
 
 class ChangePassword(BaseModel):

@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import logging
@@ -23,8 +24,8 @@ from app.schemas.user_schema import (
     Token,
     UserAdminUpdate,
     UserCreate,
-    UserProfileUpdate,
     UserLogin,
+    UserProfileUpdate,
     UserResponse,
     UserSignatureUpdate,
     UserStatusUpdate,
@@ -38,85 +39,55 @@ from app.services.auth_service import (
 )
 
 
-# ============================================================
-# LOGGER
-# ============================================================
-
 logger = logging.getLogger(__name__)
-
-
-# ============================================================
-# ROUTER
-# ============================================================
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
 
+DbDep = Annotated[Session, Depends(get_db)]
+UserDep = Annotated[dict, Depends(get_current_user)]
 
-# ============================================================
-# DEPENDENCIAS
-# ============================================================
-
-DbDep = Annotated[
-    Session,
-    Depends(get_db),
-]
-
-UserDep = Annotated[
-    dict,
-    Depends(get_current_user),
-]
+EXTENSIONES_FOTO = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+}
 
 
 # ============================================================
-# FUNCIONES AUXILIARES
+# SEGURIDAD Y FUNCIONES COMPARTIDAS
 # ============================================================
 
-def obtener_campo(
-    user,
-    campo: str,
-):
-    """
-    Permite obtener un campo tanto si el usuario autenticado
-    llega como diccionario como si llega como objeto.
-    """
-
+def obtener_campo(user, campo: str):
     if isinstance(user, dict):
         return user.get(campo)
 
-    return getattr(
-        user,
-        campo,
-        None,
-    )
+    return getattr(user, campo, None)
 
 
-def exigir_admin(
-    user,
-) -> None:
-    """
-    Solamente un administrador puede ejecutar
-    operaciones administrativas.
+def obtener_id(user) -> int:
+    user_id = obtener_campo(user, "id")
 
-    Esto incluye:
-    - editar usuarios;
-    - cambiar roles;
-    - cambiar estado laboral;
-    - activar/desactivar;
-    - subir foto de otro usuario;
-    - cambiar firma de otro usuario.
-    """
-
-    if (
-        obtener_campo(
-            user,
-            "role",
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario autenticado inválido.",
         )
-        != "admin"
-    ):
 
+    try:
+        return int(user_id)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario autenticado inválido.",
+        ) from exc
+
+
+def exigir_admin(user) -> None:
+    if obtener_campo(user, "role") != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=(
@@ -126,59 +97,55 @@ def exigir_admin(
         )
 
 
-def exigir_admin_o_almacenero(
-    user,
-) -> None:
-    """
-    Permite operaciones destinadas tanto a admin
-    como a almacenero.
-    """
-
-    if (
-        obtener_campo(
-            user,
-            "role",
-        )
-        not in {
-            "admin",
-            "almacenero",
-        }
-    ):
-
+def exigir_admin_o_almacenero(user) -> None:
+    if obtener_campo(user, "role") not in {
+        "admin",
+        "almacenero",
+    }:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="No autorizado.",
         )
 
 
-def obtener_id(
-    user,
-) -> int:
+async def leer_foto(archivo: UploadFile) -> tuple[bytes, str]:
     """
-    Obtiene el ID del usuario autenticado.
+    Validación compartida para fotos propias y
+    fotos administradas por un usuario admin.
+
+    No modifica los formatos admitidos actualmente.
     """
 
-    user_id = obtener_campo(
-        user,
-        "id",
-    )
-
-    if user_id is None:
-
+    if not archivo.filename:
         raise HTTPException(
-            status_code=(
-                status.HTTP_401_UNAUTHORIZED
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Debe seleccionar una imagen.",
+        )
+
+    extension = Path(archivo.filename).suffix.lower()
+
+    if extension not in EXTENSIONES_FOTO:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
-                "Usuario autenticado inválido."
+                "Formato de imagen no permitido. "
+                "Use JPG, JPEG, PNG o WEBP."
             ),
         )
 
-    return int(user_id)
+    contenido = await archivo.read()
+
+    if not contenido:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La imagen está vacía.",
+        )
+
+    return contenido, extension
 
 
 # ============================================================
-# REGISTRO
+# REGISTRO PÚBLICO
 # ============================================================
 
 @router.post(
@@ -192,28 +159,20 @@ def register(
     db: DbDep,
 ):
     """
-    Registro público.
+    Conservar el registro público existente.
 
-    Los únicos roles permitidos son:
-
+    Solo puede registrar:
     - user
     - trabajador
 
-    No se permite crear públicamente:
-
-    - almacenero
-    - admin
-
-    IMPORTANTE:
-    La foto y firma NO se reciben todavía en este endpoint.
-    Se mantienen mediante sus endpoints correspondientes.
+    Conductor, ingeniero y supervisor deben
+    asignarse mediante edición administrativa.
     """
 
     service = AuthService(db)
 
     try:
-
-        new_user = service.register_user(
+        return service.register_user(
             nombre=user_data.nombre,
             apellidos=user_data.apellidos,
             tipo_documento=user_data.tipo_documento,
@@ -232,28 +191,19 @@ def register(
             email=str(user_data.email),
             password=user_data.password,
             codigo_unico=user_data.codigo_unico,
-            role=user_data.role or "user",
+            role=user_data.role,
         )
 
-        return new_user
-
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except IntegrityError as exc:
-
         db.rollback()
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_409_CONFLICT
-            ),
+            status_code=status.HTTP_409_CONFLICT,
             detail=(
                 "El correo, documento o código "
                 "ya está registrado."
@@ -261,17 +211,11 @@ def register(
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
-        logger.exception(
-            "Error al registrar usuario"
-        )
+        logger.exception("Error al registrar usuario")
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al registrar usuario.",
         ) from exc
 
@@ -289,35 +233,23 @@ def login(
     user_data: UserLogin,
     db: DbDep,
 ):
-    """
-    Inicia sesión y devuelve JWT.
-    """
-
     service = AuthService(db)
 
     try:
-
-        auth_user = (
-            service.authenticate_user(
-                email=str(
-                    user_data.email
-                ),
-                password=user_data.password,
-            )
+        auth_user = service.authenticate_user(
+            email=str(user_data.email),
+            password=user_data.password,
         )
 
         if not auth_user:
-
             raise HTTPException(
-                status_code=(
-                    status.HTTP_401_UNAUTHORIZED
-                ),
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=(
                     "Credenciales inválidas "
                     "o cuenta no disponible."
                 ),
                 headers={
-                    "WWW-Authenticate": "Bearer"
+                    "WWW-Authenticate": "Bearer",
                 },
             )
 
@@ -339,17 +271,11 @@ def login(
         raise
 
     except Exception as exc:
-
         db.rollback()
-
-        logger.exception(
-            "Error al autenticar usuario"
-        )
+        logger.exception("Error al autenticar usuario")
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al autenticar usuario.",
         ) from exc
 
@@ -367,159 +293,85 @@ def obtener_mi_perfil(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    Obtiene los datos del usuario actualmente autenticado.
-    """
-
-    service = AuthService(db)
-
     try:
-
-        return service.obtener_usuario(
-            obtener_id(
-                current_user
-            )
+        return AuthService(db).obtener_usuario(
+            obtener_id(current_user)
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_404_NOT_FOUND
-            ),
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
         ) from exc
 
 
-# ============================================================
-# ACTUALIZAR PERFIL PROPIO
-# ============================================================
-
 @router.patch(
     "/me",
     response_model=UserResponse,
-    summary=(
-        "Actualizar datos de contacto "
-        "del usuario autenticado"
-    ),
+    summary="Actualizar datos de contacto propios",
 )
 def actualizar_mi_perfil(
     data: UserProfileUpdate,
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    El usuario puede modificar:
-
-    - teléfono;
-    - teléfono secundario;
-    - dirección;
-    - foto_url.
-
-    No puede modificar:
-
-    - email;
-    - role;
-    - password;
-    - estado laboral;
-    - activo.
-    """
-
     service = AuthService(db)
 
     try:
-
         return service.actualizar_usuario(
-            user_id=obtener_id(
-                current_user
-            ),
-            datos=data.model_dump(
-                exclude_unset=True
-            ),
-            usuario_auditoria=obtener_id(
-                current_user
-            ),
+            user_id=obtener_id(current_user),
+            datos=data.model_dump(exclude_unset=True),
+            usuario_auditoria=obtener_id(current_user),
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
-        logger.exception(
-            "Error al actualizar perfil propio"
-        )
+        logger.exception("Error al actualizar perfil propio")
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
-            detail=(
-                "Error al actualizar el perfil."
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al actualizar el perfil.",
         ) from exc
 
 
 # ============================================================
-# FIRMA DIGITAL - PROPIA
+# FIRMA DIGITAL PROPIA
 # ============================================================
 
 @router.put(
     "/me/firma",
     response_model=UserResponse,
-    summary="Guardar firma digital en Base64",
+    summary="Guardar firma digital propia",
 )
 def guardar_mi_firma(
     data: UserSignatureUpdate,
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    Permite al usuario autenticado guardar su propia firma.
-    """
-
-    service = AuthService(db)
-
     try:
-
-        user = service.guardar_firma_base64(
-            user_id=obtener_id(
-                current_user
-            ),
+        return AuthService(db).guardar_firma_base64(
+            user_id=obtener_id(current_user),
             firma_base64=data.firma_base64,
         )
 
-        return user
-
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
-        logger.exception(
-            "Error al guardar firma"
-        )
+        logger.exception("Error al guardar firma")
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al guardar la firma.",
         ) from exc
 
@@ -527,135 +379,60 @@ def guardar_mi_firma(
 @router.post(
     "/me/firma/imagen",
     response_model=dict,
-    summary="Convertir firma Base64 a imagen PNG",
+    summary="Convertir firma propia a PNG",
 )
 def generar_mi_imagen_firma(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    Convierte la firma almacenada en Base64
-    en una imagen PNG.
-    """
-
-    service = AuthService(db)
-
     try:
-
-        url = service.generar_imagen_firma(
-            user_id=obtener_id(
-                current_user
-            )
+        url = AuthService(db).generar_imagen_firma(
+            user_id=obtener_id(current_user)
         )
 
         return {
-            "mensaje": (
-                "Firma convertida correctamente."
-            ),
+            "mensaje": "Firma convertida correctamente.",
             "firma_url": url,
         }
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         logger.exception(
             "Error al generar imagen de firma"
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
-            detail=(
-                "Error al generar la imagen de firma."
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al generar la imagen de firma.",
         ) from exc
 
 
 # ============================================================
-# FOTO - PROPIA
+# FOTO PROPIA
 # ============================================================
 
 @router.post(
     "/me/foto",
     response_model=UserResponse,
-    summary="Subir foto del usuario",
+    summary="Subir foto propia",
 )
 async def subir_mi_foto(
     db: DbDep,
     current_user: UserDep,
     archivo: UploadFile = File(...),
 ):
-    """
-    Permite al usuario autenticado subir su propia foto.
-    """
-
     service = AuthService(db)
 
     try:
-
-        if not archivo.filename:
-
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_400_BAD_REQUEST
-                ),
-                detail=(
-                    "Debe seleccionar una imagen."
-                ),
-            )
-
-        extension = (
-            Path(
-                archivo.filename
-            ).suffix.lower()
-        )
-
-        extensiones_permitidas = {
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp",
-        }
-
-        if (
-            extension
-            not in extensiones_permitidas
-        ):
-
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_400_BAD_REQUEST
-                ),
-                detail=(
-                    "Formato de imagen no permitido. "
-                    "Use JPG, JPEG, PNG o WEBP."
-                ),
-            )
-
-        contenido = await archivo.read()
-
-        if not contenido:
-
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_400_BAD_REQUEST
-                ),
-                detail="La imagen está vacía.",
-            )
+        contenido, extension = await leer_foto(archivo)
 
         return service.guardar_foto_usuario(
-            user_id=obtener_id(
-                current_user
-            ),
+            user_id=obtener_id(current_user),
             contenido=contenido,
             extension=extension,
         )
@@ -664,32 +441,25 @@ async def subir_mi_foto(
         raise
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
         logger.exception(
             "Error al guardar foto de usuario"
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al guardar la foto.",
         ) from exc
 
 
 # ============================================================
-# PASSWORD - PROPIA
+# CONTRASEÑA PROPIA
 # ============================================================
 
 @router.post(
@@ -702,83 +472,60 @@ def cambiar_mi_password(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    El usuario cambia su propia contraseña.
-
-    IMPORTANTE:
-    No existe un endpoint administrativo aquí para
-    modificar password desde UserAdminUpdate.
-    """
-
-    service = AuthService(db)
-
     try:
-
-        service.cambiar_password(
-            user_id=obtener_id(
-                current_user
-            ),
+        AuthService(db).cambiar_password(
+            user_id=obtener_id(current_user),
             password_actual=data.password_actual,
             password_nueva=data.password_nueva,
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
-        logger.exception(
-            "Error al cambiar contraseña"
-        )
+        logger.exception("Error al cambiar contraseña")
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al cambiar la contraseña.",
         ) from exc
 
 
 # ============================================================
-# TRABAJADORES
+# LISTADO DE TRABAJADORES
 # ============================================================
 
 @router.get(
     "/trabajadores",
     response_model=list[UserResponse],
-    summary=(
-        "Listar trabajadores y "
-        "almaceneros activos"
-    ),
+    summary="Listar trabajadores, almaceneros y conductores",
 )
 def obtener_trabajadores(
     db: DbDep,
     current_user: UserDep,
 ):
     """
-    Admin y almacenero pueden consultar
-    trabajadores y almaceneros activos.
+    Acceso conservado:
+    - admin
+    - almacenero
+
+    La integración del rol conductor al resultado
+    se realiza en AuthService.obtener_trabajadores().
+
+    Ingeniero y supervisor no reciben permisos nuevos.
     """
 
-    exigir_admin_o_almacenero(
-        current_user
-    )
+    exigir_admin_o_almacenero(current_user)
 
-    return AuthService(
-        db
-    ).obtener_trabajadores()
+    return AuthService(db).obtener_trabajadores()
 
 
 # ============================================================
-# LISTAR USUARIOS
+# LISTADO ADMINISTRATIVO DE USUARIOS
 # ============================================================
 
 @router.get(
@@ -789,68 +536,32 @@ def obtener_trabajadores(
 def listar_usuarios(
     db: DbDep,
     current_user: UserDep,
-    role: str | None = Query(
-        default=None
-    ),
-    estado_laboral: str | None = Query(
-        default=None
-    ),
-    activo: bool | None = Query(
-        default=None
-    ),
+    role: str | None = Query(default=None),
+    estado_laboral: str | None = Query(default=None),
+    activo: bool | None = Query(default=None),
     search: str | None = Query(
         default=None,
         max_length=100,
     ),
 ):
-    """
-    Solamente admin puede listar todos los usuarios
-    con filtros administrativos.
-    """
+    exigir_admin(current_user)
 
-    exigir_admin(
-        current_user
-    )
-
-    # ========================================================
-    # VALIDAR FILTRO ROLE
-    # ========================================================
-
-    if (
-        role is not None
-        and role not in ROLES_VALIDOS
-    ):
-
+    if role is not None and role not in ROLES_VALIDOS:
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Filtro de rol no válido.",
         )
 
-    # ========================================================
-    # VALIDAR FILTRO ESTADO
-    # ========================================================
-
     if (
         estado_laboral is not None
-        and estado_laboral
-        not in ESTADOS_LABORALES
+        and estado_laboral not in ESTADOS_LABORALES
     ):
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
-            detail=(
-                "Filtro de estado laboral "
-                "no válido."
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Filtro de estado laboral no válido.",
         )
 
-    return AuthService(
-        db
-    ).listar_usuarios(
+    return AuthService(db).listar_usuarios(
         role=role,
         estado_laboral=estado_laboral,
         activo=activo,
@@ -859,7 +570,7 @@ def listar_usuarios(
 
 
 # ============================================================
-# OBTENER USUARIO
+# OBTENER USUARIO POR ID
 # ============================================================
 
 @router.get(
@@ -872,43 +583,26 @@ def obtener_usuario(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    Solo admin puede consultar cualquier usuario por ID.
-    """
-
-    exigir_admin(
-        current_user
-    )
+    exigir_admin(current_user)
 
     try:
-
-        return AuthService(
-            db
-        ).obtener_usuario(
-            user_id
-        )
+        return AuthService(db).obtener_usuario(user_id)
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_404_NOT_FOUND
-            ),
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
         ) from exc
 
 
 # ============================================================
-# ACTUALIZAR USUARIO ADMINISTRATIVO
+# ACTUALIZACIÓN ADMINISTRATIVA
 # ============================================================
 
 @router.put(
     "/usuario/{user_id}",
     response_model=UserResponse,
-    summary=(
-        "Actualizar datos administrativos "
-        "del usuario"
-    ),
+    summary="Actualizar usuario administrativamente",
 )
 def actualizar_usuario(
     user_id: int,
@@ -919,70 +613,41 @@ def actualizar_usuario(
     """
     SOLO ADMIN.
 
-    Permite modificar:
-
-    - nombre
-    - apellidos
-    - tipo de documento
-    - DNI
-    - género
-    - fecha de nacimiento
-    - teléfono
-    - teléfono secundario
-    - dirección
-    - cargo
-    - área
-    - fecha de ingreso
+    Permite asignar los roles:
+    - user
+    - trabajador
+    - almacenero
+    - admin
+    - conductor
+    - ingeniero
     - supervisor
-    - código único
-    - role
-    - estado laboral
-    - activo
 
-    NO permite modificar:
+    La asignación no otorga automáticamente acceso
+    a nuevos módulos.
 
-    - email
-    - password
-
-    La foto y firma tienen endpoints independientes.
+    Email y password siguen siendo inmutables aquí.
     """
 
-    exigir_admin(
-        current_user
-    )
-
-    service = AuthService(db)
+    exigir_admin(current_user)
 
     try:
-
-        return service.actualizar_usuario(
+        return AuthService(db).actualizar_usuario(
             user_id=user_id,
-            datos=data.model_dump(
-                exclude_unset=True
-            ),
-            usuario_auditoria=obtener_id(
-                current_user
-            ),
+            datos=data.model_dump(exclude_unset=True),
+            usuario_auditoria=obtener_id(current_user),
             permitir_admin=True,
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except IntegrityError as exc:
-
         db.rollback()
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_409_CONFLICT
-            ),
+            status_code=status.HTTP_409_CONFLICT,
             detail=(
                 "El documento o código "
                 "ya está registrado."
@@ -990,23 +655,17 @@ def actualizar_usuario(
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
-        logger.exception(
-            "Error al actualizar usuario"
-        )
+        logger.exception("Error al actualizar usuario")
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al actualizar usuario.",
         ) from exc
 
 
 # ============================================================
-# FOTO DE OTRO USUARIO - ADMIN
+# FOTO ADMINISTRATIVA
 # ============================================================
 
 @router.post(
@@ -1020,123 +679,42 @@ async def subir_foto_usuario_admin(
     current_user: UserDep,
     archivo: UploadFile = File(...),
 ):
-    """
-    SOLO ADMIN.
-
-    Permite que un administrador suba o reemplace
-    la fotografía de cualquier usuario.
-    """
-
-    exigir_admin(
-        current_user
-    )
-
-    service = AuthService(db)
+    exigir_admin(current_user)
 
     try:
+        contenido, extension = await leer_foto(archivo)
 
-        # ====================================================
-        # VALIDAR ARCHIVO
-        # ====================================================
-
-        if not archivo.filename:
-
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_400_BAD_REQUEST
-                ),
-                detail=(
-                    "Debe seleccionar una imagen."
-                ),
-            )
-
-        extension = (
-            Path(
-                archivo.filename
-            ).suffix.lower()
-        )
-
-        extensiones_permitidas = {
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp",
-        }
-
-        if (
-            extension
-            not in extensiones_permitidas
-        ):
-
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_400_BAD_REQUEST
-                ),
-                detail=(
-                    "Formato de imagen no permitido. "
-                    "Use JPG, JPEG, PNG o WEBP."
-                ),
-            )
-
-        # ====================================================
-        # LEER ARCHIVO
-        # ====================================================
-
-        contenido = await archivo.read()
-
-        if not contenido:
-
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_400_BAD_REQUEST
-                ),
-                detail="La imagen está vacía.",
-            )
-
-        # ====================================================
-        # GUARDAR FOTO
-        # ====================================================
-
-        return service.guardar_foto_usuario(
+        return AuthService(db).guardar_foto_usuario(
             user_id=user_id,
             contenido=contenido,
             extension=extension,
-            usuario_auditoria=obtener_id(
-                current_user
-            ),
+            usuario_auditoria=obtener_id(current_user),
         )
 
     except HTTPException:
         raise
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
         logger.exception(
             "Error al subir foto del usuario %s",
             user_id,
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al guardar la foto.",
         ) from exc
 
 
 # ============================================================
-# FIRMA DE OTRO USUARIO - ADMIN
+# FIRMA ADMINISTRATIVA
 # ============================================================
 
 @router.put(
@@ -1150,58 +728,33 @@ def guardar_firma_usuario_admin(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    SOLO ADMIN.
-
-    Permite que un administrador registre o reemplace
-    la firma digital de cualquier usuario.
-    """
-
-    exigir_admin(
-        current_user
-    )
-
-    service = AuthService(db)
+    exigir_admin(current_user)
 
     try:
-
-        return service.guardar_firma_base64(
+        return AuthService(db).guardar_firma_base64(
             user_id=user_id,
             firma_base64=data.firma_base64,
-            usuario_auditoria=obtener_id(
-                current_user
-            ),
+            usuario_auditoria=obtener_id(current_user),
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
         logger.exception(
             "Error al guardar firma del usuario %s",
             user_id,
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al guardar la firma.",
         ) from exc
 
-
-# ============================================================
-# GENERAR IMAGEN DE FIRMA - ADMIN
-# ============================================================
 
 @router.post(
     "/usuario/{user_id}/firma/imagen",
@@ -1213,70 +766,44 @@ def generar_imagen_firma_usuario_admin(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    SOLO ADMIN.
-
-    Convierte la firma Base64 almacenada del usuario
-    en un archivo PNG dentro de static/firmas.
-    """
-
-    exigir_admin(
-        current_user
-    )
-
-    service = AuthService(db)
+    exigir_admin(current_user)
 
     try:
-
-        url = service.generar_imagen_firma(
+        url = AuthService(db).generar_imagen_firma(
             user_id=user_id
         )
 
         return {
-            "mensaje": (
-                "Firma convertida correctamente."
-            ),
+            "mensaje": "Firma convertida correctamente.",
             "firma_url": url,
         }
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         logger.exception(
-            "Error al generar imagen de firma "
-            "del usuario %s",
+            "Error al generar firma del usuario %s",
             user_id,
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
-            detail=(
-                "Error al generar la imagen de firma."
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al generar la imagen de firma.",
         ) from exc
 
 
 # ============================================================
-# CAMBIAR ESTADO
+# CAMBIAR ESTADO LABORAL
 # ============================================================
 
 @router.patch(
     "/usuario/{user_id}/estado",
     response_model=UserResponse,
-    summary=(
-        "Activar, suspender o dar de baja "
-        "un usuario"
-    ),
+    summary="Activar, suspender o dar de baja un usuario",
 )
 def cambiar_estado_usuario(
     user_id: int,
@@ -1284,69 +811,43 @@ def cambiar_estado_usuario(
     db: DbDep,
     current_user: UserDep,
 ):
-    """
-    SOLO ADMIN.
-
-    Permite:
-    - activo
-    - suspendido
-    - cesado
-    """
-
-    exigir_admin(
-        current_user
-    )
+    exigir_admin(current_user)
 
     try:
-
-        return AuthService(
-            db
-        ).cambiar_estado(
+        return AuthService(db).cambiar_estado(
             user_id=user_id,
             activo=data.activo,
             estado_laboral=data.estado_laboral,
-            usuario_auditoria=obtener_id(
-                current_user
-            ),
+            usuario_auditoria=obtener_id(current_user),
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
         logger.exception(
             "Error al cambiar estado del usuario %s",
             user_id,
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al cambiar estado.",
         ) from exc
 
 
 # ============================================================
-# ACTUALIZAR DATOS PERSONALES DE USUARIO
+# ACTUALIZAR DATOS PERSONALES - ADMIN
 # ============================================================
 
 @router.patch(
     "/usuario/{user_id}/datos",
     response_model=UserResponse,
-    summary=(
-        "Actualizar datos personales "
-        "de un usuario"
-    ),
+    summary="Actualizar datos personales de un usuario",
 )
 def actualizar_datos_usuario(
     user_id: int,
@@ -1355,58 +856,37 @@ def actualizar_datos_usuario(
     current_user: UserDep,
 ):
     """
+    Ruta conservada por compatibilidad.
+
     SOLO ADMIN.
 
-    Esta ruta se conserva por compatibilidad.
-
-    Permite modificar los datos contenidos en UserUpdate.
-
-    No permite:
+    No modifica:
+    - email
+    - password
     - role
     - activo
     - estado_laboral
-    - email
-    - password
-
-    Para modificar role, activo o estado laboral se utiliza
-    PUT /auth/usuario/{user_id}.
     """
 
-    exigir_admin(
-        current_user
-    )
+    exigir_admin(current_user)
 
     try:
-
-        return AuthService(
-            db
-        ).actualizar_usuario(
+        return AuthService(db).actualizar_usuario(
             user_id=user_id,
-            datos=data.model_dump(
-                exclude_unset=True
-            ),
-            usuario_auditoria=obtener_id(
-                current_user
-            ),
+            datos=data.model_dump(exclude_unset=True),
+            usuario_auditoria=obtener_id(current_user),
         )
 
     except ValueError as exc:
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_400_BAD_REQUEST
-            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(exc),
         ) from exc
 
     except IntegrityError as exc:
-
         db.rollback()
-
         raise HTTPException(
-            status_code=(
-                status.HTTP_409_CONFLICT
-            ),
+            status_code=status.HTTP_409_CONFLICT,
             detail=(
                 "El documento o código "
                 "ya está registrado."
@@ -1414,18 +894,13 @@ def actualizar_datos_usuario(
         ) from exc
 
     except Exception as exc:
-
         db.rollback()
-
         logger.exception(
-            "Error al actualizar datos "
-            "del usuario %s",
+            "Error al actualizar datos del usuario %s",
             user_id,
         )
 
         raise HTTPException(
-            status_code=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error al actualizar datos.",
         ) from exc

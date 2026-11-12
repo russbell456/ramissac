@@ -194,3 +194,35 @@ class User(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+    # =========================================================
+    # DOCUMENTACIÓN DEL CONDUCTOR
+    # =========================================================
+
+    licencia_vencimiento = Column(
+        Date,
+        nullable=True,
+    )
+
+    licencia_categoria = Column(
+        String(20),
+        nullable=True,
+    )
+
+    emo_vencimiento = Column(
+        Date,
+        nullable=True,
+    )
+
+    pase_minero_vencimiento = Column(
+        Date,
+        nullable=True,
+    )
+
+    # =========================================================
+    # FIRMA — COMPATIBILIDAD CON AMBAS IMPLEMENTACIONES
+    # =========================================================
+
+    firma_url = Column(
+        String(500),
+        nullable=True,
+    )

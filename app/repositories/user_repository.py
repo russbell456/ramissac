@@ -1,16 +1,30 @@
+
 from __future__ import annotations
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.user import User
 
 
 class UserRepository:
-    def __init__(
-        self,
-        db: Session,
-    ):
+    """
+    Repositorio unificado de usuarios RAMIS ERP.
+
+    Conserva las operaciones de ambas ramas y admite
+    todos los roles definidos en el sistema.
+
+    La autorización y validación de roles corresponden
+    a los servicios y dependencias de seguridad,
+    no al repositorio.
+    """
+
+    def __init__(self, db: Session):
         self.db = db
+
+    # =====================================================
+    # CONSULTAS INDIVIDUALES
+    # =====================================================
 
     def get_by_id(
         self,
@@ -48,11 +62,13 @@ class UserRepository:
     ) -> User | None:
         return (
             self.db.query(User)
-            .filter(
-                User.codigo_unico == codigo_unico
-            )
+            .filter(User.codigo_unico == codigo_unico)
             .first()
         )
+
+    # =====================================================
+    # VALIDACIÓN DE DUPLICADOS
+    # =====================================================
 
     def email_exists(
         self,
@@ -102,6 +118,10 @@ class UserRepository:
 
         return query.first() is not None
 
+    # =====================================================
+    # CREACIÓN Y ACTUALIZACIÓN
+    # =====================================================
+
     def create_user(
         self,
         user: User,
@@ -110,6 +130,7 @@ class UserRepository:
             self.db.add(user)
             self.db.commit()
             self.db.refresh(user)
+
             return user
 
         except Exception:
@@ -123,11 +144,16 @@ class UserRepository:
         try:
             self.db.commit()
             self.db.refresh(user)
+
             return user
 
         except Exception:
             self.db.rollback()
             raise
+
+    # =====================================================
+    # LISTADO GENERAL
+    # =====================================================
 
     def list_users(
         self,
@@ -136,6 +162,21 @@ class UserRepository:
         activo: bool | None = None,
         search: str | None = None,
     ) -> list[User]:
+        """
+        Lista usuarios con filtros opcionales.
+
+        Admite cualquier rol almacenado en la base
+        de datos, incluidos:
+
+        - admin
+        - almacenero
+        - trabajador
+        - conductor
+        - ingeniero
+        - supervisor
+
+        No asigna ni modifica permisos.
+        """
 
         query = self.db.query(User)
 
@@ -146,8 +187,7 @@ class UserRepository:
 
         if estado_laboral:
             query = query.filter(
-                User.estado_laboral
-                == estado_laboral
+                User.estado_laboral == estado_laboral
             )
 
         if activo is not None:
@@ -156,16 +196,16 @@ class UserRepository:
             )
 
         if search:
-            term = (
-                f"%{search.strip()}%"
-            )
+            term = f"%{search.strip()}%"
 
             query = query.filter(
-                User.nombre.ilike(term)
-                | User.apellidos.ilike(term)
-                | User.dni.ilike(term)
-                | User.email.ilike(term)
-                | User.codigo_unico.ilike(term)
+                or_(
+                    User.nombre.ilike(term),
+                    User.apellidos.ilike(term),
+                    User.dni.ilike(term),
+                    User.email.ilike(term),
+                    User.codigo_unico.ilike(term),
+                )
             )
 
         return (
@@ -177,9 +217,19 @@ class UserRepository:
             .all()
         )
 
-    def list_trabajadores(
-        self,
-    ) -> list[User]:
+    # =====================================================
+    # LISTADO DE TRABAJADORES
+    # =====================================================
+
+    def list_trabajadores(self) -> list[User]:
+        """
+        Conserva exactamente el filtro original.
+
+        No incluye automáticamente conductor,
+        ingeniero ni supervisor, porque todavía
+        no se ha definido su participación en
+        este listado.
+        """
 
         return (
             self.db.query(User)
@@ -191,8 +241,7 @@ class UserRepository:
                     ]
                 ),
                 User.activo.is_(True),
-                User.estado_laboral
-                == "activo",
+                User.estado_laboral == "activo",
             )
             .order_by(
                 User.apellidos.asc()
