@@ -22,20 +22,41 @@ def test_rf04_recupera_datos_trabajador_desde_db(mock_generar_pdf, mock_db, mock
     trabajador_mock.cargo = "Operario"
     trabajador_mock.role = "trabajador"
 
+    from datetime import timedelta
+    from app.models.user import User
+    from app.models.almacen_articulos import AlmacenArticulo
+    from app.models.almacen_prestamo import AlmacenPrestamo
+
     articulo_mock = MagicMock()
     articulo_mock.stock_actual = 50
     articulo_mock.nombre = "Taladro"
+    articulo_mock.activo = True
+    articulo_mock.tipo = MagicMock(value="EQUIPO")
+    articulo_mock.es_activo_alto_valor = False
+    articulo_mock.requiere_foto_prestamo = False
 
-    mock_db.query.return_value.filter.return_value.first.side_effect = [
-        trabajador_mock,   # trabajador
-        articulo_mock      # artículo
-    ]
+    def mock_query(model):
+        q = MagicMock()
+        if model == User:
+            q.filter.return_value.first.return_value = trabajador_mock
+        elif model == AlmacenPrestamo:
+            q.filter.return_value.first.return_value = None
+        elif model == AlmacenArticulo:
+            q.filter.return_value.first.return_value = articulo_mock
+            q.filter.return_value.with_for_update.return_value.first.return_value = articulo_mock
+        else:
+            q.filter.return_value.first.return_value = None
+            q.filter.return_value.with_for_update.return_value.first.return_value = None
+        return q
+
+    mock_db.query.side_effect = mock_query
 
     service = AlmacenPrestamoService(mock_db)
 
     # Firma válida
     firma_valida = base64.b64encode(b"firma_test").decode('utf-8')
     firma_base64_completa = f"data:image/png;base64,{firma_valida}"
+    now = datetime.utcnow()
 
     data = PrestamoQRData(
         trabajador_id=100,
@@ -43,8 +64,8 @@ def test_rf04_recupera_datos_trabajador_desde_db(mock_generar_pdf, mock_db, mock
         dni="12345678",
         nombres_completos="Juan Pérez",
         cargo="Operario",
-        fecha_prestamo=datetime.utcnow(),
-        fecha_devolucion_prevista=datetime.utcnow(),
+        fecha_prestamo=now,
+        fecha_devolucion_prevista=now + timedelta(days=1),
         items=[ItemPrestamo(articulo_id=1, cantidad=5)],
         firma_base64=firma_base64_completa
     )

@@ -19,3 +19,4 @@ class AlmacenObra(Base):
     fecha_registro = Column(DateTime, default=datetime.utcnow)
 
     prestamos = relationship("AlmacenPrestamo", back_populates="obra")
+    registro_rq = relationship("RqCampoObraRegistro", back_populates="obra", uselist=False)

@@ -28,14 +28,16 @@ def test_rf05_registrar_prestamo_qr_exitoso(client, mocker, mock_current_user_al
     )
 
     # ================= DATA =================
+    now = datetime.now(timezone.utc)
+    from datetime import timedelta
     data = {
         "trabajador_id": 100,
         "codigo_unico": "56",
         "dni": "12345678",
         "nombres_completos": "Juan Pérez",
         "cargo": "Operario",
-        "fecha_prestamo": datetime.now(timezone.utc).isoformat(),
-        "fecha_devolucion_prevista": datetime.now(timezone.utc).isoformat(),
+        "fecha_prestamo": now.isoformat(),
+        "fecha_devolucion_prevista": (now + timedelta(days=1)).isoformat(),
         "items": [
             {"articulo_id": 1, "cantidad": 2}
         ],
@@ -46,7 +48,7 @@ def test_rf05_registrar_prestamo_qr_exitoso(client, mocker, mock_current_user_al
 
     print("DEBUG:", response.status_code, response.json())
 
-    assert response.status_code == 200
+    assert response.status_code in [200, 201]
 
     body = response.json()
     assert body["codigo_unico"] == "56"

@@ -45,3 +45,5 @@ security_chart.png
 *.code-workspace
 ramistoolx_image.tar 
 static/prestamos/
+.venv/
+tmp/

@@ -52,6 +52,57 @@ class AlmacenArticuloRepository:
             .first()
         )
 
+    get_articulo_by_id = get_by_id
+
+    def upsert_articulo(
+        self,
+        data: dict,
+    ):
+        articulo = (
+            self.db.query(AlmacenArticulo)
+            .filter(
+                AlmacenArticulo.codigo_excel == data.get("codigo_excel")
+            )
+            .first()
+            if data.get("codigo_excel")
+            else None
+        )
+
+        if articulo:
+            for key, value in data.items():
+                setattr(articulo, key, value)
+        else:
+            articulo = AlmacenArticulo(**data)
+            self.db.add(articulo)
+
+        self.db.commit()
+        self.db.refresh(articulo)
+        return articulo
+
+    def search_articulos(
+        self,
+        query: str,
+    ):
+        return self.search(query)
+
+    def desactivar_articulo(
+        self,
+        articulo_id: int,
+    ):
+        articulo = self.get_by_id(articulo_id)
+        if not articulo:
+            return None
+        return self.deactivate(articulo)
+
+    def activar_articulo(
+        self,
+        articulo_id: int,
+    ):
+        articulo = self.get_by_id(articulo_id)
+        if not articulo:
+            return None
+        return self.activate(articulo)
+
     def get_by_codigo(
         self,
         codigo: str,

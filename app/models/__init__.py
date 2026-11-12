@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from app.models.user import User
+from app.models.rq_campo import RqCampo, RqCampoCorrelativo, RqCampoItem, RqCampoAdjunto
 from app.models.almacen_articulos import AlmacenArticulo
+from app.models.almacen_articulo_imagen import AlmacenArticuloImagen
 from app.models.almacen_auditoria import AlmacenAuditoria
 from app.models.almacen_prestamo import AlmacenPrestamo, AlmacenPrestamoDetalle
 from app.models.almacen_devolucion import AlmacenDevolucion

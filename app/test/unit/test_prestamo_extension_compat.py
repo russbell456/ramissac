@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.schemas.almacen_prestamo import PrestamoQRData, ItemPrestamo
 from app.models.almacen_articulos import AlmacenArticulo
@@ -6,14 +6,15 @@ from app.models.almacen_prestamo import AlmacenPrestamo
 
 
 def test_prestamo_schema_accepts_optional_obra_and_external_fields():
+    now = datetime.utcnow()
     data = PrestamoQRData(
         trabajador_id=1,
         codigo_unico="P-001",
         dni="12345678",
         nombres_completos="Juan Perez",
         cargo="Operario",
-        fecha_prestamo=datetime.utcnow(),
-        fecha_devolucion_prevista=datetime.utcnow(),
+        fecha_prestamo=now,
+        fecha_devolucion_prevista=now + timedelta(days=7),
         items=[ItemPrestamo(articulo_id=1, cantidad=2)],
         firma_base64="abc123",
         obra_id=7,

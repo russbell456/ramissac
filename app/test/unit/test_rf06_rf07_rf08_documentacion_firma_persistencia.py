@@ -40,11 +40,29 @@ def test_rf06_rf07_generacion_pdf_y_firma(mock_db, mocker):
         unidad_medida="unidad"
     )
 
-    # Flujo DB: trabajador → artículo
-    mock_db.query.return_value.filter.return_value.first.side_effect = [
-        trabajador_mock,
-        articulo_mock
-    ]
+    from datetime import timedelta
+    from app.models.user import User
+    from app.models.almacen_prestamo import AlmacenPrestamo
+    from app.models.almacen_articulos import AlmacenArticulo
+
+    articulo_mock.es_activo_alto_valor = False
+    articulo_mock.requiere_foto_prestamo = False
+
+    def mock_query(model):
+        q = MagicMock()
+        if model == User:
+            q.filter.return_value.first.return_value = trabajador_mock
+        elif model == AlmacenPrestamo:
+            q.filter.return_value.first.return_value = None
+        elif model == AlmacenArticulo:
+            q.filter.return_value.first.return_value = articulo_mock
+            q.filter.return_value.with_for_update.return_value.first.return_value = articulo_mock
+        else:
+            q.filter.return_value.first.return_value = None
+            q.filter.return_value.with_for_update.return_value.first.return_value = None
+        return q
+
+    mock_db.query.side_effect = mock_query
 
     # =========================
     # Mock modelo préstamo
@@ -52,15 +70,16 @@ def test_rf06_rf07_generacion_pdf_y_firma(mock_db, mocker):
     mock_prestamo_model = MagicMock()
     mock_prestamo_model.id = 999
     mock_prestamo_model.codigo_unico = "P-056"
-    mock_prestamo_model.fecha_prestamo = datetime.utcnow()
-    mock_prestamo_model.fecha_devolucion_prevista = datetime.utcnow()
+    now = datetime.utcnow()
+    mock_prestamo_model.fecha_prestamo = now
+    mock_prestamo_model.fecha_devolucion_prevista = now + timedelta(days=1)
 
     # 🔥 FIX AQUÍ: debe coincidir con el input
     mock_prestamo_model.firma_base64 = "data:image/png;base64,abc123"
 
     mock_prestamo_model.estado = MagicMock(value="abierto")
     mock_prestamo_model.registrado_por = "almacenero"
-    mock_prestamo_model.fecha_registro = datetime.utcnow()
+    mock_prestamo_model.fecha_registro = now
 
     # Evitar lógica extra
     mock_prestamo_model.detalles = []
@@ -94,8 +113,8 @@ def test_rf06_rf07_generacion_pdf_y_firma(mock_db, mocker):
         dni="12345678",
         nombres_completos="Juan Pérez",
         cargo="Operario",
-        fecha_prestamo=datetime.utcnow(),
-        fecha_devolucion_prevista=datetime.utcnow(),
+        fecha_prestamo=now,
+        fecha_devolucion_prevista=now + timedelta(days=1),
         items=[ItemPrestamo(articulo_id=1, cantidad=2)],
         firma_base64="data:image/png;base64,abc123"
     )

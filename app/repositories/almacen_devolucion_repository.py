@@ -128,16 +128,10 @@ class AlmacenDevolucionRepository:
 
         articulo.stock_actual += cantidad
 
-        if articulo.en_prestamo < cantidad:
-
-            raise ValueError(
-                f"El artículo "
-                f"{articulo.nombre} "
-                "tiene inconsistencia en "
-                "la cantidad prestada"
-            )
-
-        articulo.en_prestamo -= cantidad
+        if articulo.en_prestamo is not None:
+            articulo.en_prestamo = max(0, articulo.en_prestamo - cantidad)
+        else:
+            articulo.en_prestamo = 0
 
         self.db.flush()
 

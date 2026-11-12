@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.core.validation_handler import request_validation_exception_handler
 from app.database.base import Base
 from app.database.connection import engine, get_db
+from app.database.rq_schema import actualizar_esquema_rq
 from app.models.almacen_articulo_imagen import AlmacenArticuloImagen
 from app.models.almacen_obras import AlmacenObra
 from app.models.almacen_terceros import AlmacenTercero
@@ -20,12 +21,16 @@ import app.models  # noqa: F401
 from app.routers.almacen_articulo_router import router as almacen_articulo_router
 from app.routers.almacen_devolucion import router as almacen_devolucion_router
 from app.routers.almacen_obras import router as almacen_obras_router
-from app.routers.almacen_prestamo import router as almacen_prestamo_router
+from app.routers.almacen_prestamo import (
+    router as almacen_prestamo_router,
+    prestamos_compat_router,
+)
 from app.routers.almacen_terceros import router as almacen_terceros_router
 from app.routers.auth_router import router as auth_router
 from app.routers.vehiculo_router import router as vehiculo_router
 from app.routers.ruta_router import router as ruta_router
 from app.routers.mantenimiento_router import router as mantenimiento_router
+from app.routers.rq_campo_router import router as rq_campo_router
 
 from app.security.hashing import Hash
 
@@ -33,6 +38,7 @@ from app.security.hashing import Hash
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
+    actualizar_esquema_rq(engine)
     db = next(get_db())
     try:
         seed_admin_user(db)
@@ -153,9 +159,11 @@ def seed_admin_user(db: Session):
 app.include_router(auth_router)
 app.include_router(almacen_articulo_router)
 app.include_router(almacen_prestamo_router)
+app.include_router(prestamos_compat_router)
 app.include_router(almacen_devolucion_router)
 app.include_router(almacen_obras_router)
 app.include_router(almacen_terceros_router)
 app.include_router(vehiculo_router)
 app.include_router(ruta_router)
 app.include_router(mantenimiento_router)
+app.include_router(rq_campo_router)

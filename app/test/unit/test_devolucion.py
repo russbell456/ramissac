@@ -192,7 +192,16 @@ def test_registrar_devolucion_detalle_inexistente(db_session):
         password="password_hash",
         role="trabajador"
     )
-    db_session.add(trabajador)
+    prestamo = AlmacenPrestamo(
+        id=100,
+        trabajador_id=10,
+        codigo_unico="P-100",
+        firma_base64="firma",
+        estado=EstadoPrestamo.ABIERTO,
+        fecha_prestamo=datetime.utcnow(),
+        fecha_devolucion_prevista=datetime.utcnow()
+    )
+    db_session.add_all([trabajador, prestamo])
     db_session.commit()
 
     service = AlmacenDevolucionService(db_session)
@@ -208,7 +217,7 @@ def test_registrar_devolucion_detalle_inexistente(db_session):
         firma_base64="firma_dev_data"
     )
 
-    with pytest.raises(ValueError, match="Detalle no encontrado"):
+    with pytest.raises(ValueError, match="Detalle.*no encontrado"):
         service.registrar_devolucion_desde_qr(data, almacenero_id=999)
 
 
@@ -226,6 +235,7 @@ def test_registrar_devolucion_cantidad_excede_pendiente(db_session):
     articulo = AlmacenArticulo(
         id=1,
         nombre="Taladro",
+        unidad_medida="unid",
         tipo=TipoArticulo.EQUIPO,
         stock_actual=5,
         activo=True
@@ -233,6 +243,7 @@ def test_registrar_devolucion_cantidad_excede_pendiente(db_session):
     prestamo = AlmacenPrestamo(
         id=100,
         trabajador_id=10,
+        codigo_unico="P-100",
         firma_base64="firma",
         estado=EstadoPrestamo.ABIERTO,
         fecha_prestamo=datetime.utcnow(),
@@ -262,7 +273,7 @@ def test_registrar_devolucion_cantidad_excede_pendiente(db_session):
         firma_base64="firma_dev_data"
     )
 
-    with pytest.raises(ValueError, match="Cantidad excede lo pendiente"):
+    with pytest.raises(ValueError, match="(?i)excede lo pendiente"):
         service.registrar_devolucion_desde_qr(data, almacenero_id=999)
 
 

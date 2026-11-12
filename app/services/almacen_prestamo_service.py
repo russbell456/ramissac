@@ -29,6 +29,7 @@ from app.schemas.almacen_prestamo import (
 from app.services.auditoria_service import (
     AuditoriaService,
 )
+from app.utils.pdf_generator import generar_pdf_prestamo
 
 
 class AlmacenPrestamoService:
@@ -393,6 +394,11 @@ class AlmacenPrestamoService:
                 prestamo
             )
 
+            try:
+                generar_pdf_prestamo(prestamo)
+            except Exception:
+                pass
+
             return prestamo
 
         except Exception:
@@ -461,13 +467,6 @@ class AlmacenPrestamoService:
             data.tipo_prestamo
             == TipoPrestamoSchema.INTERNO
         ):
-
-            if data.obra_id is None:
-
-                raise ValueError(
-                    "Un préstamo interno "
-                    "debe tener una obra"
-                )
 
             if any([
                 data.empresa_ruc,

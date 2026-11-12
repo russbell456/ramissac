@@ -203,7 +203,7 @@ class AlmacenArticuloService:
         termino: str,
     ):
         if len(termino.strip()) < 2:
-            return self.repo.get_all_disponibles()
+            return self.repo.get_all()
 
         return self.repo.search(
             termino.strip()
@@ -322,3 +322,62 @@ class AlmacenArticuloService:
                 f"Imagen {imagen_id} eliminada"
             ),
         )
+
+    async def procesar_inventario_excel(
+        self,
+        file,
+    ):
+        import io
+        import inspect
+        import pandas as pd
+
+        if hasattr(file, "read") and inspect.iscoroutinefunction(file.read):
+            content = await file.read()
+        else:
+            content = file.file.read()
+
+        df = pd.read_excel(
+            io.BytesIO(content),
+            skiprows=3,
+        )
+
+        df.columns = df.columns.str.strip()
+
+        for _, row in df.iterrows():
+            if pd.isna(row["Producto"]) or pd.isna(row["Codigo"]):
+                continue
+
+            nombre_prod = str(row["Producto"]).upper()
+
+            herramientas = [
+                "ROTOMARTILLO",
+                "TALADRO",
+                "AMOLADORA",
+                "ESMERIL",
+                "MOTOSIERRA",
+                "ARNES",
+                "BOMBA",
+                "SOLDAR",
+                "MAQUINA",
+                "EQUIPO",
+                "MARTILLO",
+                "CINCEL",
+                "APLICADOR",
+                "LLAVE",
+            ]
+
+            es_equipo = any(h in nombre_prod for h in herramientas)
+
+            self.repo.upsert_articulo({
+                "nombre": row["Producto"],
+                "unidad_medida": row["Unidad Medida"],
+                "tipo": (
+                    TipoArticulo.EQUIPO
+                    if es_equipo
+                    else TipoArticulo.CONSUMIBLE
+                ),
+                "stock_actual": 5,
+                "codigo_excel": str(row["Codigo"]),
+            })
+
+        return len(df)

@@ -5,6 +5,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum,
+    ForeignKey,
     Integer,
     Numeric,
     String,
@@ -151,3 +152,48 @@ class AlmacenArticulo(Base):
         back_populates="articulo",
         cascade="all, delete-orphan",
     )
+    ficha = relationship("AlmacenArticuloFicha", uselist=False, cascade="all, delete-orphan")
+
+    def _ficha(self):
+        if self.ficha is None:
+            self.ficha = AlmacenArticuloFicha()
+        return self.ficha
+
+    @property
+    def medidas(self):
+        return self.ficha.medidas if self.ficha else None
+
+    @medidas.setter
+    def medidas(self, valor):
+        self._ficha().medidas = valor
+
+    @property
+    def especificaciones(self):
+        return self.ficha.especificaciones if self.ficha else None
+
+    @especificaciones.setter
+    def especificaciones(self, valor):
+        self._ficha().especificaciones = valor
+
+    @property
+    def observacion(self):
+        return self.ficha.observacion if self.ficha else None
+
+    @observacion.setter
+    def observacion(self, valor):
+        self._ficha().observacion = valor
+
+    @property
+    def ficha_tecnica_nombre(self):
+        return self.ficha.nombre_documento if self.ficha else None
+
+
+class AlmacenArticuloFicha(Base):
+    __tablename__ = "almacen_articulo_fichas"
+
+    articulo_id = Column(Integer, ForeignKey("almacen_articulos.id", ondelete="CASCADE"), primary_key=True)
+    medidas = Column(String(150), nullable=True)
+    especificaciones = Column(Text, nullable=True)
+    observacion = Column(Text, nullable=True)
+    nombre_documento = Column(String(200), nullable=True)
+    documento_base64 = Column(Text, nullable=True)

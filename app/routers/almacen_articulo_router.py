@@ -1,4 +1,6 @@
 from typing import Annotated
+import base64
+from urllib.parse import quote
 
 from fastapi import (
     APIRouter,
@@ -9,6 +11,8 @@ from fastapi import (
     status,
 )
 from sqlalchemy.orm import Session
+from fastapi.responses import Response
+from app.schemas.rq_campo import RqAdjuntoCreate
 
 from app.database.connection import get_db
 from app.dependencies.auth_dependencies import (
@@ -44,6 +48,7 @@ UserDep = Annotated[
 ALLOWED_ROLES = {
     "admin",
     "almacenero",
+    "logistica",
 }
 
 
@@ -91,6 +96,39 @@ def listar_articulos(
     service = AlmacenArticuloService(db)
 
     return service.repo.get_all()
+
+
+@router.post(
+    "/importar-excel",
+    status_code=status.HTTP_201_CREATED,
+)
+async def importar_excel(
+    file: UploadFile = File(...),
+    db: DbDep = None,
+    user: UserDep = None,
+):
+    if user.role not in ["almacenero", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No autorizado",
+        )
+
+    service = AlmacenArticuloService(db)
+    cantidad = await service.procesar_inventario_excel(file)
+    return {
+        "message": f"Se cargaron {cantidad} artículos correctamente."
+    }
+
+
+@router.get(
+    "/articulos",
+    response_model=list[ArticuloSchema],
+)
+def obtener_catalogo(
+    db: DbDep,
+):
+    service = AlmacenArticuloService(db)
+    return service.repo.get_all_disponibles()
 
 
 @router.get(
@@ -182,10 +220,14 @@ def desactivar_articulo(
     service = AlmacenArticuloService(db)
 
     try:
-        return service.desactivar_articulo(
+        articulo = service.desactivar_articulo(
             articulo_id,
             user.id,
         )
+        res = ArticuloSchema.model_validate(articulo)
+        res.message = "Artículo desactivado correctamente"
+        res.articulo_id = articulo.id
+        return res
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -207,10 +249,14 @@ def activar_articulo(
     service = AlmacenArticuloService(db)
 
     try:
-        return service.activar_articulo(
+        articulo = service.activar_articulo(
             articulo_id,
             user.id,
         )
+        res = ArticuloSchema.model_validate(articulo)
+        res.message = "Artículo activado correctamente"
+        res.articulo_id = articulo.id
+        return res
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -269,3 +315,34 @@ def eliminar_imagen(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(exc),
         ) from exc
+
+
+@router.post("/{articulo_id}/ficha-tecnica")
+async def subir_ficha_tecnica(articulo_id: int, db: DbDep, user: UserDep, file: UploadFile = File(...)):
+    validar_rol(user)
+    try:
+        service = AlmacenArticuloService(db)
+        articulo = service.obtener_articulo(articulo_id)
+        datos = await file.read(5 * 1024 * 1024 + 1)
+        adjunto = RqAdjuntoCreate(nombre=file.filename or "ficha.pdf", tipo_mime="application/pdf",
+                                contenido_base64=base64.b64encode(datos).decode())
+        ficha = articulo._ficha()
+        ficha.nombre_documento = adjunto.nombre
+        ficha.documento_base64 = adjunto.contenido_base64
+        db.commit()
+        return {"nombre": ficha.nombre_documento}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Seleccione una ficha técnica PDF válida de hasta 5 MB") from exc
+
+
+@router.get("/{articulo_id}/ficha-tecnica")
+def descargar_ficha_tecnica(articulo_id: int, db: DbDep, user: UserDep):
+    service = AlmacenArticuloService(db)
+    try:
+        articulo = service.obtener_articulo(articulo_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if not articulo.ficha or not articulo.ficha.documento_base64:
+        raise HTTPException(status_code=404, detail="El artículo no tiene ficha técnica")
+    return Response(base64.b64decode(articulo.ficha.documento_base64), media_type="application/pdf",
+                    headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(articulo.ficha.nombre_documento)}"})

@@ -74,6 +74,8 @@ class AlmacenPrestamoRepository:
 
         self.db.flush()
 
+    update_stock = descontar_stock
+
     def obtener_prestamo(
         self,
         prestamo_id: int,

@@ -37,6 +37,9 @@ class ArticuloCreateSchema(BaseModel):
     )
 
     descripcion: str | None = None
+    medidas: str | None = Field(default=None, max_length=150)
+    especificaciones: str | None = None
+    observacion: str | None = None
 
     categoria: str | None = Field(
         default=None,
@@ -115,6 +118,9 @@ class ArticuloUpdateSchema(BaseModel):
     )
 
     descripcion: str | None = None
+    medidas: str | None = Field(default=None, max_length=150)
+    especificaciones: str | None = None
+    observacion: str | None = None
 
     categoria: str | None = Field(
         default=None,
@@ -179,6 +185,10 @@ class ArticuloSchema(BaseModel):
     modelo: str | None
     serie: str | None
     descripcion: str | None
+    medidas: str | None = None
+    especificaciones: str | None = None
+    observacion: str | None = None
+    ficha_tecnica_nombre: str | None = None
     categoria: str | None
     unidad_medida: str
     tipo: TipoArticuloSchema
@@ -196,8 +206,10 @@ class ArticuloSchema(BaseModel):
     activo: bool
     fecha_baja: datetime | None
     imagenes: list[ArticuloImagenSchema] = Field(
-    default_factory=list
-)
+        default_factory=list
+    )
+    message: str | None = None
+    articulo_id: int | None = None
 
     model_config = ConfigDict(
         from_attributes=True,

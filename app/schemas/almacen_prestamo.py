@@ -175,12 +175,6 @@ class PrestamoQRData(BaseModel):
             == TipoPrestamoSchema.INTERNO
         ):
 
-            if self.obra_id is None:
-                raise ValueError(
-                    "Los préstamos internos "
-                    "deben indicar una obra"
-                )
-
             if any([
                 self.empresa_ruc,
                 self.empresa_nombre,
@@ -202,13 +196,6 @@ class PrestamoQRData(BaseModel):
             self.tipo_prestamo
             == TipoPrestamoSchema.EXTERNO
         ):
-
-            if self.obra_id is not None:
-                raise ValueError(
-                    "Un préstamo externo "
-                    "no puede estar asociado a una obra"
-                )
-
             if not self.empresa_ruc:
                 raise ValueError(
                     "El RUC es obligatorio "
@@ -279,15 +266,15 @@ class PrestamoSchema(BaseModel):
     registrado_por: str
     fecha_registro: datetime
 
-    tipo_prestamo: str
-    obra_id: int | None
+    tipo_prestamo: str = "interno"
+    obra_id: int | None = None
 
-    empresa_ruc: str | None
-    empresa_nombre: str | None
+    empresa_ruc: str | None = None
+    empresa_nombre: str | None = None
 
-    persona_dni: str | None
-    persona_nombres: str | None
-    persona_telefono: str | None
+    persona_dni: str | None = None
+    persona_nombres: str | None = None
+    persona_telefono: str | None = None
 
     detalles: list[PrestamoDetalleSchema]
 
